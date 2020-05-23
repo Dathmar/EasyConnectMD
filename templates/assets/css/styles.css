@@ -1,0 +1,78 @@
+.navbar.navbar-light.navbar-expand-md.fixed-top.d-xl-flex {
+  border-bottom: 1px solid #c3c3c3;
+  box-shadow: 1px 1px 3px #c3c3c3;
+}
+
+.orange-border-button {
+  cursor: pointer;
+  border: 2px solid #ffa500;
+  background-color: #00000000;
+  color: #ffa500;
+}
+
+#orange-font {
+  color: #ffa500;
+  padding-left: 33px;
+  font-family: Antic, sans-serif;
+  margin-left: 0px;
+  font-size: 24px;
+  padding-right: 33px;
+}
+
+body {
+  padding-top: 180px;
+}
+
+.section-1 {
+  width: 50%;
+}
+
+.section.connect {
+  background-image: linear-gradient(#FFFFFF,#e7e7e7);
+}
+
+[type=button]:not(:disabled), [type=reset]:not(:disabled), [type=submit]:not(:disabled), button:not(:disabled) {
+  vertical-align: text-bottom;
+}
+
+#section-2 {
+  padding: 90px;
+}
+
+#section-2-cardBox {
+  padding-top: 55px;
+}
+
+#section-3 {
+  padding-top: 60px;
+  padding-bottom: 60px;
+  background-color: #e7e7e7;
+}
+
+#fuck-css {
+  border: 2px solid #ffa500;
+}
+
+#other-button {
+  border: 2px solid #ffa500 !important;
+}
+
+#section-4-cardBox {
+  padding: 5px 100px;
+}
+
+.orange-box {
+  margin-left: 20%;
+  margin-bottom: 6%;
+  width: 60%;
+  height: 200px;
+  vertical-align: middle;
+  background-image: linear-gradient(to right, #ff7a00, #ffb800);
+  box-shadow: 1px 1px #919191, -0.5em 0 1em 0 #919191;
+}
+
+.btn.btn-primary.border.rounded-0.shadow.other-button {
+  border: 2px solid #ffa500;
+  background-color: #00000000;
+}
+
