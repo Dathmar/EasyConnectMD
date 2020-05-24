@@ -65,7 +65,7 @@ body {
   margin-left: 20%;
   margin-bottom: 6%;
   width: 60%;
-  height: 200px;
+  height: auto;
   vertical-align: middle;
   background-image: linear-gradient(to right, #ff7a00, #ffb800);
   box-shadow: 1px 1px #919191, -0.5em 0 1em 0 #919191;

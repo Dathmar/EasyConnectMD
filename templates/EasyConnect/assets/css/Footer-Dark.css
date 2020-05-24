@@ -95,3 +95,11 @@ a {
   text-decoration: underline;
 }
 
+.orange-block {
+  display: inline-block;
+}
+
+.btn.btn-primary.border.rounded-0.shadow-sm.orange-box-button {
+  max-width: 80%;
+}
+
