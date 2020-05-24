@@ -2,3 +2,8 @@
 -add button and link hover effects
 -spacing
 -edit responsive design because it currently sucks as hell!
+
+update 24.05:
+
+-privacy policy page needs to be finished 
+
