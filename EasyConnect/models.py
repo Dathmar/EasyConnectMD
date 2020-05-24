@@ -33,7 +33,7 @@ class Patient(models.Model):
         return f'{self.first_name} {self.last_name}'
 
 
-class Preferred_Pharmacy(models.Model):
+class PreferredPharmacy(models.Model):
     # section in page 1
     # would like to expand to location information from Google
     # probably just store the google location data in that case.
@@ -64,14 +64,14 @@ class Symptoms(models.Model):
     create_datetime = models.DateTimeField('date created')
 
 
-class Payment_Response(models.Model):
+class PaymentResponse(models.Model):
     patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
     response = models.TextField()
 
     create_datetime = models.DateTimeField('date created')
 
 
-class Video_Chat(models.Model):
+class VideoChat(models.Model):
     patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
     sid = models.CharField(max_length=200)
     status = models.BooleanField()
