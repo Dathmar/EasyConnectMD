@@ -14,6 +14,7 @@ class Choice(models.Model):
     votes = models.IntegerField(default=0)
 """
 
+
 class Patient(models.Model):
     # page 1
     first_name = models.CharField(max_length=200)
@@ -24,7 +25,7 @@ class Patient(models.Model):
     address1 = models.CharField(max_length=200)
     address2 = models.CharField(max_length=200)
     city = models.CharField(max_length=200)
-    zip = models.CharField(max_length=10)
+    zip = models.CharField(max_length=10, default=0)
     state = models.CharField(choices=STATE_CHOICES, max_length=2)
 
     create_datetime = models.DateTimeField('date created')
@@ -33,7 +34,7 @@ class Patient(models.Model):
         return f'{self.first_name} {self.last_name}'
 
 
-class PreferredPharmacy(models.Model):
+class Preferred_Pharmacy(models.Model):
     # section in page 1
     # would like to expand to location information from Google
     # probably just store the google location data in that case.
@@ -64,14 +65,14 @@ class Symptoms(models.Model):
     create_datetime = models.DateTimeField('date created')
 
 
-class PaymentResponse(models.Model):
+class Payment_Response(models.Model):
     patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
     response = models.TextField()
 
     create_datetime = models.DateTimeField('date created')
 
 
-class VideoChat(models.Model):
+class Video_Chat(models.Model):
     patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
     sid = models.CharField(max_length=200)
     status = models.BooleanField()
