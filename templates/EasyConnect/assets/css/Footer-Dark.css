@@ -103,3 +103,11 @@ a {
   max-width: 80%;
 }
 
+.col {
+  margin: 1em;
+}
+
+.form-check {
+  margin-right: 1.25rem;
+}
+
