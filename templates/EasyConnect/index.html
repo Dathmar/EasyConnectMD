@@ -15,13 +15,13 @@
 <body>
     <nav class="navbar navbar-light navbar-expand-md fixed-top d-xl-flex" style="background-color: #ffffff;filter: blur(0px) grayscale(0%) hue-rotate(0deg) invert(0%) saturate(100%) sepia(0%);">
         <div class="container">
-            <div><a class="navbar-brand" href="#" style="margin-right: 0;"><img src="{% get_static_prefix %}EasyConnect/assets/img/Logo-nav.png" style="margin-left: 0;"><br></a></div><button data-toggle="collapse" class="navbar-toggler" data-target="#navcol-1" style="margin-left: 14px;padding: 0px;padding-right: 7px;padding-left: 6px;margin-top: 0px;height: 40px;margin-bottom: -11px;"><span class="sr-only">Toggle navigation</span><span class="navbar-toggler-icon"></span></button>
+            <div><a class="navbar-brand" href="{% url 'index' %}" style="margin-right: 0;"><img src="{% get_static_prefix %}EasyConnect/assets/img/Logo-nav.png" style="margin-left: 0;"><br></a></div><button data-toggle="collapse" class="navbar-toggler" data-target="#navcol-1" style="margin-left: 14px;padding: 0px;padding-right: 7px;padding-left: 6px;margin-top: 0px;height: 40px;margin-bottom: -11px;"><span class="sr-only">Toggle navigation</span><span class="navbar-toggler-icon"></span></button>
             <div
                 class="collapse navbar-collapse" id="navcol-1">
                 <ul class="nav navbar-nav ml-auto" style="font-size: 22px;margin: 0px;">
-                    <li class="nav-item" role="presentation" style="padding: 0px;padding-right: 13px;"><a class="nav-link" href="about" style="font-family: Antic, sans-serif;font-size: 24px;">Our Story</a></li>
-                    <li class="nav-item" role="presentation"><a class="nav-link" href="faq" style="padding-right: 25px;font-family: Antic, sans-serif;font-size: 24px;">FAQs</a></li>
-                    <li class="nav-item" role="presentation" style="margin-right: -41px;"><a class="nav-link orange-border-button orange-font" id="orange-font" href="#">Book Now</a></li>
+                    <li class="nav-item" role="presentation" style="padding: 0px;padding-right: 13px;"><a class="nav-link" href="{% url 'our-story' %}" style="font-family: Antic, sans-serif;font-size: 24px;">Our Story</a></li>
+                    <li class="nav-item" role="presentation"><a class="nav-link" href="{% url 'faq' %}" style="padding-right: 25px;font-family: Antic, sans-serif;font-size: 24px;">FAQs</a></li>
+                    <li class="nav-item" role="presentation" style="margin-right: -41px;"><a class="nav-link orange-border-button orange-font" id="orange-font" href="{% url 'connect-with-a-doctor' %}">Book Now</a></li>
                 </ul>
         </div>
         </div>
@@ -144,7 +144,7 @@
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col d-flex d-sm-flex d-md-flex d-lg-flex d-xl-flex justify-content-center justify-content-sm-center justify-content-md-center justify-content-lg-center justify-content-xl-center"><a id="privacy-policy" href="privacyPolicy" style="color: rgb(122,122,122);font-family: Antic, sans-serif;">Privacy Policy</a></div>
+                    <div class="col d-flex d-sm-flex d-md-flex d-lg-flex d-xl-flex justify-content-center justify-content-sm-center justify-content-md-center justify-content-lg-center justify-content-xl-center"><a id="privacy-policy" href="{% url 'privacy-policy' %}" style="color: rgb(122,122,122);font-family: Antic, sans-serif;">Privacy Policy</a></div>
                 </div>
             </div>
         </footer>
