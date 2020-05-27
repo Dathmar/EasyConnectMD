@@ -23,7 +23,7 @@ def privacy_policy(request):
 
 
 def connect(request):
-    return HttpResponse("Hello, world. You're at the EasyConnect our connect with a doctor page.")
+    return render(request, 'EasyConnect/connect.html')
 
 
 def video_chat(request, sid):

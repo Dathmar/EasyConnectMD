@@ -8,7 +8,7 @@ urlpatterns = [
     path('faqs/', views.faq, name='faq'),
     path('faq/', views.faq, name='faq'),
     path('privacy-policy/', views.privacy_policy, name='privacy-policy'),
-    path('connect-with-a-doctor/', views.connect, name='connect-with-a-doctor'),
     path('connect/', views.connect, name='connect-with-a-doctor'),
+    path('connect-with-a-doctor/', views.connect, name='connect-with-a-doctor'),
     path('video-chat/<str:sid>/', views.video_chat, name='video-chat'),
 ]
