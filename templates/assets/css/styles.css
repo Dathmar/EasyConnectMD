@@ -1,0 +1,26 @@
+.navbar.navbar-light.navbar-expand-md.fixed-top.d-xl-flex {
+  border-bottom: 1px solid #c3c3c3;
+  box-shadow: 1px 1px 3px #c3c3c3;
+}
+
+body {
+  padding-top: 180px;
+}
+
+.section.connect {
+  background-image: linear-gradient(#FFFFFF,#e7e7e7);
+}
+
+.orange-box {
+  margin-left: 20%;
+  margin-bottom: 6%;
+  width: 60%;
+  height: auto;
+  vertical-align: middle;
+  background-image: linear-gradient(to right, #ff7a00, #ffb800);
+  box-shadow: -0.5em 0 1em 0 #919191;
+  padding-top: 1.2em;
+  padding-left: 0.7em;
+  padding-right: 0.7em;
+}
+
