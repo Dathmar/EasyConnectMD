@@ -1,0 +1,75 @@
+{% extends 'EasyConnect/header_footer.html' %}
+{% load static %}
+{% block content %}
+
+<body style="background-image: url(&quot;assets/img/Image-waiting-room.jpg&quot;);background-size: cover;background-repeat: no-repeat;background-position: center;padding-top: 5em;">
+    <div class="d-md-flex justify-content-md-center" style="margin-right: 10%;margin-left: 10%;">
+        <section class="container-wrapper" style="background-color: #ffffff;padding: 0px;padding-bottom: 4em;">
+            <div>
+                <div class="container">
+                    <div id="textAboveForm">
+                        <div class="row">
+                            <div class="col text-center">
+                                <h1 style="margin-top: 1em;margin-bottom: 1em;">Connect with a doctor</h1>
+                            </div>
+                        </div>
+                        <div class="row" style="margin-bottom: -42px;">
+                            <div class="col text-center">
+                                <h5><br>Less than 10 questions and 10 minutes to get connected with a doctor.<br><br></h5>
+                            </div>
+                        </div>
+                        <div class="row" style="margin-top: 3em;margin-bottom: 0em;">
+                            <div class="col text-center d-sm-flex align-items-sm-end m-sm-auto justify-content-lg-center three-headings"><span style="padding-right: 1em;padding-left: 1em;"><br><strong>1.</strong>About you<br><br></span><span style="padding-right: 1em;padding-left: 1em;"><br><br><strong>2.</strong>Symptoms &amp; Payment<br><br></span><span style="padding-right: 1em;padding-left: 1em;"><br><br><strong>3.</strong>Video Chat<br><br></span></div>
+                        </div>
+                        <div class="row">
+                            <div class="col">
+                                <h5>Terms of Service*</h5>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col">
+                                <div id="terms" class="overflow-auto" style="height: 150px;">
+                                    <p style="margin-left: 1em;margin-top: 1em;"><strong>Services</strong> <br>The service provided by EasyConnectMD is for acute, urgent care type <br>visits. Anxiety and depression cannot be diagnosed or treated. <br><strong>Prescriptions</strong> <br>Prescriptions
+                                        for controlled substances for non-therapeutic use, and/or those <br>which may be harmful (potential for abuse or addiction) as well as general <br>medicine refills (for chronic conditions) <strong><em>will not be written here.</em></strong>                                        <br><strong>Refunds</strong> <br>Refunds will not be processed because we were unable to diagnose or treat you <br>nor because a prescription was unable to be filled due to medical restrictions. <br>We will however
+                                        issue a refund if you are unable to connect with a member of <br>our staff. <br><br></p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col" style="margin-top: 5px;">
+                                <div class="form-check"><input class="form-check-input" type="checkbox" id="formCheck-1"><label class="form-check-label" for="formCheck-1">I agree to the Terms of Service</label></div>
+                            </div>
+                        </div>
+                        <div class="row" style="margin-top: 1em;">
+                            <div class="col">
+                                <h5>1.About you</h5>
+                                <div class="seperator"></div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col">
+                                <h5></h5>
+                            </div>
+                        </div>
+                    </div>
+                    <form action="/connect/" method="post">
+                        {% csrf_token %}
+                        {{ form }}
+                        <input type="submit" value="Submit">
+                    </form>
+                <div class="row seperator" id="light">
+                    <div class="col">
+                        <div></div>
+                    </div>
+                </div>
+                <div class="row" style="margin-top: 1em;">
+                    <div class="col"><button class="btn btn-primary border rounded-0 button-white connect-button" type="button" style="background-color: rgb(255,255,255);color: #ffa500;border: 2px solid #ffa500 !important;"><a class="link-base button-transparent" href="connect-2.html">Step 2: Symptoms &amp; Payment<br></a></button></div>
+                </div>
+                <div class="row" style="margin-top: 3em;margin-bottom: 0em;">
+                    <div class="col text-center d-sm-flex align-items-sm-end m-sm-auto justify-content-lg-center three-headings"><span style="padding-right: 1em;padding-left: 1em;"><br><strong>1.</strong>About you<br><br></span><span style="padding-right: 1em;padding-left: 1em;"><br><br><strong>2.</strong>Symptoms &amp; Payment<br><br></span><span style="padding-right: 1em;padding-left: 1em;"><br><br><strong>3.</strong>Video Chat<br><br></span></div>
+                </div>
+            </div>
+    </div>
+    </section>
+    </div>
+{%  endblock %}

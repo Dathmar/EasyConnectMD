@@ -1,3 +1,7 @@
+GENDER_CHOICES = (
+    ('M', 'Male'),
+    ('F', 'Female')
+)
 STATE_CHOICES = (
     ('AL', 'Alabama'),
     ('AK', 'Alaska'),
