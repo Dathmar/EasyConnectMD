@@ -2,7 +2,7 @@ import datetime
 import os
 
 from django.shortcuts import render, get_object_or_404
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from django.urls import reverse
 
 from EasyConnect.forms import PatientForm
@@ -71,17 +71,15 @@ def connect(request):
             # redirect to a new URL:
             return HttpResponseRedirect(reverse('all-borrowed'))
 
-        # If this is a GET (or any other method) create the default form.
-        else:
-            form = PatientForm()
+    # If this is a GET (or any other method) create the default form.
+    else:
+        form = PatientForm()
 
-        context = {
-            'form': form
-        }
+    context = {
+        'form': form
+    }
 
-        return render(request, 'EasyConnect/connect.html', context)
-
-    return render(request, 'EasyConnect/connect.html')
+    return render(request, 'EasyConnect/connect.html', context)
 
 
 def video_chat(request, sid):

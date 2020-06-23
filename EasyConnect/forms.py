@@ -11,7 +11,7 @@ class PatientForm(forms.Form):
     last_name = forms.CharField(widget=forms.TextInput(attrs={'class': "form-control form-control"}), max_length=200)
     phone_number = PhoneNumberField(widget=forms.TextInput(attrs={'class': "form-control form-control"}), max_length=10)
     email = forms.EmailField(widget=forms.TextInput(attrs={'class': "form-control form-control"}), max_length=200)
-    dob = forms.CharField(widget=forms.DateInput(attrs={'class': "form-control half-width"}), max_length=200)
+    dob = forms.DateField(widget=forms.DateInput(attrs={'class': "form-control half-width"}))
     gender = forms.ChoiceField(widget=forms.RadioSelect(attrs={'class': "form-check-input"}), choices=GENDER_CHOICES)
     address1 = forms.CharField(widget=forms.TextInput(attrs={'class': "form-control form-control"}), max_length=200)
     address2 = forms.CharField(widget=forms.TextInput(attrs={'class': "form-control form-control"}), max_length=200)
