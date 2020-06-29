@@ -12,7 +12,7 @@ class Patient(models.Model):
     dob = models.DateField()
     gender = models.CharField(choices=GENDER_CHOICES, max_length=1, default=None)
     address1 = models.CharField(max_length=200)
-    address2 = models.CharField(max_length=200)
+    address2 = models.CharField(max_length=200, blank=True)
     city = models.CharField(max_length=200)
     state = models.CharField(choices=STATE_CHOICES, max_length=2)
     zip = models.CharField(max_length=10, default=0)

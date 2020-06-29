@@ -6,22 +6,42 @@ from django.utils.translation import ugettext_lazy as _
 import re
 from datetime import datetime
 
+
+class DateInput(forms.DateInput):
+    input_type = 'date'
+
+
 class PatientForm(forms.Form):
-    first_name = forms.CharField(widget=forms.TextInput(attrs={'class': "form-control form-control"}), max_length=200)
-    last_name = forms.CharField(widget=forms.TextInput(attrs={'class': "form-control form-control"}), max_length=200)
-    phone_number = PhoneNumberField(widget=forms.TextInput(attrs={'class': "form-control form-control"}), max_length=10)
-    email = forms.EmailField(widget=forms.TextInput(attrs={'class': "form-control form-control"}), max_length=200)
-    dob = forms.DateField(widget=forms.DateInput(attrs={'class': "form-control half-width"}))
+    first_name = forms.CharField(widget=forms.TextInput(attrs={'class': "form-control form-control",
+                                                               'placeholder': 'First Name*'}), max_length=200)
+    last_name = forms.CharField(widget=forms.TextInput(attrs={'class': "form-control form-control",
+                                                              'placeholder': 'Last Name*'}), max_length=200)
+    phone_number = PhoneNumberField(widget=forms.TextInput(attrs={'class': "form-control form-control",
+                                                                  'placeholder': 'Phone*'}), max_length=10)
+    email = forms.EmailField(widget=forms.TextInput(attrs={'class': "form-control form-control",
+                                                           'placeholder': 'E-mail*'}), max_length=200)
+    dob = forms.DateField(widget=forms.DateInput(attrs={'class': "form-control half-width",
+                                                        'placeholder': 'mm/dd/yyyy'}))
     gender = forms.ChoiceField(widget=forms.RadioSelect(attrs={'class': "form-check-input"}), choices=GENDER_CHOICES)
-    address1 = forms.CharField(widget=forms.TextInput(attrs={'class': "form-control form-control"}), max_length=200)
-    address2 = forms.CharField(widget=forms.TextInput(attrs={'class': "form-control form-control"}), max_length=200)
-    city = forms.CharField(widget=forms.TextInput(attrs={'class': "form-control form-control"}), max_length=200)
-    state = forms.ChoiceField(widget=forms.Select(attrs={'class': "btn btn-primary dropdown-toggle"}), choices=STATE_CHOICES)
-    zip = forms.CharField(widget=forms.NumberInput(attrs={'class': "form-control form-control half-width"}), max_length=10)
+    address1 = forms.CharField(widget=forms.TextInput(attrs={'class': "form-control form-control",
+                                                             'placeholder': 'Street Address*'}), max_length=200)
+    address2 = forms.CharField(widget=forms.TextInput(attrs={'class': "form-control form-control",
+                                                             'placeholder': 'Address line 2'}),
+                               max_length=200, required=False)
+    city = forms.CharField(widget=forms.TextInput(attrs={'class': "form-control form-control",
+                                                         'placeholder': 'City*'}), max_length=200)
+    state = forms.ChoiceField(widget=forms.Select(attrs={'class': "btn btn-primary dropdown-toggle",
+                                                         'placeholder': 'State*'}), choices=STATE_CHOICES)
+    zip = forms.CharField(widget=forms.NumberInput(attrs={'class': "form-control form-control half-width",
+                                                          'placeholder': 'Zip*'}), max_length=10)
 
     # pharmacy information
-    location_name = forms.CharField(widget=forms.TextInput(attrs={'class': "form-control form-control half-width"}), max_length=200)
-    pharmacy_phone = forms.CharField(widget=forms.TextInput(attrs={'class': "form-control form-control half-width"}), max_length=12)
+    location_name = forms.CharField(widget=forms.TextInput(attrs={'class': "form-control form-control half-width",
+                                                                  'placeholder': 'Preferred Pharmacy Name*'}),
+                                    max_length=200)
+    pharmacy_phone = forms.CharField(widget=forms.TextInput(attrs={'class': "form-control form-control half-width",
+                                                                   'placeholder': 'Preferred Pharmacy Phone*'}),
+                                     max_length=12)
 
     def clean_first_name(self):
         data = self.cleaned_data['first_name']
