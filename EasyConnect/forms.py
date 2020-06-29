@@ -7,10 +7,6 @@ import re
 from datetime import datetime
 
 
-class DateInput(forms.DateInput):
-    input_type = 'date'
-
-
 class PatientForm(forms.Form):
     first_name = forms.CharField(widget=forms.TextInput(attrs={'class': "form-control form-control",
                                                                'placeholder': 'First Name*'}), max_length=200)
@@ -21,6 +17,7 @@ class PatientForm(forms.Form):
     email = forms.EmailField(widget=forms.TextInput(attrs={'class': "form-control form-control",
                                                            'placeholder': 'E-mail*'}), max_length=200)
     dob = forms.DateField(widget=forms.DateInput(attrs={'class': "form-control half-width",
+                                                        'type': 'date',
                                                         'placeholder': 'mm/dd/yyyy'}))
     gender = forms.ChoiceField(widget=forms.RadioSelect(attrs={'class': "form-check-input"}), choices=GENDER_CHOICES)
     address1 = forms.CharField(widget=forms.TextInput(attrs={'class': "form-control form-control",

@@ -2,6 +2,7 @@ from django.db import models
 from EasyConnect.choices import STATE_CHOICES, GENDER_CHOICES
 from phonenumber_field.modelfields import PhoneNumberField
 
+
 # Create your models here.
 class Patient(models.Model):
     # page 1
