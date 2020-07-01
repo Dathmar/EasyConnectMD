@@ -17,6 +17,7 @@ class Patient(models.Model):
     city = models.CharField(max_length=200)
     state = models.CharField(choices=STATE_CHOICES, max_length=2)
     zip = models.CharField(max_length=10, default=0)
+    tos = models.BooleanField()
 
     create_datetime = models.DateTimeField('date created', auto_now_add=True)
     update_datetime = models.DateTimeField('date updated', auto_now=True)

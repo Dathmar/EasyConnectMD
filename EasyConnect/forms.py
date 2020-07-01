@@ -39,6 +39,8 @@ class PatientForm(forms.Form):
     pharmacy_phone = forms.CharField(widget=forms.TextInput(attrs={'class': "form-control form-control half-width",
                                                                    'placeholder': 'Preferred Pharmacy Phone*'}),
                                      max_length=12)
+    tos = forms.BooleanField(widget=forms.CheckboxInput(attrs={'class': "form-check-input"}),
+                             required=True)
 
     def clean_first_name(self):
         data = self.cleaned_data['first_name']
