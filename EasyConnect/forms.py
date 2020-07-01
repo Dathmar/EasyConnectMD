@@ -135,3 +135,5 @@ class PatientForm(forms.Form):
         data = self.cleaned_data['pharmacy_phone']
         if not data:
             raise ValidationError(_('Invalid Pharmacy phone number - cannot be blank'))
+
+        return data
