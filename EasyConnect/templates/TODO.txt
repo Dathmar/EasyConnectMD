@@ -9,9 +9,7 @@ update 24.05:
 
 Update 01.07
 Connect form:
-- Make sure you are happy with spacing.  I think it's fine
+- Spacing needs a lot of help
 - Birthday text box should be a bit longer to compensate for the datepicker icon.
 - Gender options should be horizontal
-- Terms I think the alignment is a little off now that it's in the form.
-- Probably my issue, but button should have some text in it.
 
