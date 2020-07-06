@@ -66,3 +66,14 @@ STATE_CHOICES = (
     ('AE', 'Armed Forces Europe, the Middle East, and Canada'),
     ('AP', 'Armed Forces Pacific')
 )
+
+DIAGNOSED_CHOICES = (
+    ('hypertension', 'Hypertension'),
+    ('diabetes', 'Diabetes'),
+    ('copd', 'COPD'),
+    ('cancer', 'Cancer'),
+    ('stroke', 'Stroke'),
+    ('heart_attack', 'Heart Attack'),
+    ('migraines', 'Migraines'),
+    ('none', 'None of the Above')
+)

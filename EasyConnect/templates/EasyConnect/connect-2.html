@@ -47,7 +47,7 @@
                     </div>
                     <div class="row">
                         <div class="col">
-                            <div class="overflow-auto border" style="height: 6em;"><textarea style="width: 100%; resize: none; border: none" required=""></textarea></div>
+                            <div class="overflow-auto border" style="height: 6em;">{{ form.symptom_description }}</div>
                         </div>
                     </div>
                     <div class="row">
@@ -55,7 +55,7 @@
                     </div>
                     <div class="row">
                         <div class="col">
-                            <div class="overflow-auto border" style="height: 6em;"><textarea style="width: 100%; resize: none; border: none" required=""></textarea></div>
+                            <div class="overflow-auto border" style="height: 6em;">{{ form.allergies }}</div>
                         </div>
                     </div>
                     <div class="row">
@@ -63,7 +63,7 @@
                     </div>
                     <div class="row">
                         <div class="col">
-                            <div class="overflow-auto border" style="height: 6em;"><textarea style="width: 100%; resize: none; border: none" required=""></textarea></div>
+                            <div class="overflow-auto border" style="height: 6em;">{{ form.medications }}</div>
                         </div>
                     </div>
                     <div class="row">
@@ -73,16 +73,7 @@
                         <div class="col">
                             <div class="row">
                                 <div class="col">
-                                    <ul class="list-group">
-                                        <li class="list-group-item"><input type="checkbox"><span style="margin-left: 0.5em;">Diabetes</span></li>
-                                        <li class="list-group-item"><input type="checkbox"><span style="margin-left: 0.5em;">Diabetes</span></li>
-                                        <li class="list-group-item"><input type="checkbox"><span style="margin-left: 0.5em;">COPD<br></span></li>
-                                        <li class="list-group-item"><input type="checkbox"><span style="margin-left: 0.5em;">Cancer</span></li>
-                                        <li class="list-group-item"><input type="checkbox"><span style="margin-left: 0.5em;">Stroke</span></li>
-                                        <li class="list-group-item"><input type="checkbox"><span style="margin-left: 0.5em;">Heart Attack</span></li>
-                                        <li class="list-group-item"><input type="checkbox"><span style="margin-left: 0.5em;">Migraines</span></li>
-                                        <li class="list-group-item"><input type="checkbox"><span style="margin-left: 0.5em;">None of the Above</span></li>
-                                    </ul>
+                                    {{ form.previous_diagnosis }}
                                 </div>
                             </div>
                             <div class="form-group"><label>Preferred Pharmacy</label>

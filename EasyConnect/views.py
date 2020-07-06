@@ -5,8 +5,8 @@ from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponseRedirect, HttpResponse
 from django.urls import reverse
 
-from EasyConnect.forms import PatientForm
-from EasyConnect.models import Patient, Preferred_Pharmacy
+from EasyConnect.forms import PatientForm, SymptomsForm
+from EasyConnect.models import Patient, Preferred_Pharmacy, Symptoms
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -41,10 +41,10 @@ def connect(request):
             email = form.cleaned_data['email']
             dob = form.cleaned_data['dob']
             gender = form.cleaned_data['gender']
-            address1 = form.cleaned_data['address1']
-            address2 = form.cleaned_data['address2']
-            city = form.cleaned_data['city']
-            state = form.cleaned_data['state']
+            #address1 = form.cleaned_data['address1']
+            #address2 = form.cleaned_data['address2']
+            #city = form.cleaned_data['city']
+            #state = form.cleaned_data['state']
             zip = form.cleaned_data['zip']
 
             patient = Patient(first_name=first_name,
@@ -53,23 +53,11 @@ def connect(request):
                               email=email,
                               dob=dob,
                               gender=gender,
-                              address1=address1,
-                              address2=address2,
-                              city=city,
-                              state=state,
                               zip=zip)
             patient.save()
 
-            # pharmacy information
-            location_name = form.cleaned_data['location_name']
-            pharmacy_phone = form.cleaned_data['pharmacy_phone']
-
-            pharmacy = Preferred_Pharmacy(patient=patient,
-                                          location_name=location_name,
-                                          pharmacy_phone=pharmacy_phone)
-
             # redirect to a new URL:
-            return HttpResponseRedirect(reverse('all-borrowed'))
+            return HttpResponseRedirect(reverse('EasyConnect:connect-3'))
 
     # If this is a GET (or any other method) create the default form.
     else:
@@ -80,6 +68,47 @@ def connect(request):
     }
 
     return render(request, 'EasyConnect/connect.html', context)
+
+
+def connect_2(request, patient_id):
+    if request.method == 'POST':
+        # Create a form instance and populate it with data from the request (binding):
+        form = SymptomsForm(request.POST)
+        if form.is_valid():
+            # process the data in form.cleaned_data as required (here we just write it to the model due_back field)
+            symptom_description = form.cleaned_data['symptom_description']
+            allergies = form.cleaned_data['allergies']
+            medications = form.cleaned_data['medications']
+            previous_diagnosis = form.cleaned_data['previous_diagnosis']
+
+            symptoms = Symptoms(patient=patient_id,
+                              symptom_description=symptom_description,
+                              allergies=allergies,
+                              medications=medications,
+                              previous_diagnosis=previous_diagnosis)
+            symptoms.save()
+
+            # pharmacy information
+            location_name = form.cleaned_data['location_name']
+            pharmacy_phone = form.cleaned_data['pharmacy_phone']
+
+            pharmacy = Preferred_Pharmacy(patient=patient_id,
+                                          location_name=location_name,
+                                          pharmacy_phone=pharmacy_phone)
+
+            pharmacy.save()
+            # redirect to a new URL:
+            return HttpResponseRedirect(reverse('video-chat'))
+
+    # If this is a GET (or any other method) create the default form.
+    else:
+        form = SymptomsForm()
+
+    context = {
+        'form': form
+    }
+
+    return render(request, 'EasyConnect/connect-2.html', context)
 
 
 def video_chat(request, sid):
