@@ -1,21 +1,16 @@
-import hashlib, random, sys
+import uuid
 from django.db import models
-from EasyConnect.choices import STATE_CHOICES, GENDER_CHOICES, DIAGNOSED_CHOICES
+from EasyConnect.choices import GENDER_CHOICES, DIAGNOSED_CHOICES
 from phonenumber_field.modelfields import PhoneNumberField
-
-
-def create_session_hash():
-  hash = hashlib.sha1()
-  hash.update(str(random.randint(0,sys.maxsize)).encode('utf-8'))
-  return hash.hexdigest()
 
 
 # Create your models here.
 class Patient(models.Model):
     # page 1
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     first_name = models.CharField(max_length=200)
     last_name = models.CharField(max_length=200)
-    phone_number = PhoneNumberField(blank=False)
+    phone_number = PhoneNumberField(max_length=20, blank=False)
     email = models.EmailField(max_length=200)
     dob = models.DateField()
     gender = models.CharField(choices=GENDER_CHOICES, max_length=1, default=None)
@@ -50,7 +45,7 @@ class Symptoms(models.Model):
     symptom_description = models.TextField(default=None)
     allergies = models.TextField(default=None)
     medications = models.TextField(default=None)
-    previous_diagnosis = models.CharField(default=None, max_length=255)
+    previous_diagnosis = models.CharField(choices=GENDER_CHOICES, default=None, max_length=255)
 
     create_datetime = models.DateTimeField('date created', auto_now_add=True)
     update_datetime = models.DateTimeField('date updated', auto_now=True)

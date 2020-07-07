@@ -33,34 +33,37 @@ def connect(request):
     if request.method == 'POST':
         # Create a form instance and populate it with data from the request (binding):
         form = PatientForm(request.POST)
+        print('method == post')
+        print('form is_valid == ' + str(form.is_valid()))
         if form.is_valid():
             # process the data in form.cleaned_data as required (here we just write it to the model due_back field)
             first_name = form.cleaned_data['first_name']
             last_name = form.cleaned_data['last_name']
             phone_number = form.cleaned_data['phone_number']
             email = form.cleaned_data['email']
+            zip = form.cleaned_data['zip']
             dob = form.cleaned_data['dob']
             gender = form.cleaned_data['gender']
-            #address1 = form.cleaned_data['address1']
-            #address2 = form.cleaned_data['address2']
-            #city = form.cleaned_data['city']
-            #state = form.cleaned_data['state']
-            zip = form.cleaned_data['zip']
+            tos = form.cleaned_data['tos']
 
             patient = Patient(first_name=first_name,
                               last_name=last_name,
                               phone_number=phone_number,
                               email=email,
+                              zip=zip,
                               dob=dob,
                               gender=gender,
-                              zip=zip)
+                              tos=tos)
             patient.save()
 
             # redirect to a new URL:
-            return HttpResponseRedirect(reverse('EasyConnect:connect-3'))
+            return HttpResponseRedirect(reverse('easyconnect:connect-2', args=(patient.id,)))
 
+        else:
+            print(form.errors)
     # If this is a GET (or any other method) create the default form.
     else:
+        print('method != POST')
         form = PatientForm()
 
     context = {
@@ -70,18 +73,21 @@ def connect(request):
     return render(request, 'EasyConnect/connect.html', context)
 
 
-def connect_2(request, patient_id):
+def connect_2(request, id):
+    patient = get_object_or_404(Patient, pk=id)
+    print(patient)
     if request.method == 'POST':
         # Create a form instance and populate it with data from the request (binding):
         form = SymptomsForm(request.POST)
+
         if form.is_valid():
-            # process the data in form.cleaned_data as required (here we just write it to the model due_back field)
+            # process the data in form.cleaned_data as required (here we just write it to the model fields)
             symptom_description = form.cleaned_data['symptom_description']
             allergies = form.cleaned_data['allergies']
             medications = form.cleaned_data['medications']
             previous_diagnosis = form.cleaned_data['previous_diagnosis']
 
-            symptoms = Symptoms(patient=patient_id,
+            symptoms = Symptoms(patient=id,
                               symptom_description=symptom_description,
                               allergies=allergies,
                               medications=medications,
@@ -92,7 +98,7 @@ def connect_2(request, patient_id):
             location_name = form.cleaned_data['location_name']
             pharmacy_phone = form.cleaned_data['pharmacy_phone']
 
-            pharmacy = Preferred_Pharmacy(patient=patient_id,
+            pharmacy = Preferred_Pharmacy(patient=id,
                                           location_name=location_name,
                                           pharmacy_phone=pharmacy_phone)
 
@@ -105,7 +111,8 @@ def connect_2(request, patient_id):
         form = SymptomsForm()
 
     context = {
-        'form': form
+        'form': form,
+        'patient': patient,
     }
 
     return render(request, 'EasyConnect/connect-2.html', context)
