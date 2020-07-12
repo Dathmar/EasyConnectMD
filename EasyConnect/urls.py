@@ -12,5 +12,5 @@ urlpatterns = [
     path('connect/', views.connect, name='connect-with-a-doctor'),
     path('connect-with-a-doctor/', views.connect, name='connect-with-a-doctor'),
     path('connect-2/<uuid:pk>', views.connect_2, name='connect-2'),
-    path('video-chat/<str:sid>/', views.video_chat, name='video-chat'),
+    path('video-chat/', views.video_chat, name='video-chat'),
 ]

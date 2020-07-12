@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html>
 
@@ -5,13 +6,20 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
     <title>connectMD</title>
-    <link rel="stylesheet" href="assets/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{% get_static_prefix %}EasyConnect/assets/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Antic">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Cambay">
-    <link rel="stylesheet" href="assets/fonts/font-awesome.min.css">
-    <link rel="stylesheet" href="assets/css/Footer-Dark.css">
-    <link rel="stylesheet" href="assets/css/styles.css">
-    <link rel="stylesheet" href="assets/css/untitled.css">
+    <link rel="stylesheet" href="{% get_static_prefix %}EasyConnect/assets/fonts/font-awesome.min.css">
+    <link rel="stylesheet" href="{% get_static_prefix %}EasyConnect/assets/css/Footer-Dark.css">
+    <link rel="stylesheet" href="{% get_static_prefix %}EasyConnect/assets/css/styles.css">
+    <link rel="stylesheet" href="{% get_static_prefix %}EasyConnect/assets/css/untitled.css">
+    <link rel="stylesheet" href="{% get_static_prefix %}EasyConnect/assets/css/google_map.css">
+
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDDhdlOWJynJ3hq34ZhiIY7bMegpWSN3FE&callback=initMap&libraries=places&v=weekly"
+            defer
+    ></script>
+    <script src="{% get_static_prefix %}EasyConnect/assets/js/nearby_pharmacies.js"></script>
 </head>
 
 <body id="videoBody">
@@ -22,12 +30,14 @@
         <p style="font-size: 15px;"><em>Need technical support</em><br><em>Click on "Need Help?" (top right) or email info@easyconnectmd.com</em></p>
     </div>
     <section class="d-flex" id="chatSection">
-        <div class="d-lg-flex justify-content-lg-center align-items-lg-center" style="width: 50%;height: 30em;background-color: grey;"><button class="btn btn-primary border rounded-0 button-white connect-button" type="button"><a id="white-button" class="link-base button-transparent" href="#">Click to Start Video Chat</a></button></div>
+        <div id="otEmbedContainer" style="width:800px; height:640px"></div> <script src="https://tokbox.com/embed/embed/ot-embed.js?embedId=032c81ed-9c14-43b2-89fa-59e4e1ecc59b&room=DEFAULT_ROOM"></script>
         <div id="map-card-container" style="width: 50%;">
             <div class="card-container">
                 <div><label>PHARMACIES NEAR:&nbsp;</label><button class="btn btn-primary border rounded-0" type="button" style="width: 8em;background-color: rgb(27,43,61);height: 34px;"><i class="fa fa-location-arrow"></i><a id="location-link" href="#" style="font-size: 15px;">My Location</a></button>
                     <input
-                        type="search" style="width: auto;height: 34px;"></div><iframe allowfullscreen="" frameborder="0" src="https://www.google.com/maps/embed/v1/place?key=AIzaSyDaEw6o8OhJvRQnTF3gI_tibMejtfasOlY&amp;q=Paris%2C+France&amp;zoom=15" width="100%" height="90%" style="width: 100%;height: 84%;"></iframe></div>
+                        type="search" style="width: auto;height: 34px;"></div>
+                    <div id="map"></div>
+            </div>
             <div
                 class="card-container-bottom card-container">
                 <div class="cardItem"><label class="cardLabel">Some Pharmacy</label></div>
@@ -37,8 +47,9 @@
         </div>
         </div>
     </section>
-    <script src="assets/js/jquery.min.js"></script>
-    <script src="assets/bootstrap/js/bootstrap.min.js"></script>
+    <script src="{% get_static_prefix %}EasyConnect/assets/js/jquery.min.js"></script>
+    <script src="{% get_static_prefix %}EasyConnect/assets/bootstrap/js/bootstrap.min.js"></script>
+
 </body>
 
 </html>

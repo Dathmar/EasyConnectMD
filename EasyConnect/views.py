@@ -57,7 +57,7 @@ def connect(request):
             patient.save()
 
             # redirect to a new URL:
-            return HttpResponseRedirect(reverse('EasyConnect:connect-3'))
+            return HttpResponseRedirect(reverse('EasyConnect:connect-2', patient.id))
 
     # If this is a GET (or any other method) create the default form.
     else:
@@ -98,7 +98,7 @@ def connect_2(request, patient_id):
 
             pharmacy.save()
             # redirect to a new URL:
-            return HttpResponseRedirect(reverse('video-chat'))
+            return HttpResponseRedirect(reverse('video-chat', patient_id))
 
     # If this is a GET (or any other method) create the default form.
     else:
@@ -111,5 +111,5 @@ def connect_2(request, patient_id):
     return render(request, 'EasyConnect/connect-2.html', context)
 
 
-def video_chat(request, sid):
-    return HttpResponse(f"Hello, world. You're at the EasyConnect video chat page with sid {sid}")
+def video_chat(request):
+    return render(request, 'EasyConnect/VideoChat.html')
