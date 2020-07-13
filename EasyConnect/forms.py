@@ -82,9 +82,15 @@ class PatientForm(forms.Form):
 
 
 class SymptomsForm(forms.Form):
-    symptom_description = forms.Textarea()
-    allergies = forms.Textarea()
-    medications = forms.Textarea()
+    symptom_description = forms.CharField(widget=forms.Textarea(
+        attrs={"class": "overflow-auto border",
+               "rows": "3", "cols": "40", "style": "width: 100%; resize: none; border: none"}))
+    allergies = forms.CharField(widget=forms.Textarea(
+        attrs={"class": "overflow-auto border",
+               "rows": "3", "cols": "40", "style": "width: 100%; resize: none; border: none"}))
+    medications = forms.CharField(widget=forms.Textarea(
+        attrs={"class": "overflow-auto border",
+               "rows": "3", "cols": "40", "style": "width: 100%; resize: none; border: none"}))
     previous_diagnosis = forms.MultipleChoiceField(
         required=True,
         widget=forms.CheckboxSelectMultiple,

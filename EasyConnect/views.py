@@ -41,10 +41,6 @@ def connect(request):
             email = form.cleaned_data['email']
             dob = form.cleaned_data['dob']
             gender = form.cleaned_data['gender']
-            #address1 = form.cleaned_data['address1']
-            #address2 = form.cleaned_data['address2']
-            #city = form.cleaned_data['city']
-            #state = form.cleaned_data['state']
             zip = form.cleaned_data['zip']
 
             patient = Patient(first_name=first_name,
