@@ -11,6 +11,6 @@ urlpatterns = [
     path('privacy-policy/', views.privacy_policy, name='privacy-policy'),
     path('connect/', views.connect, name='connect-with-a-doctor'),
     path('connect-with-a-doctor/', views.connect, name='connect-with-a-doctor'),
-    path('connect-2/<uuid:id>', views.connect_2, name='connect-2'),
-    path('video-chat/<uuid:id>/', views.video_chat, name='video-chat'),
+    path('connect-2/<uuid:pk>', views.connect_2, name='connect-2'),
+    path('video-chat/', views.video_chat, name='video-chat'),
 ]
