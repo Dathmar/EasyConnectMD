@@ -42,6 +42,7 @@ def connect(request):
             dob = form.cleaned_data['dob']
             gender = form.cleaned_data['gender']
             zip = form.cleaned_data['zip']
+            tos = form.cleaned_data['tos']
 
             patient = Patient(first_name=first_name,
                               last_name=last_name,
@@ -49,11 +50,12 @@ def connect(request):
                               email=email,
                               dob=dob,
                               gender=gender,
-                              zip=zip)
+                              zip=zip,
+                              tos=tos)
             patient.save()
 
             # redirect to a new URL:
-            return HttpResponseRedirect(reverse('EasyConnect:connect-2', patient.id))
+            return HttpResponseRedirect(reverse('easyconnect:connect-2', args=(patient.id,)))
 
     # If this is a GET (or any other method) create the default form.
     else:
@@ -94,7 +96,7 @@ def connect_2(request, patient_id):
 
             pharmacy.save()
             # redirect to a new URL:
-            return HttpResponseRedirect(reverse('video-chat', patient_id))
+            return HttpResponseRedirect(reverse('video-chat', args=(patient_id,)))
 
     # If this is a GET (or any other method) create the default form.
     else:
