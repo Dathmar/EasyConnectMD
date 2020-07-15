@@ -12,12 +12,19 @@
     <link rel="stylesheet" href="{%  get_static_prefix %}EasyConnect/assets/css/Footer-Dark.css">
     <link rel="stylesheet" href="{%  get_static_prefix %}EasyConnect/assets/css/styles.css">
     <link rel="stylesheet" href="{%  get_static_prefix %}EasyConnect/assets/css/untitled.css">
+    <link rel="stylesheet" href="{% get_static_prefix %}EasyConnect/assets/css/google_map.css">
+
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDDhdlOWJynJ3hq34ZhiIY7bMegpWSN3FE&callback=initMap&libraries=places&v=weekly"
+            defer
+    ></script>
+    <script src="{% get_static_prefix %}EasyConnect/assets/js/nearbyPharmacies.js"></script>
     <!-- link to the SqPaymentForm library -->
     <script type="text/javascript" src="https://js.squareupsandbox.com/v2/paymentform">
 </script>
 </head>
 
-<body style="background-image: url('{% get_static_prefix %}EasyConnect/assets/img/Image-waiting-room.jpg');background-size: cover;background-repeat: no-repeat;padding-top: 5em;">
+<body style="background-image: url('{% get_static_prefix %}EasyConnect/assets/img/Image-waiting-room.jpg');background-size: cover;background-repeat: no-repeat;padding-top: 5em; background-attachment: fixed; background-position: center; background-size: cover;">
     <div class="d-md-flex justify-content-md-center" style="margin-right: 10%;margin-left: 10%;">
         <section class="container-wrapper" style="background-color: #ffffff;padding-bottom: 4em;">
             <div style="margin-right: 10%;margin-left: 10%;">
@@ -77,23 +84,21 @@
                         </div>
                         <div class="row">
                             <div class="col">
-                                <div class="row">
-                                    <div class="col">
-                                        {{ form.previous_diagnosis }}
-                                    </div>
-                                </div>
-                                <div class="form-group"><label>Preferred Pharmacy</label>
-                                    <div class="input-wrapper">{{ form.location_name }}
-                                        {{ form.pharmacy_phone }}
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col" style="margin-top: 1em;"><label style="margin-left: 0.6rem;">Total</label>
-                                        <div><span style="margin-left: 0.5em;color: #ffa500;">$39.95</span></div>
-                                    </div>
-                                </div>
+                                {{ form.previous_diagnosis }}
                             </div>
                         </div>
+                        <div class="row">
+                            <div class="col" style="height: 25em"><label>Preferred Pharmacy</label>
+                                <div id="map"></div>
+                                <!-- <div id="panel"></div> -->
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col" style="margin-top: 2.5em;"><label style="margin-left: 0.6rem;">Total</label>
+                                <div><span style="margin-left: 0.5em;color: #ffa500;">$39.95</span></div>
+                            </div>
+                        </div>
+
                         <div class="row">
                             <div class="col">
                                 <div class="row">
