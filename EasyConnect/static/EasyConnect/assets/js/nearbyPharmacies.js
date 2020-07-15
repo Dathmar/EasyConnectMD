@@ -28,7 +28,6 @@ function initMap() {
         bounds.extend(pos);
 
         infoWindow.setPosition(pos);
-        infoWindow.open(map);
         map.setCenter(pos);
 
 
@@ -38,8 +37,8 @@ function initMap() {
         handleLocationError(true, infoWindow);
     });
     } else {
-    // Browser doesn't support geolocation
-    handleLocationError(false, infoWindow);
+        // Browser doesn't support geolocation
+        handleLocationError(false, infoWindow);
     }
 }
 
