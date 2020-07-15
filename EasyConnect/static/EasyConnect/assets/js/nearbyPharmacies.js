@@ -28,7 +28,7 @@ function initMap() {
         bounds.extend(pos);
 
         infoWindow.setPosition(pos);
-        // infoWindow.open(map);
+        infoWindow.open(map);
         map.setCenter(pos);
 
 
@@ -172,7 +172,7 @@ function showPanel(placeResult) {
     websiteLink.appendChild(websiteUrl);
     websiteLink.title = placeResult.website;
     websiteLink.href = placeResult.website;
-    websitePara.appendChild('Website');
+    websitePara.appendChild(websiteLink);
     infoPane.appendChild(websitePara);
     }
 
