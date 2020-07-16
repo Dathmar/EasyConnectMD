@@ -401,3 +401,46 @@ body {
   text-decoration: none;
 }
 
+.tab-style {
+  padding: 1em;
+}
+
+.smaller-field {
+  margin-right: 2%;
+}
+
+.bold-h6 {
+  font-weight: 600;
+}
+
+.appointment {
+  font-size: small;
+}
+
+#docviewleft {
+  width: 80%;
+}
+
+#docviewright {
+  width: 20%;
+}
+
+.dark-grey {
+  background-color: #a8a8a8;
+}
+
+.light-grey {
+  background-color: #dfdfdf;
+}
+
+#prevapps p {
+  font-size: 0.8em;
+}
+
+.dark-grey p {
+  font-weight: 600;
+}
+
+#prevapps {
+  border: 1px solid lightgrey;
+}
