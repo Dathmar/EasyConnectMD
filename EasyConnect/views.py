@@ -6,7 +6,7 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.urls import reverse
 
 from EasyConnect.forms import PatientForm, SymptomsForm
-from EasyConnect.models import Patient, Preferred_Pharmacy, Symptoms
+from EasyConnect.models import Patient, Preferred_Pharmacy, Symptoms, ProviderNotes
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -111,3 +111,25 @@ def connect_2(request, patient_id):
 
 def video_chat(request):
     return render(request, 'EasyConnect/VideoChat.html')
+
+
+def provider_view(request):
+    if request.method == 'POST':
+        # create a form instance and populate it with data from the request:
+        form = ProviderNotes(request.POST)
+        # check whether it's valid:
+        if form.is_valid():
+            # process the data in form.cleaned_data as required
+            # ...
+            # redirect to a new URL:
+            return HttpResponseRedirect('/thanks/')
+
+        # if a GET (or any other method) we'll create a blank form
+    else:
+        form = ProviderNotes()
+
+
+    return render((request, 'EasyConnect/provider.html', {'form': form}))
+
+def doctorview(request):
+    return render(request, 'EasyConnect/doctorview.html')

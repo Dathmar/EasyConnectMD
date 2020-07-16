@@ -7,6 +7,7 @@ import re
 from datetime import date
 
 
+
 class PatientForm(forms.Form):
     first_name = forms.CharField(widget=forms.TextInput(attrs={'class': "form-control form-control",
                                                                'placeholder': 'First Name*'}), max_length=200)
@@ -146,3 +147,21 @@ class SymptomsForm(forms.Form):
             raise ValidationError(_('Invalid Pharmacy phone number - cannot be blank'))
 
         return data
+
+
+class ProviderForm(forms.Form):
+    hpi = forms.CharField(widget=forms.Textarea(
+        attrs={"class": "overflow-auto border",
+               "rows": "3", "cols": "40", "style": "width: 100%; resize: none; border: none"}))
+    #assessments = forms.SearchableSelect(model='EasyConned.ICD10', search_field='ICD10_DSC', limit=10)
+    treatment = forms.CharField(widget=forms.Textarea(
+        attrs={"class": "overflow-auto border",
+               "rows": "3", "cols": "40", "style": "width: 100%; resize: none; border: none"}))
+    followup = forms.CharField(widget=forms.Textarea(
+        attrs={"class": "overflow-auto border",
+               "rows": "3", "cols": "40", "style": "width: 100%; resize: none; border: none"}))
+    return_to_work_notes = forms.CharField(widget=forms.Textarea(
+        attrs={"class": "overflow-auto border",
+               "rows": "3", "cols": "40", "style": "width: 100%; resize: none; border: none"}))
+
+
