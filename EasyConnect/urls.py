@@ -14,5 +14,4 @@ urlpatterns = [
     path('connect-2/<uuid:patient_id>', views.connect_2, name='connect-2'),
     path('video-chat/', views.video_chat, name='video-chat'),
     path('provider/', views.provider_view, name='provider-view'),
-    path('doctor/', views.doctorview, name='doctorview'),
 ]

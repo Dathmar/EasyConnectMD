@@ -1,0 +1,213 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>connectMD</title>
+    <link rel="stylesheet" href="{% get_static_prefix %}EasyConnect/assets/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Antic">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Cambay">
+    <link rel="stylesheet" href="{% get_static_prefix %}EasyConnect/assets/css/Footer-Dark.css">
+    <link rel="stylesheet" href="{% get_static_prefix %}EasyConnect/assets/css/styles.css">
+    <link rel="stylesheet" href="{% get_static_prefix %}EasyConnect/assets/css/untitled.css">
+    <style>
+        #acf-input{
+            vertical-align: top;
+            box-sizing: border-box;
+            position: relative;
+        }
+        #otEmbedWrap {
+            position: relative;
+            overflow: hidden;
+            max-width: 100px;
+            max-height: 100px;
+            margin: 0 auto;
+            padding-top: 75%;
+            /*padding-top: 56.25%;*/
+        }
+        #otEmbedContainer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: 0;
+        }
+    </style>
+
+
+</head>
+
+<body style="padding-top: 0px;">
+    <div class="d-flex">
+        <div id="docviewleft">
+            <ul class="nav nav-tabs">
+                <li class="nav-item"><a class="nav-link active" role="tab" data-toggle="tab" href="#tab-1">Appointment</a></li>
+                <li class="nav-item"><a class="nav-link" role="tab" data-toggle="tab" href="#tab-2">Patient Details</a></li>
+            </ul>
+            <form action="" method="post">
+                {% csrf_token %}
+                <div class="tab-content">
+                    <div class="tab-pane active" role="tabpanel" id="tab-1">
+                        <div class="tab-style">
+                            <h6 class="bold-h6 appointment">Patient Submitted Information</h6>
+                            <h4></h4>
+                            <p class="appointment">Name: and all that stuff</p>
+                            <h6 class="appointment">Chief Complaint (<em>Describe your symptoms</em>):<br></h6>
+                            <p class="appointment">test</p>
+                            <h6 class="bold-h6 appointment">HPI</h6>
+                            <div style="height: 6em;">{{ form.hpi }}</div>
+                            <h6 class="appointment">Allergies to Medications (<em>Known drug or food allergies</em>):</h6>
+                            <p class="appointment">test</p>
+                            <h6 class="appointment">Current Medications (<em>Current Medications and Doses</em>):</h6>
+                            <p class="appointment">test</p>
+                            <h6 class="appointment">Medical History (<em>Have you been diagnosed with any of the following</em>):</h6>
+                            <p class="appointment">test</p>
+                            <div class="form-group">
+                                <div class="d-xl-flex align-items-xl-center">
+                                    <div class="half-width">
+                                        <h6 class="bold-h6 appointment">Preffered Pharmacy</h6>
+                                    </div>
+                                    <div class="half-width">
+                                        <h6 class="bold-h6 appointment">Preffered Pharmacy Phone<br></h6>
+                                    </div>
+                                </div>
+                                <div></div>
+                                <div class="input-wrapper"><input type="text" class="form-control half-width" required="" placeholder="Preferred Pharmacy Name*"><input type="text" class="form-control half-width" placeholder="Preferred Pharmacy Phone*" required="" inputmode="tel"></div>
+                            </div>
+                            <h6 class="bold-h6 appointment">Assesment(s)</h6>
+                            <h6 class="appointment"><em>Select one or more options. Type a few characters to search then wait a second for the options to load.</em></h6>
+                            <div class="smaller-field">
+                                <div class="dropdown" style="width: 100%;">{{ form.assessments }}
+                                </div>
+                            </div>
+                            <h6 class="bold-h6 appointment" style="margin-top: 1.5em;">Treatment</h6>
+                            <div style="height: 6em;">{{ form.treatment }}</div>
+                            <h6 class="bold-h6 appointment">Followup</h6>
+                            <div style="height: 6em;">{{ form.followup }}</div>
+                            <h6 class="bold-h6 appointment">Return to Work Notes</h6>
+                            <div style="height: 6em;">{{ form.return_to_work_notes }}</div>
+                        </div>
+                    </div>
+                    <div class="tab-pane" role="tabpanel" id="tab-2">
+                        <div class="tab-style">
+                            <div class="input-wrapper">
+                                <div class="form-group half-width"><input type="text" class="form-control" placeholder="First Name*" required="" inputmode="latin-name"></div>
+                                <div class="form-group half-width"><input type="text" class="form-control" placeholder="Last Name*" required="" inputmode="latin-name"></div>
+                            </div>
+                            <div class="d-xl-flex input-wrapper">
+                                <div class="form-group half-width"><input type="text" class="form-control" inputmode="tel" required="" placeholder="Phone*"></div>
+                                <div class="form-group half-width"><input type="text" class="form-control" placeholder="Email*" required=""></div>
+                            </div>
+                            <div class="form-group-wrapper">
+                                <div class="form-group half-width"><label>Birthday</label><input type="text" class="form-control" inputmode="tel" required="" placeholder="Phone*"></div>
+                                <div class="form-group half-width"><label>Sex</label><input type="text" class="form-control" inputmode="tel" required="" placeholder="Phone*"></div>
+                            </div>
+                            <div class="form-group smaller-field"><input type="text" class="form-control smaller-field" required="" placeholder="Street address*"></div>
+                            <div class="form-group">
+                                <div class="d-xl-flex align-items-xl-center">
+                                    <div class="half-width"><label>Preferred Pharmacy</label></div>
+                                    <div class="half-width"><label>Preferred Pharmacy</label></div>
+                                </div>
+                                <div></div>
+                                <div class="input-wrapper"><input type="text" class="form-control half-width" required="" placeholder="Preferred Pharmacy Name*"><input type="text" class="form-control half-width" placeholder="Preferred Pharmacy Phone*" required="" inputmode="tel"></div>
+                            </div>
+                            <div class="row">
+                                <div class="col"><label class="col-form-label">Describe your symptoms*</label></div>
+                            </div>
+                            <div class="row">
+                                <div class="col">
+                                    <div class="overflow-auto border smaller-field" style="height: 6em;"><textarea style="width: 100%; resize: none; border: none" required=""></textarea></div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col"><label class="col-form-label">Known drug or food allergies*</label></div>
+                            </div>
+                            <div class="row">
+                                <div class="col">
+                                    <div class="overflow-auto border smaller-field" style="height: 6em;"><textarea style="width: 100%; resize: none; border: none" required=""></textarea></div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col"><label class="col-form-label">Current Medications and Doses*</label></div>
+                            </div>
+                            <div class="row">
+                                <div class="col">
+                                    <div class="overflow-auto border smaller-field" style="height: 6em;"><textarea style="width: 100%; resize: none; border: none" required=""></textarea></div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col"><label class="col-form-label">Have you been diagnosed with any of the following?*</label></div>
+                            </div>
+                            <div class="row">
+                                <div class="col">
+                                    <div class="overflow-auto border smaller-field" style="height: 6em;"><textarea style="width: 100%; resize: none; border: none" required=""></textarea></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div id="docviewright"><iframe allowfullscreen="" frameborder="0" class="videoChat" width="560" height="315" style="height: 30em;width: 100%;">
+            <div id="otEmbedWrap">
+                <div id="otEmbedContainer"></div>
+            </div>
+            <script src="https://tokbox.com/embed/embed/ot-embed.js?embedId=032c81ed-9c14-43b2-89fa-59e4e1ecc59b&room=DEFAULT_ROOM"></script>
+        </iframe>
+            <div id="prevapps">
+                <h6 style="margin-top: 0.8em;">Previous Appointments</h6>
+                <div class="container">
+                    <div class="row">
+                        <div class="col-md-6 dark-grey">
+                            <p>Paragraph</p>
+                        </div>
+                        <div class="col-md-6 dark-grey">
+                            <p>Paragraph</p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 light-grey">
+                            <p>Paragraph</p>
+                        </div>
+                        <div class="col-md-6 light-grey">
+                            <p>Paragraph</p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p>Paragraph</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p>Paragraph</p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 light-grey">
+                            <p>Paragraph</p>
+                        </div>
+                        <div class="col-md-6 light-grey">
+                            <p>Paragraph</p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p>Paragraph</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p>Paragraph</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="d-xl-flex justify-content-xl-center"><button class="btn btn-primary border rounded-0 shadow button-white connect-button" type="button" style="margin-top: 1em;"><a class="link-base button-transparent" href="#">Complete Appointment</a></button></div>
+    <script src="{% get_static_prefix %}EasyConnect/assets/js/jquery.min.js"></script>
+    <script src="{% get_static_prefix %}EasyConnect/assets/bootstrap/js/bootstrap.min.js"></script>
+</body>
+
+</html>

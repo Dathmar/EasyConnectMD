@@ -5,8 +5,8 @@ from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponseRedirect, HttpResponse
 from django.urls import reverse
 
-from EasyConnect.forms import PatientForm, SymptomsForm
-from EasyConnect.models import Patient, Preferred_Pharmacy, Symptoms, ProviderNotes
+from EasyConnect.forms import PatientForm, SymptomsForm, ProviderForm
+from EasyConnect.models import Patient, Symptoms, ProviderNotes
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -86,15 +86,6 @@ def connect_2(request, patient_id):
                               previous_diagnosis=previous_diagnosis)
             symptoms.save()
 
-            # pharmacy information
-            location_name = form.cleaned_data['location_name']
-            pharmacy_phone = form.cleaned_data['pharmacy_phone']
-
-            pharmacy = Preferred_Pharmacy(patient=patient_id,
-                                          location_name=location_name,
-                                          pharmacy_phone=pharmacy_phone)
-
-            pharmacy.save()
             # redirect to a new URL:
             return HttpResponseRedirect(reverse('video-chat', args=(patient_id,)))
 
@@ -115,21 +106,33 @@ def video_chat(request):
 
 def provider_view(request):
     if request.method == 'POST':
-        # create a form instance and populate it with data from the request:
-        form = ProviderNotes(request.POST)
-        # check whether it's valid:
+        # Create a form instance and populate it with data from the request (binding):
+        form = ProviderForm(request.POST)
         if form.is_valid():
-            # process the data in form.cleaned_data as required
-            # ...
+            # process the data in form.cleaned_data as required (here we just write it to the model due_back field)
+            hpi = form.cleaned_data['hpi']
+            #assessments = form.cleaned_data['assessments']
+            treatment = form.cleaned_data['treatment']
+            followup = form.cleaned_data['followup']
+            return_to_work_notes = form.cleaned_data['return_to_work_notes']
+
+            provider_notes = ProviderNotes(hpi=hpi,
+                              #assessments=assessments,
+                              treatment=treatment,
+                              followup=followup,
+                              return_to_work_notes=return_to_work_notes)
+            provider_notes.save()
+
             # redirect to a new URL:
-            return HttpResponseRedirect('/thanks/')
+            return HttpResponseRedirect('EasyConnect/index.html')
 
-        # if a GET (or any other method) we'll create a blank form
+    # If this is a GET (or any other method) create the default form.
     else:
-        form = ProviderNotes()
+        form = ProviderForm()
 
+    context = {
+        'form': form
+    }
 
-    return render((request, 'EasyConnect/provider.html', {'form': form}))
+    return render(request, 'EasyConnect/provider-view.html', context)
 
-def doctorview(request):
-    return render(request, 'EasyConnect/doctorview.html')

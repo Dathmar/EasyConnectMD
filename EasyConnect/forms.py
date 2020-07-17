@@ -5,7 +5,7 @@ from phonenumber_field.formfields import PhoneNumberField
 from django.utils.translation import ugettext_lazy as _
 import re
 from datetime import date
-
+from EasyConnect.models import Icd10
 
 
 class PatientForm(forms.Form):
@@ -98,14 +98,6 @@ class SymptomsForm(forms.Form):
         choices=DIAGNOSED_CHOICES
     )
 
-    # pharmacy information
-    location_name = forms.CharField(widget=forms.TextInput(attrs={'class': "form-control form-control half-width",
-                                                                  'placeholder': 'Preferred Pharmacy Name*'}),
-                                    max_length=200)
-    pharmacy_phone = forms.CharField(widget=forms.TextInput(attrs={'class': "form-control form-control half-width",
-                                                                   'placeholder': 'Preferred Pharmacy Phone*'}),
-                                     max_length=12)
-
     def clean_symptom_description(self):
         data = self.cleaned_data['symptom_description']
         if not data:
@@ -141,27 +133,20 @@ class SymptomsForm(forms.Form):
 
         return data
 
-    def clean_pharmacy_phone(self):
-        data = self.cleaned_data['pharmacy_phone']
-        if not data:
-            raise ValidationError(_('Invalid Pharmacy phone number - cannot be blank'))
-
-        return data
-
 
 class ProviderForm(forms.Form):
     hpi = forms.CharField(widget=forms.Textarea(
-        attrs={"class": "overflow-auto border",
+        attrs={"class": "ooverflow-auto border smaller-field",
                "rows": "3", "cols": "40", "style": "width: 100%; resize: none; border: none"}))
-    #assessments = forms.SearchableSelect(model='EasyConned.ICD10', search_field='ICD10_DSC', limit=10)
+    #assessments = forms.ModelMultipleChoiceField(queryset=Icd10.objects.all())
     treatment = forms.CharField(widget=forms.Textarea(
-        attrs={"class": "overflow-auto border",
+        attrs={"class": "ooverflow-auto border smaller-field",
                "rows": "3", "cols": "40", "style": "width: 100%; resize: none; border: none"}))
     followup = forms.CharField(widget=forms.Textarea(
-        attrs={"class": "overflow-auto border",
+        attrs={"class": "ooverflow-auto border smaller-field",
                "rows": "3", "cols": "40", "style": "width: 100%; resize: none; border: none"}))
     return_to_work_notes = forms.CharField(widget=forms.Textarea(
-        attrs={"class": "overflow-auto border",
+        attrs={"class": "ooverflow-auto border smaller-field",
                "rows": "3", "cols": "40", "style": "width: 100%; resize: none; border: none"}))
 
 

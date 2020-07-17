@@ -77,11 +77,11 @@ class Icd10(models.Model):
 
 class ProviderNotes(models.Model):
     patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
-    hpi = models.CharField(max_length=4000)
-    #assessments = models.ManyToManyField(Icd10)
-    treatment = models.CharField(max_length=4000)
-    followup = models.CharField(max_length=4000)
-    return_to_work_notes = models.CharField(max_length=4000)
+    hpi = models.TextField(default=None)
+    #assessments = models.ManyToManyField(Icd10, blank=True, null=True)
+    treatment = models.TextField(default=None)
+    followup = models.TextField(default=None)
+    return_to_work_notes = models.TextField(default=None)
 
     create_datetime = models.DateTimeField('date created', auto_now_add=True)
     update_datetime = models.DateTimeField('date updated', auto_now=True)
