@@ -28,10 +28,14 @@ body {
   margin-top: 5em;
 }
 
-.tos-box{
+.tos-box {
   margin-top: 0.5em;
 }
 
 .ul-no-bulletpoints li{
   list-style-type: none;
+}
+
+.hidden {
+  display: none;
 }

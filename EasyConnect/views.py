@@ -69,6 +69,8 @@ def connect(request):
 
 
 def connect_2(request, patient_id):
+    patient = get_object_or_404(Patient, pk=patient_id)
+
     if request.method == 'POST':
         # Create a form instance and populate it with data from the request (binding):
         form = SymptomsForm(request.POST)
@@ -94,7 +96,8 @@ def connect_2(request, patient_id):
         form = SymptomsForm()
 
     context = {
-        'form': form
+        'form': form,
+        'zip': patient.zip
     }
 
     return render(request, 'EasyConnect/connect-2.html', context)

@@ -1,14 +1,25 @@
--figure out how to change border of buttons
--add button and link hover effects
--spacing
--edit responsive design because it currently sucks as hell!
+TODO before Launch!
 
-update 24.05:
+Testimonials:
+    Need new testimonial model.
+    Index: Replace Hero-in-White image with full testimonials
+    Connect: add short testimonials between "Less than 10 questions and 10 minutes to get connected with a doctor." and form steps
 
--privacy policy page needs to be finished 
+Connect:
+    zip boundry outside of TX send error
 
-Update 01.07
-Connect form:
-- Birthday text box should be a bit longer to compensate for the datepicker icon.
-- Gender options should be horizontal
+Connect-2:
+    bountry on map outside of TX
+    Add zip code default when location mapping is denied in browser
+
+Provider:
+    Update video embed to float.
+    Populate Previous Appoinments based on first, last and dob
+    General formatting
+    Assessments should provide list of all ICD10 codes with multiple select AND substring search
+    Previous appointments add Seen by (first field), HIP, Assessment, Treatment, Follow up
+
+Appointments:
+    Create list of appointments
+    Allow search of appointments
 

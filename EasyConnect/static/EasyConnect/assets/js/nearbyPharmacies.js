@@ -1,4 +1,4 @@
-let pos;
+let latlng;
 let map;
 let bounds;
 let infoWindow;
@@ -8,34 +8,32 @@ let infoPane;
 
 function initMap() {
     // Initialize variables
+    geocoder = new google.maps.Geocoder();
     bounds = new google.maps.LatLngBounds();
     infoWindow = new google.maps.InfoWindow;
     currentInfoWindow = infoWindow;
-
     infoPane = document.getElementById('panel');
 
     // Try HTML5 geolocation
     if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(position => {
-        pos = {
-        lat: position.coords.latitude,
-        lng: position.coords.longitude
-        };
-        map = new google.maps.Map(document.getElementById('map'), {
-        center: pos,
-        zoom: 12
+        navigator.geolocation.getCurrentPosition(position => {
+            latlng = position.coords
+
+            map = new google.maps.Map(document.getElementById('map'), {
+                center: latlng,
+                zoom: 12
+            });
+            bounds.extend(latlng);
+
+            infoWindow.setPosition(latlng);
+            map.setCenter(latlng);
+
+            console.log('blah')
+            getNearbyPlaces(latlng);
+        }, () => {
+            // Browser supports geolocation, but user has denied permission
+            handleLocationError(true, infoWindow);
         });
-        bounds.extend(pos);
-
-        infoWindow.setPosition(pos);
-        map.setCenter(pos);
-
-
-        getNearbyPlaces(pos);
-    }, () => {
-        // Browser supports geolocation, but user has denied permission
-        handleLocationError(true, infoWindow);
-    });
     } else {
         // Browser doesn't support geolocation
         handleLocationError(false, infoWindow);
@@ -44,27 +42,32 @@ function initMap() {
 
 // Handle a geolocation error
 function handleLocationError(browserHasGeolocation, infoWindow) {
-    // Set default location to Sydney, Australia
-    pos = {lat: -33.856, lng: 151.215};
-    map = new google.maps.Map(document.getElementById('map'), {
-    center: pos,
-    zoom: 12
-    });
+    var zipDiv = document.getElementById("zipcode");
+    var zip = zipDiv.innerHTML
 
-    // Display an InfoWindow at the map center
-    infoWindow.setPosition(pos);
-    infoWindow.setContent(browserHasGeolocation ?
-    'Geolocation permissions denied. Using default location.' :
-    'Error: Your browser doesn\'t support geolocation.');
-    infoWindow.open(map);
-    currentInfoWindow = infoWindow;
-    getNearbyPlaces(pos);
+    geocoder.geocode( { 'address': zip}, function(results, status) {
+        if (status == google.maps.GeocoderStatus.OK) {
+            latlng = results[0].geometry.location;
+            map = new google.maps.Map(document.getElementById('map'), {
+                center: latlng,
+                zoom: 12
+            });
+            getNearbyPlaces(latlng);
+        } else {
+            latlng = new google.maps.LatLng(29.4241, 98.4936);
+            map = new google.maps.Map(document.getElementById('map'), {
+                center: latlng,
+                zoom: 12
+            });
+            getNearbyPlaces(latlng);
+        };
+    });
 }
 
 // Perform a Places Nearby Search Request
-function getNearbyPlaces(position) {
+function getNearbyPlaces(latlng) {
     let request = {
-    location: position,
+    location: latlng,
     rankBy: google.maps.places.RankBy.DISTANCE,
     keyword: 'pharmacy'
     };
