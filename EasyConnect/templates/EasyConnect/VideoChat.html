@@ -21,10 +21,10 @@
         <h1 style="margin-bottom: 16px;">Video Chat</h1>
         <p style="margin-bottom: 6px;font-size: 16px;color: rgb(31,51,71);"><strong>1. Select the "Click to Start Video Chat" button below.</strong></p>
         <p style="font-size: 16px;"><strong>2. The doctor will be with you in less than 10 minutes, on average.</strong></p>
-        <p style="font-size: 15px;"><em>Need technical support</em><br><em>Click on "Need Help?" (top right) or email info@easyconnectmd.com</em></p>
+        <p style="font-size: 15px;"><em>Need technical support</em><br><em>Click on "Need Help?" (top right) or email info@easyconnectmd.net</em></p>
     </div>
     <section class="d-flex" id="chatSection">
-        <div id="otEmbedContainer" style="width:800px; height:640px"></div> <script src="https://tokbox.com/embed/embed/ot-embed.js?embedId=032c81ed-9c14-43b2-89fa-59e4e1ecc59b&room=DEFAULT_ROOM"></script
+        <div id="otEmbedContainer" style="width:800px; height:640px"></div> <script src="https://tokbox.com/embed/embed/ot-embed.js?embedId=032c81ed-9c14-43b2-89fa-59e4e1ecc59b&room={{ patient_id }}"></script
     </section>
     <script src="{% get_static_prefix %}EasyConnect/assets/js/jquery.min.js"></script>
     <script src="{% get_static_prefix %}EasyConnect/assets/bootstrap/js/bootstrap.min.js"></script>

@@ -19,9 +19,8 @@
             defer
     ></script>
     <script src="{% get_static_prefix %}EasyConnect/assets/js/nearbyPharmacies.js"></script>
-    <!-- link to the SqPaymentForm library -->
-    <script type="text/javascript" src="https://js.squareupsandbox.com/v2/paymentform">
-</script>
+
+    <script type="text/javascript" src="https://js.squareupsandbox.com/v2/paymentform"></script>
 </head>
 
 <body style="background-image: url('{% get_static_prefix %}EasyConnect/assets/img/Image-waiting-room.jpg');background-size: cover;background-repeat: no-repeat;padding-top: 5em; background-attachment: fixed; background-position: center; background-size: cover;">
@@ -102,17 +101,7 @@
                         <div class="row">
                             <div class="col">
                                 <div class="row">
-                                    <div class="col"><label class="col-form-label" style="margin-top: 1em;">Credit Card</label></div>
-                                </div>
-                                <div class="row">
-                                    <div class="col"><input type="text" class="form-control" required="" placeholder="Card number" style="margin-top: 0.5em;margin-bottom: 0.5em;"></div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col">
-                                <div class="row">
-                                    <div class="col"><input type="text" class="form-control" required="" placeholder="Cardholder Name" style="margin-top: 0.5em;margin-bottom: 0.5em;"></div>
+                                     Add Payment form here
                                 </div>
                             </div>
                         </div>
@@ -123,9 +112,7 @@
                         </div>
                         <div class="row" style="margin-top: 1em;">
                             <div class="col d-lg-flex">
-                                <input class="btn btn-primary border rounded-0 connect-button" type="previous" style="background-color: rgb(255,255,255);color: #ffa500;border: 2px solid #ffa500 !important;"
-                                                    value="Previous Step"/>
-                                <input class="btn btn-primary border rounded-0 connect-button" type="to_chat" style="background-color: rgb(255,255,255);color: #ffa500;border: 2px solid #ffa500 !important;"
+                                <input class="btn btn-primary border rounded-0 connect-button button-credit-card" type="submit" style="background-color: rgb(255,255,255);color: #ffa500;border: 2px solid #ffa500 !important;"
                                                     value="Proceed to Video Chat"/>
                             </div>
                         </div>

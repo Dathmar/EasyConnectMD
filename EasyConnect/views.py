@@ -1,4 +1,4 @@
-import datetime
+
 import os
 
 from django.shortcuts import render, get_object_or_404
@@ -7,6 +7,7 @@ from django.urls import reverse
 
 from EasyConnect.forms import PatientForm, SymptomsForm, ProviderForm
 from EasyConnect.models import Patient, Symptoms, ProviderNotes
+from square.client import Client
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -75,25 +76,41 @@ def connect_2(request, patient_id):
         # Create a form instance and populate it with data from the request (binding):
         form = SymptomsForm(request.POST)
         if form.is_valid():
+            """
+            # Instantiate the client
+            client = Client(access_token='YOUR ACCESS TOKEN')
+
+            # Call create_customer method to create a new customer
+            result = client.customers.create_customer(new_customer)
+
+            # Handle the result
+            if result.is_success():
+                # Display the response as text
+                print(f"Success: {result.text}")
+            # Call the error method to see if the call failed
+            elif result.is_error():
+                print(f"Errors: {result.errors}")
+            """
+
             # process the data in form.cleaned_data as required (here we just write it to the model due_back field)
             symptom_description = form.cleaned_data['symptom_description']
             allergies = form.cleaned_data['allergies']
             medications = form.cleaned_data['medications']
             previous_diagnosis = form.cleaned_data['previous_diagnosis']
 
-            symptoms = Symptoms(patient=patient_id,
+            symptoms = Symptoms(patient=patient,
                               symptom_description=symptom_description,
                               allergies=allergies,
                               medications=medications,
                               previous_diagnosis=previous_diagnosis)
             symptoms.save()
-
             # redirect to a new URL:
-            return HttpResponseRedirect(reverse('video-chat', args=(patient_id,)))
+            return HttpResponseRedirect(reverse('easyconnect:video-chat', args=(patient_id,)))
 
     # If this is a GET (or any other method) create the default form.
     else:
         form = SymptomsForm()
+
 
     context = {
         'form': form,
@@ -103,8 +120,12 @@ def connect_2(request, patient_id):
     return render(request, 'EasyConnect/connect-2.html', context)
 
 
-def video_chat(request):
-    return render(request, 'EasyConnect/VideoChat.html')
+def video_chat(request, patient_id):
+    context = {
+        'patient_id': patient_id
+    }
+
+    return render(request, 'EasyConnect/VideoChat.html', context)
 
 
 def provider_view(request):
