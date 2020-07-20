@@ -12,19 +12,7 @@ body {
   padding: 0;
 }
 
-#panel {
-    height: 100%;
-    width: null;
-    background-color: white;
-    position: fixed;
-    z-index: 1;
-    overflow-x: hidden;
-    transition: all .2s ease-out;
-}
 
-.open {
-    width: 250px;
-}
 
 /* Styling for place details */
 .hero {

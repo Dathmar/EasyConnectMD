@@ -23,7 +23,7 @@
     <script type="text/javascript" src="https://js.squareupsandbox.com/v2/paymentform"></script>
 </head>
 
-<body style="background-image: url('{% get_static_prefix %}EasyConnect/assets/img/Image-waiting-room.jpg');background-size: cover;background-repeat: no-repeat;padding-top: 5em; background-attachment: fixed; background-position: center; background-size: cover;">
+<body style="background-image: url('{% get_static_prefix %}EasyConnect/assets/img/Image-waiting-room.jpg');background-size: cover;background-repeat: no-repeat;padding-top: 5em; background-attachment: fixed; background-position: center;">
     <div class="d-md-flex justify-content-md-center" style="margin-right: 10%;margin-left: 10%;">
         <section class="container-wrapper" style="background-color: #ffffff;padding-bottom: 4em;">
             <div style="margin-right: 10%;margin-left: 10%;">
@@ -38,7 +38,7 @@
                             <h5><br>Less than 10 questions and 10 minutes to get connected with a doctor.<br><br></h5>
                         </div>
                     </div>
-                    <div class="row" style="margin-top: 0em;margin-bottom: 0em;">
+                    <div class="row" style="margin-top: 0;margin-bottom: 0;">
                         <div class="col text-center d-sm-flex align-items-sm-end m-sm-auto justify-content-lg-center"><span style="padding-right: 1em;padding-left: 1em;"><br>1.About you<br><br></span><span style="padding-right: 1em;padding-left: 1em;"><br><br>2.Symptoms &amp; Payment<br><br></span><span style="padding-right: 1em;padding-left: 1em;"><br><br>3.Video Chat<br><br></span></div>
                     </div>
                     <div class="row" style="margin-top: 1em;">
@@ -59,7 +59,7 @@
                         </div>
                         <div class="row">
                             <div class="col">
-                                <div style="height: 6em;">{{ form.symptom_description }}</div>
+                                <div style="height: 6em;">{{ symptom_form.symptom_description }}</div>
                             </div>
                         </div>
                         <div class="row">
@@ -67,7 +67,7 @@
                         </div>
                         <div class="row">
                             <div class="col">
-                                <div style="height: 6em;">{{ form.allergies }}</div>
+                                <div style="height: 6em;">{{ symptom_form.allergies }}</div>
                             </div>
                         </div>
                         <div class="row">
@@ -75,25 +75,38 @@
                         </div>
                         <div class="row">
                             <div class="col">
-                                <div style="height: 6em;">{{ form.medications }}</div>
+                                <div style="height: 6em;">{{ symptom_form.medications }}</div>
                             </div>
                         </div>
                         <div class="row">
                             <div class="col"><label class="col-form-label">Have you been diagnosed with any of the following?*</label></div>
                         </div>
                         <div class="row ul-no-bulletpoints">
-                            <div class="col>
-                                {{ form.previous_diagnosis }}
+                            <div class="col">
+                                {{ symptom_form.previous_diagnosis }}
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col" style="height: 25em"><label>Preferred Pharmacy</label>
+                            <div class="col"><label>Choose Your Preferred Pharmacy</label>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col" style="height: 25em">
                                 <div id="map"></div>
-                                <!-- <div id="panel"></div> -->
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col" style="margin-top: 2.5em;"><label style="margin-left: 0.6rem;">Total</label>
+                            <div class="col" style="margin-top: 1em; height: 15em"><label>Preferred Pharmacy</label>
+                                <div id="panel">
+                                    <input type="checkbox" id="custom_pharmacy" value="Don't see your pharmacy?" onclick="allowCustomPharmacy()"> Don't see your pharmacy?
+                                    {{ pharmacy_form.pharmacy_name }}
+                                    {{ pharmacy_form.pharmacy_address }}
+                                    {{ pharmacy_form.pharmacy_phone }}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col"><label style="margin-left: 0.6rem;">Total</label>
                                 <div><span style="margin-left: 0.5em;color: #ffa500;">$39.95</span></div>
                             </div>
                         </div>
@@ -117,7 +130,7 @@
                             </div>
                         </div>
                     </form>
-                    <div class="row" style="margin-top: 3em;margin-bottom: 0em;">
+                    <div class="row" style="margin-top: 3em;margin-bottom: 0;">
                         <div class="col text-center d-sm-flex align-items-sm-end m-sm-auto justify-content-lg-center"><span style="padding-right: 1em;padding-left: 1em;"><br>1.About you<br><br></span><span style="padding-right: 1em;padding-left: 1em;"><br><br>2.Symptoms &amp; Payment<br><br></span><span style="padding-right: 1em;padding-left: 1em;"><br><br>3.Video Chat<br><br></span></div>
                     </div>
                 </div>
@@ -131,8 +144,8 @@
                     <div class="col d-flex d-sm-flex d-md-flex d-lg-flex d-xl-flex justify-content-center justify-content-sm-center justify-content-md-center justify-content-lg-center justify-content-xl-center"><img src="../../static/EasyConnect/assets/img/Logo-footer.png"></div>
                 </div>
                 <div class="row d-xl-flex">
-                    <div class="col d-xl-flex justify-content-xl-center" style="padding-top: 0px;padding-right: 6px;padding-bottom: 8px;">
-                        <p class="d-xl-flex copyright" style="font-size: 20px;height: 0px;padding-top: 1px;font-family: Antic, sans-serif;">made in Germany</p>
+                    <div class="col d-xl-flex justify-content-xl-center" style="padding-top: 0;padding-right: 6px;padding-bottom: 8px;">
+                        <p class="d-xl-flex copyright" style="font-size: 20px;height: 0;padding-top: 1px;font-family: Antic, sans-serif;">made in Germany</p>
                     </div>
                 </div>
                 <div class="row d-xl-flex">

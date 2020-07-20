@@ -134,6 +134,20 @@ class SymptomsForm(forms.Form):
         return data
 
 
+class PharmacyForm(forms.Form):
+    pharmacy_name = forms.CharField(widget=forms.TextInput(attrs={'class': "form-control form-control",
+                                                                  'placeholder': 'Pharmacy Name*'}),
+                                    max_length=200)
+    pharmacy_address = forms.CharField(widget=forms.TextInput(attrs={'class': "form-control form-control",
+                                                                     'placeholder': 'Pharmacy Address*'}),
+                                       max_length=2000)
+    pharmacy_phone = forms.CharField(widget=forms.TextInput(attrs={'class': "form-control form-control",
+                                                                   'placeholder': 'Pharmacy Phone*'}), max_length=200)
+
+    pharmacy_name.widget.attrs['readonly'] = True
+    pharmacy_address.widget.attrs['readonly'] = True
+    pharmacy_phone.widget.attrs['readonly'] = True
+
 class ProviderForm(forms.Form):
     hpi = forms.CharField(widget=forms.Textarea(
         attrs={"class": "ooverflow-auto border smaller-field",

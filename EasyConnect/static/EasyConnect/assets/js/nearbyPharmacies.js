@@ -96,15 +96,16 @@ function createMarkers(places) {
     google.maps.event.addListener(marker, 'click', () => {
         let request = {
         placeId: place.place_id,
-        fields: ['name', 'formatted_address', 'geometry', 'rating',
-            'website', 'photos']
+        fields: ['name', 'formatted_address', 'geometry', 'business_status', 'formatted_phone_number']
         };
 
         /* Only fetch the details of a place when the user clicks on a marker.
         * If we fetch the details for all place results as soon as we get
         * the search response, we will hit API rate limits. */
         service.getDetails(request, (placeResult, status) => {
-        showDetails(placeResult, marker, status)
+            if (status == google.maps.places.PlacesServiceStatus.OK) {
+                showDetails(placeResult, marker);
+            }
         });
     });
 
@@ -117,67 +118,51 @@ function createMarkers(places) {
 }
 
 // Builds an InfoWindow to display details above the marker
-function showDetails(placeResult, marker, status) {
-    if (status == google.maps.places.PlacesServiceStatus.OK) {
-      let placeInfowindow = new google.maps.InfoWindow();
-      placeInfowindow.setContent('<div><strong>' + placeResult.name +
-          '</strong><br>' + 'Rating: ' + placeResult.rating + '</div>');
-      placeInfowindow.open(marker.map, marker);
-      currentInfoWindow.close();
-      currentInfoWindow = placeInfowindow;
-      showPanel(placeResult);
-    } else {
-      console.log('showDetails failed: ' + status);
+function showDetails(placeResult, marker) {
+    if (placeResult.business_status = "OPERATIONAL" ) {
+        let placeInfowindow = new google.maps.InfoWindow();
+        placeInfowindow.setContent('<div><strong>' + placeResult.name + '</strong><br>'
+            + 'Address: ' + placeResult.formatted_address + '<br>'
+            + 'Phone: ' + placeResult.formatted_phone_number + '</div>');
+        placeInfowindow.open(marker.map, marker);
+        currentInfoWindow.close();
+        currentInfoWindow = placeInfowindow;
+        showPanel(placeResult);
     }
 }
 
 // Displays place details in a sidebar
 function showPanel(placeResult) {
-    // If infoPane is already open, close it
-    if (infoPane.classList.contains("open")) {
-      infoPane.classList.remove("open");
-    }
+    let name = document.getElementById('id_pharmacy_name');
+    name.value = placeResult.name;
 
-    // Clear the previous details
-    while (infoPane.lastChild) {
-      infoPane.removeChild(infoPane.lastChild);
-    }
+    let address = document.getElementById('id_pharmacy_address');
+    address.value = placeResult.formatted_address;
 
-    // Add the primary photo, if there is one
-    if (placeResult.photos != null) {
-        let firstPhoto = placeResult.photos[0];
-        let photo = document.createElement('img');
-        photo.classList.add('hero');
-        photo.src = firstPhoto.getUrl();
-        infoPane.appendChild(photo);
-    }
+    let phone = document.getElementById('id_pharmacy_phone');
+    phone.value = placeResult.formatted_phone_number;
 
-    // Add place details with text formatting
-    let name = document.createElement('h1');
-    name.classList.add('place');
-    name.textContent = placeResult.name;
-    infoPane.appendChild(name);
-    if (placeResult.rating != null) {
-    let rating = document.createElement('p');
-    rating.classList.add('details');
-    rating.textContent = `Rating: ${placeResult.rating} \u272e`;
-    infoPane.appendChild(rating);
-    }
-    let address = document.createElement('p');
-    address.classList.add('details');
-    address.textContent = placeResult.formatted_address;
-    infoPane.appendChild(address);
-    if (placeResult.website) {
-    let websitePara = document.createElement('p');
-    let websiteLink = document.createElement('a');
-    let websiteUrl = document.createTextNode(placeResult.website);
-    websiteLink.appendChild(websiteUrl);
-    websiteLink.title = placeResult.website;
-    websiteLink.href = placeResult.website;
-    websitePara.appendChild(websiteLink);
-    infoPane.appendChild(websitePara);
-    }
+}
 
-    // Open the infoPane
-    infoPane.classList.add("open");
+// Code for allowing a custom pharmacy:
+function allowCustomPharmacy() {
+    var checkBox = document.getElementById("custom_pharmacy");
+    let name = document.getElementById('id_pharmacy_name');
+    let address = document.getElementById('id_pharmacy_address');
+    let phone = document.getElementById('id_pharmacy_phone');
+    name.value = "";
+    address.value = "";
+    phone.value = "";
+
+    if (checkBox.checked == true ) {
+        // code for check box checked
+        name.readOnly = false;
+        address.readOnly = false;
+        phone.readOnly = false;
+    } else {
+        // code for check box unchecked
+        name.readOnly = true;
+        address.readOnly = true;
+        phone.readOnly = true;
+    }
 }

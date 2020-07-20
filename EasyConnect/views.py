@@ -5,8 +5,8 @@ from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponseRedirect, HttpResponse
 from django.urls import reverse
 
-from EasyConnect.forms import PatientForm, SymptomsForm, ProviderForm
-from EasyConnect.models import Patient, Symptoms, ProviderNotes
+from EasyConnect.forms import PatientForm, SymptomsForm, ProviderForm, PharmacyForm
+from EasyConnect.models import Patient, Symptoms, ProviderNotes, Preferred_Pharmacy
 from square.client import Client
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -74,8 +74,9 @@ def connect_2(request, patient_id):
 
     if request.method == 'POST':
         # Create a form instance and populate it with data from the request (binding):
-        form = SymptomsForm(request.POST)
-        if form.is_valid():
+        symptom_form = SymptomsForm(request.POST)
+        pharmacy_form = PharmacyForm(request.POST)
+        if symptom_form.is_valid() and pharmacy_form.is_valid():
             """
             # Instantiate the client
             client = Client(access_token='YOUR ACCESS TOKEN')
@@ -93,10 +94,10 @@ def connect_2(request, patient_id):
             """
 
             # process the data in form.cleaned_data as required (here we just write it to the model due_back field)
-            symptom_description = form.cleaned_data['symptom_description']
-            allergies = form.cleaned_data['allergies']
-            medications = form.cleaned_data['medications']
-            previous_diagnosis = form.cleaned_data['previous_diagnosis']
+            symptom_description = symptom_form.cleaned_data['symptom_description']
+            allergies = symptom_form.cleaned_data['allergies']
+            medications = symptom_form.cleaned_data['medications']
+            previous_diagnosis = symptom_form.cleaned_data['previous_diagnosis']
 
             symptoms = Symptoms(patient=patient,
                               symptom_description=symptom_description,
@@ -104,16 +105,29 @@ def connect_2(request, patient_id):
                               medications=medications,
                               previous_diagnosis=previous_diagnosis)
             symptoms.save()
+
+            pharmacy_name = pharmacy_form.cleaned_data['pharmacy_name']
+            pharmacy_address = pharmacy_form.cleaned_data['pharmacy_address']
+            pharmacy_phone = pharmacy_form.cleaned_data['pharmacy_phone']
+
+            pharmacy = Preferred_Pharmacy(patient=patient,
+                                          pharmacy_name=pharmacy_name,
+                                          pharmacy_address=pharmacy_address,
+                                          pharmacy_phone=pharmacy_phone)
+            pharmacy.save()
+
             # redirect to a new URL:
             return HttpResponseRedirect(reverse('easyconnect:video-chat', args=(patient_id,)))
 
     # If this is a GET (or any other method) create the default form.
     else:
-        form = SymptomsForm()
+        symptom_form = SymptomsForm()
+        pharmacy_form = PharmacyForm()
 
 
     context = {
-        'form': form,
+        'symptom_form': symptom_form,
+        'pharmacy_form': pharmacy_form,
         'zip': patient.zip
     }
 
