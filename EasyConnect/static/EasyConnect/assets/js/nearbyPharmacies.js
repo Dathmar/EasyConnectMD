@@ -146,7 +146,7 @@ function showPanel(placeResult) {
 
 // Code for allowing a custom pharmacy:
 function allowCustomPharmacy() {
-    var checkBox = document.getElementById("custom_pharmacy");
+    let checkBox = document.getElementById("custom_pharmacy");
     let name = document.getElementById('id_pharmacy_name');
     let address = document.getElementById('id_pharmacy_address');
     let phone = document.getElementById('id_pharmacy_phone');
@@ -165,4 +165,18 @@ function allowCustomPharmacy() {
         address.readOnly = true;
         phone.readOnly = true;
     }
+}
+
+// Code for removing checks from diagnoses
+function removeChecks(event) {
+    let previous_diagnosis = document.getElementsByName('previous_diagnosis');
+
+    if (event.id == 'id_previous_diagnosis_7') {
+        for (var i = 0; i < previous_diagnosis.length - 1; i++) {
+            previous_diagnosis[i].checked = false;
+        }
+    } else {
+        previous_diagnosis[previous_diagnosis.length-1].checked = false;
+    }
+
 }

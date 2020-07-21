@@ -53,7 +53,7 @@
                             <h6 class="appointment">Chief Complaint (<em>Describe your symptoms</em>):<br></h6>
                             <p class="appointment">test</p>
                             <h6 class="bold-h6 appointment">HPI</h6>
-                            <div style="height: 6em;">{{ form.hpi }}</div>
+                            <div style="height: 6em;">{{ provider_form.hpi }}</div>
                             <h6 class="appointment">Allergies to Medications (<em>Known drug or food allergies</em>):</h6>
                             <p class="appointment">test</p>
                             <h6 class="appointment">Current Medications (<em>Current Medications and Doses</em>):</h6>
@@ -75,15 +75,15 @@
                             <h6 class="bold-h6 appointment">Assesment(s)</h6>
                             <h6 class="appointment"><em>Select one or more options. Type a few characters to search then wait a second for the options to load.</em></h6>
                             <div class="smaller-field">
-                                <div class="dropdown" style="width: 100%;">{{ form.assessments }}
+                                <div class="dropdown" style="width: 100%;">{{ provider_form.assessments }}
                                 </div>
                             </div>
                             <h6 class="bold-h6 appointment" style="margin-top: 1.5em;">Treatment</h6>
-                            <div style="height: 6em;">{{ form.treatment }}</div>
+                            <div style="height: 6em;">{{ provider_form.treatment }}</div>
                             <h6 class="bold-h6 appointment">Followup</h6>
-                            <div style="height: 6em;">{{ form.followup }}</div>
+                            <div style="height: 6em;">{{ provider_form.followup }}</div>
                             <h6 class="bold-h6 appointment">Return to Work Notes</h6>
-                            <div style="height: 6em;">{{ form.return_to_work_notes }}</div>
+                            <div style="height: 6em;">{{ provider_form.return_to_work_notes }}</div>
                         </div>
                     </div>
                     <div class="tab-pane" role="tabpanel" id="tab-2">

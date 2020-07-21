@@ -13,5 +13,6 @@ urlpatterns = [
     path('connect-with-a-doctor/', views.connect, name='connect-with-a-doctor'),
     path('connect-2/<uuid:patient_id>', views.connect_2, name='connect-2'),
     path('video-chat/<uuid:patient_id>', views.video_chat, name='video-chat'),
-    path('provider/', views.provider_view, name='provider-view'),
+    #path('provider/', views.provider_list_view, name='provider-list-view'),
+    path('provider/<uuid:patient_id>', views.provider_view, name='provider-view'),
 ]

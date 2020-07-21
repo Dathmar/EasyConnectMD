@@ -6,7 +6,7 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.urls import reverse
 
 from EasyConnect.forms import PatientForm, SymptomsForm, ProviderForm, PharmacyForm
-from EasyConnect.models import Patient, Symptoms, ProviderNotes, Preferred_Pharmacy
+from EasyConnect.models import Patient, Symptoms, ProviderNotes, Preferred_Pharmacy, Video_Chat
 from square.client import Client
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -142,17 +142,21 @@ def video_chat(request, patient_id):
     return render(request, 'EasyConnect/VideoChat.html', context)
 
 
-def provider_view(request):
+def provider_view(request, patient_id):
+    patient = get_object_or_404(Patient, pk=patient_id)
+    symptoms = get_object_or_404(Symptoms, pk=patient_id)
+    video = get_object_or_404(Video_Chat, pk=patient_id)
+
     if request.method == 'POST':
         # Create a form instance and populate it with data from the request (binding):
-        form = ProviderForm(request.POST)
-        if form.is_valid():
+        provider_form = ProviderForm(request.POST)
+        if provider_form.is_valid():
             # process the data in form.cleaned_data as required (here we just write it to the model due_back field)
-            hpi = form.cleaned_data['hpi']
+            hpi = provider_form.cleaned_data['hpi']
             #assessments = form.cleaned_data['assessments']
-            treatment = form.cleaned_data['treatment']
-            followup = form.cleaned_data['followup']
-            return_to_work_notes = form.cleaned_data['return_to_work_notes']
+            treatment = provider_form.cleaned_data['treatment']
+            followup = provider_form.cleaned_data['followup']
+            return_to_work_notes = provider_form.cleaned_data['return_to_work_notes']
 
             provider_notes = ProviderNotes(hpi=hpi,
                               #assessments=assessments,
@@ -166,10 +170,10 @@ def provider_view(request):
 
     # If this is a GET (or any other method) create the default form.
     else:
-        form = ProviderForm()
+        provider_form = ProviderForm()
 
     context = {
-        'form': form
+        'provider_form': provider_form
     }
 
     return render(request, 'EasyConnect/provider-view.html', context)

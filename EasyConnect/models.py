@@ -29,9 +29,9 @@ class Preferred_Pharmacy(models.Model):
     # would like to expand to location information from Google
     # probably just store the google location data in that case.
     patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
-    pharmacy_name = models.CharField(max_length=200)
-    pharmacy_address = models.CharField(max_length=2000)
-    pharmacy_phone = models.CharField(max_length=200)
+    pharmacy_name = models.CharField(max_length=200, default=None)
+    pharmacy_address = models.CharField(max_length=2000, default=None)
+    pharmacy_phone = models.CharField(max_length=200, default=None)
 
     create_datetime = models.DateTimeField('date created', auto_now_add=True)
     update_datetime = models.DateTimeField('date updated', auto_now=True)

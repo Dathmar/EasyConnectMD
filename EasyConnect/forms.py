@@ -94,7 +94,7 @@ class SymptomsForm(forms.Form):
                "rows": "3", "cols": "40", "style": "width: 100%; resize: none; border: none"}))
     previous_diagnosis = forms.MultipleChoiceField(
         required=True,
-        widget=forms.CheckboxSelectMultiple,
+        widget=forms.CheckboxSelectMultiple(attrs={"onClick": "removeChecks(this)"}),
         choices=DIAGNOSED_CHOICES
     )
 

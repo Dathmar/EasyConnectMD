@@ -20,6 +20,7 @@
     ></script>
     <script src="{% get_static_prefix %}EasyConnect/assets/js/nearbyPharmacies.js"></script>
 
+
     <script type="text/javascript" src="https://js.squareupsandbox.com/v2/paymentform"></script>
 </head>
 
@@ -114,7 +115,10 @@
                         <div class="row">
                             <div class="col">
                                 <div class="row">
-                                     Add Payment form here
+                                     <div id="form-container">
+                                         <div id="sq-card"></div>
+                                         <button id="sq-creditcard" class="button-credit-card" onclick="onGetCardNonce(event)">Pay $1.00</button>
+                                     </div>
                                 </div>
                             </div>
                         </div>
@@ -161,6 +165,7 @@
     </div>
     <script src="{% get_static_prefix %}EasyConnect/assets/js/jquery.min.js"></script>
     <script src="{% get_static_prefix %}EasyConnect/assets/bootstrap/js/bootstrap.min.js"></script>
+    <script src="{% get_static_prefix %}EasyConnect/assets/js/paymentForm.js"></script>
 </body>
 
 </html>

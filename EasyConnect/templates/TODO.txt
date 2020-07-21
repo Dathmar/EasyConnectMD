@@ -10,11 +10,11 @@ Connect:
 
 Connect-2:
     bountry on map outside of TX
-    Add zip code default when location mapping is denied in browser
+    Payments.
 
 Provider:
     Update video embed to float.
-    Populate Previous Appoinments based on first, last and dob
+    Populate Previous Appointments based on first, last and dob
     General formatting
     Assessments should provide list of all ICD10 codes with multiple select AND substring search
     Previous appointments add Seen by (first field), HIP, Assessment, Treatment, Follow up
