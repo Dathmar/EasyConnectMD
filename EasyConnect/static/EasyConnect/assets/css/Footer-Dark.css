@@ -153,6 +153,14 @@
   padding: 0;
 }
 
+.button-orange:active {
+  text-decoration: none;
+  color: #ffffff !important;
+  background-color: #ffa500 !important;
+  border: 2px solid #ffa500 !important;
+  padding: 0;
+}
+
 .button-base:hover {
   text-decoration: none;
   color: #ffa500 !important;
@@ -181,6 +189,10 @@
 .orange-btn:hover {
   color: #ffa500;
   display: block;
+}
+
+.orange-btn:active {
+  color: #fff;
 }
 
 .btn.btn-primary.border.rounded-0.shadow.button-base {
