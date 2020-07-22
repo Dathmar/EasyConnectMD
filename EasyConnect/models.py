@@ -37,7 +37,7 @@ class Preferred_Pharmacy(models.Model):
     update_datetime = models.DateTimeField('date updated', auto_now=True)
 
     def __str__(self):
-        return self.location_name
+        return self.pharmacy_name
 
 
 class Symptoms(models.Model):
@@ -46,10 +46,16 @@ class Symptoms(models.Model):
     symptom_description = models.TextField(default=None)
     allergies = models.TextField(default=None)
     medications = models.TextField(default=None)
-    previous_diagnosis = models.CharField(choices=GENDER_CHOICES, default=None, max_length=255)
+    previous_diagnosis = models.CharField(default=None, max_length=2000)
 
     create_datetime = models.DateTimeField('date created', auto_now_add=True)
     update_datetime = models.DateTimeField('date updated', auto_now=True)
+
+    class Meta:
+        verbose_name_plural = 'Symptoms'
+
+    def __str__(self):
+        return str(self.patient.id)
 
 
 class Payment_Response(models.Model):

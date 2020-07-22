@@ -1,5 +1,6 @@
-
 import os
+
+from datetime import datetime
 
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponseRedirect, HttpResponse
@@ -97,23 +98,38 @@ def connect_2(request, patient_id):
             symptom_description = symptom_form.cleaned_data['symptom_description']
             allergies = symptom_form.cleaned_data['allergies']
             medications = symptom_form.cleaned_data['medications']
-            previous_diagnosis = symptom_form.cleaned_data['previous_diagnosis']
+            diagnosis_list = symptom_form.cleaned_data['previous_diagnosis']
 
-            symptoms = Symptoms(patient=patient,
-                              symptom_description=symptom_description,
-                              allergies=allergies,
-                              medications=medications,
-                              previous_diagnosis=previous_diagnosis)
+            previous_diagnosis = ', '.join(map(str, diagnosis_list))
+
+            # get existing object if it exists and update.
+            symptom_obj = get_object_data_or_set_defaults(Symptoms.objects.filter(patient_id=patient_id).first())
+
+            symptoms = Symptoms(pk=symptom_obj['pk'],
+                                patient=patient,
+                                symptom_description=symptom_description,
+                                allergies=allergies,
+                                medications=medications,
+                                previous_diagnosis=previous_diagnosis,
+                                create_datetime=symptom_obj['create_datetime'],
+                                update_datetime=datetime.now())
             symptoms.save()
 
             pharmacy_name = pharmacy_form.cleaned_data['pharmacy_name']
             pharmacy_address = pharmacy_form.cleaned_data['pharmacy_address']
             pharmacy_phone = pharmacy_form.cleaned_data['pharmacy_phone']
 
-            pharmacy = Preferred_Pharmacy(patient=patient,
+            # get existing object if it exists and update.
+            pharmacy_obj = get_object_data_or_set_defaults(
+                Preferred_Pharmacy.objects.filter(patient_id=patient_id).first())
+
+            pharmacy = Preferred_Pharmacy(id=pharmacy_obj['pk'],
+                                          patient=patient,
                                           pharmacy_name=pharmacy_name,
                                           pharmacy_address=pharmacy_address,
-                                          pharmacy_phone=pharmacy_phone)
+                                          pharmacy_phone=pharmacy_phone,
+                                          create_datetime=pharmacy_obj['create_datetime'],
+                                          update_datetime=datetime.now())
             pharmacy.save()
 
             # redirect to a new URL:
@@ -123,7 +139,6 @@ def connect_2(request, patient_id):
     else:
         symptom_form = SymptomsForm()
         pharmacy_form = PharmacyForm()
-
 
     context = {
         'symptom_form': symptom_form,
@@ -144,8 +159,8 @@ def video_chat(request, patient_id):
 
 def provider_view(request, patient_id):
     patient = get_object_or_404(Patient, pk=patient_id)
-    symptoms = get_object_or_404(Symptoms, pk=patient_id)
-    video = get_object_or_404(Video_Chat, pk=patient_id)
+    symptoms = get_object_or_404(Symptoms, patient_id=patient_id)
+    preferred_pharmacy = get_object_or_404(Preferred_Pharmacy, patient_id=patient_id)
 
     if request.method == 'POST':
         # Create a form instance and populate it with data from the request (binding):
@@ -163,6 +178,7 @@ def provider_view(request, patient_id):
                               treatment=treatment,
                               followup=followup,
                               return_to_work_notes=return_to_work_notes)
+
             provider_notes.save()
 
             # redirect to a new URL:
@@ -171,10 +187,27 @@ def provider_view(request, patient_id):
     # If this is a GET (or any other method) create the default form.
     else:
         provider_form = ProviderForm()
+        preferred_pharmacy_form = PharmacyForm(initial={'pharmacy_phone': preferred_pharmacy.pharmacy_phone,
+                                                        'pharmacy_address': preferred_pharmacy.pharmacy_address,
+                                                        'pharmacy_name': preferred_pharmacy.pharmacy_name})
 
     context = {
-        'provider_form': provider_form
+        'provider_form': provider_form,
+        'patient': patient,
+        'symptoms': symptoms,
+        'preferred_pharmacy_form': preferred_pharmacy_form
+
     }
 
     return render(request, 'EasyConnect/provider-view.html', context)
 
+def get_object_data_or_set_defaults(to_get_object):
+    return_obj = {}
+    if to_get_object:
+        return_obj['pk'] = to_get_object.pk
+        return_obj['create_datetime'] = to_get_object.create_datetime
+    else:
+        return_obj['pk'] = None
+        return_obj['create_datetime'] = None
+
+    return return_obj

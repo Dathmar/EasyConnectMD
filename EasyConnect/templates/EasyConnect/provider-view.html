@@ -49,28 +49,33 @@
                         <div class="tab-style">
                             <h6 class="bold-h6 appointment">Patient Submitted Information</h6>
                             <h4></h4>
-                            <p class="appointment">Name: and all that stuff</p>
-                            <h6 class="appointment">Chief Complaint (<em>Describe your symptoms</em>):<br></h6>
-                            <p class="appointment">test</p>
-                            <h6 class="bold-h6 appointment">HPI</h6>
+                            <p class="appointment"><strong>Name:</strong> {{ patient.first_name }} {{ patient.last_name }} | <strong>DOB:</strong> {{ patient.dob }} | <strong>Phone:</strong> {{ patient.phone_number }} | <strong>Email:</strong> {{ patient.email }} | <strong>Gender:</strong> {{ patient.gender }}</p>
+                            <h6 class="appointment"><strong>Chief Complaint (<em>Describe your symptoms</em>):</strong><br></h6>
+                            <p class="appointment">{{ symptoms.symptom_description }}</p>
+                            <h6 class="bold-h6 appointment"><strong>HPI</strong></h6>
                             <div style="height: 6em;">{{ provider_form.hpi }}</div>
-                            <h6 class="appointment">Allergies to Medications (<em>Known drug or food allergies</em>):</h6>
-                            <p class="appointment">test</p>
-                            <h6 class="appointment">Current Medications (<em>Current Medications and Doses</em>):</h6>
-                            <p class="appointment">test</p>
-                            <h6 class="appointment">Medical History (<em>Have you been diagnosed with any of the following</em>):</h6>
-                            <p class="appointment">test</p>
+                            <h6 class="appointment"><strong>Allergies to Medications (<em>Known drug or food allergies</em>):</strong></h6>
+                            <p class="appointment">{{ symptoms.allergies }}</p>
+                            <h6 class="appointment"><strong>Current Medications (<em>Current Medications and Doses</em>):</strong></h6>
+                            <p class="appointment">{{ symptoms.medications }}</p>
+                            <h6 class="appointment"><strong>Medical History (<em>Have you been diagnosed with any of the following</em>):</strong></h6>
+                            <p class="appointment">{{ symptoms.previous_diagnosis }}</p>
                             <div class="form-group">
                                 <div class="d-xl-flex align-items-xl-center">
                                     <div class="half-width">
-                                        <h6 class="bold-h6 appointment">Preferred Pharmacy</h6>
+                                        <h6 class="bold-h6 appointment">Preferred Pharmacy Name</h6>
+                                        <div class="input-wrapper">{{ preferred_pharmacy_form.pharmacy_name }}</div>
                                     </div>
                                     <div class="half-width">
                                         <h6 class="bold-h6 appointment">Preferred Pharmacy Phone<br></h6>
+                                        <div class="input-wrapper">{{ preferred_pharmacy_form.pharmacy_phone }}</div>
+                                    </div>
+                                    <div class="half-width">
+                                        <h6 class="bold-h6 appointment">Preferred Pharmacy Address<br></h6>
+                                        <div class="input-wrapper">{{ preferred_pharmacy_form.pharmacy_address }}</div>
                                     </div>
                                 </div>
                                 <div></div>
-                                <div class="input-wrapper"><input type="text" class="form-control half-width" required="" placeholder="Preferred Pharmacy Name*"><input type="text" class="form-control half-width" placeholder="Preferred Pharmacy Phone*" required="" inputmode="tel"></div>
                             </div>
                             <h6 class="bold-h6 appointment">Assesment(s)</h6>
                             <h6 class="appointment"><em>Select one or more options. Type a few characters to search then wait a second for the options to load.</em></h6>
