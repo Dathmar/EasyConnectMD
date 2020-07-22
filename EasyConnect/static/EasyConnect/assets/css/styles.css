@@ -39,3 +39,8 @@ body {
 .hidden {
   display: none;
 }
+#form-container{
+  width: 100%;
+  margin-left: 3%;
+  margin-right: 3%;
+}
