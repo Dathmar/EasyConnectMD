@@ -58,9 +58,11 @@ class Symptoms(models.Model):
         return str(self.patient.id)
 
 
-class Payment_Response(models.Model):
+class Payment(models.Model):
     patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
-    response = models.TextField()
+    nonce = models.CharField(default=None, max_length=2000)
+    status = models.CharField(default=None, max_length=200)
+    response = models.CharField(default=None, max_length=10000)
 
     create_datetime = models.DateTimeField('date created', auto_now_add=True)
     update_datetime = models.DateTimeField('date updated', auto_now=True)

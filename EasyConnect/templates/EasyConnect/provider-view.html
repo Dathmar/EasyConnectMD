@@ -60,6 +60,16 @@
                             <p class="appointment">{{ symptoms.medications }}</p>
                             <h6 class="appointment"><strong>Medical History (<em>Have you been diagnosed with any of the following</em>):</strong></h6>
                             <p class="appointment">{{ symptoms.previous_diagnosis }}</p>
+                            <h6 class="bold-h6 appointment">Assesment(s)</h6>
+                            <h6 class="appointment"><em>Select one or more options. Type a few characters to search then wait a second for the options to load.</em></h6>
+                            <div class="smaller-field">
+                                <div class="dropdown" style="width: 100%;">{{ provider_form.assessments }}
+                                </div>
+                            </div>
+                            <h6 class="bold-h6 appointment" style="margin-top: 1.5em;">Treatment</h6>
+                            <div style="height: 6em;">{{ provider_form.treatment }}</div>
+                            <h6 class="bold-h6 appointment">Followup</h6>
+                            <div style="height: 6em;">{{ provider_form.followup }}</div>
                             <div class="form-group">
                                 <div class="d-xl-flex align-items-xl-center">
                                     <div class="half-width">
@@ -77,16 +87,6 @@
                                 </div>
                                 <div></div>
                             </div>
-                            <h6 class="bold-h6 appointment">Assesment(s)</h6>
-                            <h6 class="appointment"><em>Select one or more options. Type a few characters to search then wait a second for the options to load.</em></h6>
-                            <div class="smaller-field">
-                                <div class="dropdown" style="width: 100%;">{{ provider_form.assessments }}
-                                </div>
-                            </div>
-                            <h6 class="bold-h6 appointment" style="margin-top: 1.5em;">Treatment</h6>
-                            <div style="height: 6em;">{{ provider_form.treatment }}</div>
-                            <h6 class="bold-h6 appointment">Followup</h6>
-                            <div style="height: 6em;">{{ provider_form.followup }}</div>
                             <h6 class="bold-h6 appointment">Return to Work Notes</h6>
                             <div style="height: 6em;">{{ provider_form.return_to_work_notes }}</div>
                         </div>
@@ -94,26 +94,18 @@
                     <div class="tab-pane" role="tabpanel" id="tab-2">
                         <div class="tab-style">
                             <div class="input-wrapper">
-                                <div class="form-group half-width"><input type="text" class="form-control" placeholder="First Name*" required="" inputmode="latin-name"></div>
-                                <div class="form-group half-width"><input type="text" class="form-control" placeholder="Last Name*" required="" inputmode="latin-name"></div>
+                                <div class="form-group half-width">{{ patient_form.first_name }}</div>
+                                <div class="form-group half-width">{{ patient_form.last_name }}</div>
                             </div>
                             <div class="d-xl-flex input-wrapper">
-                                <div class="form-group half-width"><input type="text" class="form-control" inputmode="tel" required="" placeholder="Phone*"></div>
-                                <div class="form-group half-width"><input type="text" class="form-control" placeholder="Email*" required=""></div>
+                                <div class="form-group half-width">{{ patient_form.phone_number }}</div>
+                                <div class="form-group half-width">{{ patient_form.email }}</div>
                             </div>
                             <div class="form-group-wrapper">
-                                <div class="form-group half-width"><label>Birthday</label><input type="text" class="form-control" inputmode="tel" required="" placeholder="Phone*"></div>
-                                <div class="form-group half-width"><label>Sex</label><input type="text" class="form-control" inputmode="tel" required="" placeholder="Phone*"></div>
+                                <div class="form-group half-width"><label>Birthday</label>{{ patient_form.dob }}</div>
+                                <div class="form-group half-width"><label>Gender</label>{{ patient_form.gender }}</div>
                             </div>
-                            <div class="form-group smaller-field"><input type="text" class="form-control smaller-field" required="" placeholder="Street address*"></div>
-                            <div class="form-group">
-                                <div class="d-xl-flex align-items-xl-center">
-                                    <div class="half-width"><label>Preferred Pharmacy</label></div>
-                                    <div class="half-width"><label>Preferred Pharmacy</label></div>
-                                </div>
-                                <div></div>
-                                <div class="input-wrapper"><input type="text" class="form-control half-width" required="" placeholder="Preferred Pharmacy Name*"><input type="text" class="form-control half-width" placeholder="Preferred Pharmacy Phone*" required="" inputmode="tel"></div>
-                            </div>
+                            <div class="form-group smaller-field">{{ patient_form.zip }}</div>
                             <div class="row">
                                 <div class="col"><label class="col-form-label">Describe your symptoms*</label></div>
                             </div>

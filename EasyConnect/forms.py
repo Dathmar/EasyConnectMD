@@ -9,6 +9,10 @@ from EasyConnect.models import Icd10
 
 
 class PatientForm(forms.Form):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.label_suffix = ""
+
     first_name = forms.CharField(widget=forms.TextInput(attrs={'class': "form-control form-control",
                                                                'placeholder': 'First Name*'}), max_length=200)
     last_name = forms.CharField(widget=forms.TextInput(attrs={'class': "form-control form-control",
@@ -25,6 +29,7 @@ class PatientForm(forms.Form):
     gender = forms.ChoiceField(widget=forms.RadioSelect(attrs={'class': "form-check-input"}),
                                choices=GENDER_CHOICES)
     tos = forms.BooleanField(widget=forms.CheckboxInput(attrs={'class': "form-check-input"}),
+                             label='I agree to the Terms of Service',
                              required=True)
 
     def clean_first_name(self):
@@ -80,6 +85,11 @@ class PatientForm(forms.Form):
             raise ValidationError(_('Invalid Zip code - cannot be blank'))
 
         return data
+
+
+class PaymentForm(forms.Form):
+    nonce = forms.CharField(widget=forms.TextInput(attrs={'class': "form-control form-control half-width",
+                                                          'placeholder': 'nonce'}), max_length=2000, required=False)
 
 
 class SymptomsForm(forms.Form):
@@ -150,17 +160,17 @@ class PharmacyForm(forms.Form):
 
 class ProviderForm(forms.Form):
     hpi = forms.CharField(widget=forms.Textarea(
-        attrs={"class": "ooverflow-auto border smaller-field",
+        attrs={"class": "overflow-auto border smaller-field",
                "rows": "3", "cols": "40", "style": "width: 100%; resize: none; border: none"}))
     #assessments = forms.ModelMultipleChoiceField(queryset=Icd10.objects.all())
     treatment = forms.CharField(widget=forms.Textarea(
-        attrs={"class": "ooverflow-auto border smaller-field",
+        attrs={"class": "overflow-auto border smaller-field",
                "rows": "3", "cols": "40", "style": "width: 100%; resize: none; border: none"}))
     followup = forms.CharField(widget=forms.Textarea(
-        attrs={"class": "ooverflow-auto border smaller-field",
+        attrs={"class": "overflow-auto border smaller-field",
                "rows": "3", "cols": "40", "style": "width: 100%; resize: none; border: none"}))
     return_to_work_notes = forms.CharField(widget=forms.Textarea(
-        attrs={"class": "ooverflow-auto border smaller-field",
+        attrs={"class": "overflow-auto border smaller-field",
                "rows": "3", "cols": "40", "style": "width: 100%; resize: none; border: none"}))
 
 

@@ -5,9 +5,10 @@ from datetime import datetime
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponseRedirect, HttpResponse
 from django.urls import reverse
+from django.conf import settings
 
-from EasyConnect.forms import PatientForm, SymptomsForm, ProviderForm, PharmacyForm
-from EasyConnect.models import Patient, Symptoms, ProviderNotes, Preferred_Pharmacy, Video_Chat
+from EasyConnect.forms import PatientForm, SymptomsForm, ProviderForm, PharmacyForm, PaymentForm
+from EasyConnect.models import Patient, Symptoms, ProviderNotes, Preferred_Pharmacy, Video_Chat, Payment
 from square.client import Client
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -77,23 +78,9 @@ def connect_2(request, patient_id):
         # Create a form instance and populate it with data from the request (binding):
         symptom_form = SymptomsForm(request.POST)
         pharmacy_form = PharmacyForm(request.POST)
-        if symptom_form.is_valid() and pharmacy_form.is_valid():
-            """
-            # Instantiate the client
-            client = Client(access_token='YOUR ACCESS TOKEN')
+        payment_form = PaymentForm(request.POST)
 
-            # Call create_customer method to create a new customer
-            result = client.customers.create_customer(new_customer)
-
-            # Handle the result
-            if result.is_success():
-                # Display the response as text
-                print(f"Success: {result.text}")
-            # Call the error method to see if the call failed
-            elif result.is_error():
-                print(f"Errors: {result.errors}")
-            """
-
+        if symptom_form.is_valid() and pharmacy_form.is_valid() and payment_form.is_valid():
             # process the data in form.cleaned_data as required (here we just write it to the model due_back field)
             symptom_description = symptom_form.cleaned_data['symptom_description']
             allergies = symptom_form.cleaned_data['allergies']
@@ -132,17 +119,51 @@ def connect_2(request, patient_id):
                                           update_datetime=datetime.now())
             pharmacy.save()
 
-            # redirect to a new URL:
-            return HttpResponseRedirect(reverse('easyconnect:video-chat', args=(patient_id,)))
+            # each payment attempt will generate a new nonce
+            nonce = payment_form.cleaned_data['nonce']
+
+            # process the payment
+            body = {
+                'source_id': nonce,
+                'idempotency_key': str(patient_id),
+                'amount_money': {
+                    'amount': 3995,
+                    'currency': 'USD'
+                }
+            }
+
+            client = Client(
+                access_token=settings.SQUARE_ACCESS_TOKEN,
+                environment='sandbox',
+            )
+
+            payments_api = client.payments
+            result = payments_api.create_payment(body)
+            if result.is_success():
+                payment_status = "Paid"
+            elif result.is_error():
+                payment_status = "Failed"
+
+            payment = Payment(patient=patient,
+                              nonce=nonce,
+                              status=payment_status,
+                              response=result)
+
+            payment.save()
+
+            if payment_status != 'Failed':
+                return HttpResponseRedirect(reverse('easyconnect:video-chat', args=(patient_id,)))
 
     # If this is a GET (or any other method) create the default form.
     else:
         symptom_form = SymptomsForm()
         pharmacy_form = PharmacyForm()
+        payment_form = PaymentForm()
 
     context = {
         'symptom_form': symptom_form,
         'pharmacy_form': pharmacy_form,
+        'payment_form': payment_form,
         'zip': patient.zip
     }
 
@@ -190,10 +211,18 @@ def provider_view(request, patient_id):
         preferred_pharmacy_form = PharmacyForm(initial={'pharmacy_phone': preferred_pharmacy.pharmacy_phone,
                                                         'pharmacy_address': preferred_pharmacy.pharmacy_address,
                                                         'pharmacy_name': preferred_pharmacy.pharmacy_name})
+        patient_form = PatientForm(initial={'first_name': patient.first_name,
+                                            'last_name': patient.last_name,
+                                            'phone_number': patient.phone_number,
+                                            'email': patient.email,
+                                            'dob': patient.dob,
+                                            'gender': patient.gender,
+                                            'zip': patient.zip})
 
     context = {
         'provider_form': provider_form,
         'patient': patient,
+        'patient_form': patient_form,
         'symptoms': symptoms,
         'preferred_pharmacy_form': preferred_pharmacy_form
 
