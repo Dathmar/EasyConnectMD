@@ -18,7 +18,14 @@ Provider:
     General formatting
     Assessments should provide list of all ICD10 codes with multiple select AND substring search
     Previous appointments add Seen by (first field), HIP, Assessment, Treatment, Follow up
-
+            Date                       | Seen By
+            Allergies to Medications   | val
+            Current Medications        | val
+            Medical History            | val
+            HIP                        | val
+            Assessment                 | val
+            Treatment                  | val
+            Follow up                  | val
 Appointments:
     Create list of appointments
     Allow search of appointments

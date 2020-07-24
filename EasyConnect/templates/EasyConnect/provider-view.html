@@ -111,7 +111,7 @@
                             </div>
                             <div class="row">
                                 <div class="col">
-                                    <div class="overflow-auto border smaller-field" style="height: 6em;"><textarea style="width: 100%; resize: none; border: none" required=""></textarea></div>
+                                    <div class="overflow-auto border smaller-field" style="height: 6em;">{{ symptoms_form.symptom_description }}</div>
                                 </div>
                             </div>
                             <div class="row">
@@ -119,7 +119,7 @@
                             </div>
                             <div class="row">
                                 <div class="col">
-                                    <div class="overflow-auto border smaller-field" style="height: 6em;"><textarea style="width: 100%; resize: none; border: none" required=""></textarea></div>
+                                    <div class="overflow-auto border smaller-field" style="height: 6em;">{{ symptoms_form.allergies }}</div>
                                 </div>
                             </div>
                             <div class="row">
@@ -127,7 +127,7 @@
                             </div>
                             <div class="row">
                                 <div class="col">
-                                    <div class="overflow-auto border smaller-field" style="height: 6em;"><textarea style="width: 100%; resize: none; border: none" required=""></textarea></div>
+                                    <div class="overflow-auto border smaller-field" style="height: 6em;">{{ symptoms_form.medications }}</div>
                                 </div>
                             </div>
                             <div class="row">
@@ -135,7 +135,9 @@
                             </div>
                             <div class="row">
                                 <div class="col">
-                                    <div class="overflow-auto border smaller-field" style="height: 6em;"><textarea style="width: 100%; resize: none; border: none" required=""></textarea></div>
+                                    <div class="overflow-auto border smaller-field" style="height: 6em;">
+                                        {{ symptoms_form.previous_diagnosis }}
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -148,52 +150,86 @@
             <div id="otEmbedWrap">
                 <div id="otEmbedContainer"></div>
             </div>
-            <script src="https://tokbox.com/embed/embed/ot-embed.js?embedId=032c81ed-9c14-43b2-89fa-59e4e1ecc59b&room=DEFAULT_ROOM"></script>
+            <script src="https://tokbox.com/embed/embed/ot-embed.js?embedId=032c81ed-9c14-43b2-89fa-59e4e1ecc59b&room={{ patient.id }}"></script>
         </iframe>
             <div id="prevapps">
                 <h6 style="margin-top: 0.8em;">Previous Appointments</h6>
-                <div class="container">
-                    <div class="row">
-                        <div class="col-md-6 dark-grey">
-                            <p>Paragraph</p>
+                {% for patient_record in patient_records %}
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-md-6 dark-grey">
+                                <p>{{ patient_record.create_datetime }}</p>
+                            </div>
+                            <div class="col-md-6 dark-grey">
+                                <p>Seen By: </p>
+                            </div>
                         </div>
-                        <div class="col-md-6 dark-grey">
-                            <p>Paragraph</p>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p>Chief Complaint</p>
+                            </div>
+                            <div class="col-md-6">
+                                <p>{{ patient_record.symptoms__symptom_description }}</p>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 light-grey">
+                                <p>Allergies to Medications</p>
+                            </div>
+                            <div class="col-md-6 light-grey">
+                                <p>{{ patient_record.symptoms__allergies }}</p>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p>Current Medications</p>
+                            </div>
+                            <div class="col-md-6">
+                                <p>{{ patient_record.symptoms__medications }}</p>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 light-grey">
+                                <p>Medical History</p>
+                            </div>
+                            <div class="col-md-6 light-grey">
+                                <p>{{ patient_record.symptoms__previous_diagnosis }}</p>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p>HIP</p>
+                            </div>
+                            <div class="col-md-6">
+                                <p>{{ patient_record.providernotes__hpi }}</p>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 light-grey">
+                                <p>Assessment</p>
+                            </div>
+                            <div class="col-md-6 light-grey">
+                                <p>To Do</p>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p>Treatment</p>
+                            </div>
+                            <div class="col-md-6">
+                                <p>{{ patient_record.providernotes__treatment }}</p>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 light-grey">
+                                <p>Follow up</p>
+                            </div>
+                            <div class="col-md-6 light-grey">
+                                <p>{{ patient_record.providernotes__followup }}</p>
+                            </div>
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="col-md-6 light-grey">
-                            <p>Paragraph</p>
-                        </div>
-                        <div class="col-md-6 light-grey">
-                            <p>Paragraph</p>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-6">
-                            <p>Paragraph</p>
-                        </div>
-                        <div class="col-md-6">
-                            <p>Paragraph</p>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-6 light-grey">
-                            <p>Paragraph</p>
-                        </div>
-                        <div class="col-md-6 light-grey">
-                            <p>Paragraph</p>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-6">
-                            <p>Paragraph</p>
-                        </div>
-                        <div class="col-md-6">
-                            <p>Paragraph</p>
-                        </div>
-                    </div>
-                </div>
+                {% endfor %}
             </div>
         </div>
     </div>

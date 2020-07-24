@@ -81,6 +81,19 @@ class PatientForm(forms.Form):
 
     def clean_zip(self):
         data = self.cleaned_data['zip']
+
+        if len(data) < 5:
+            raise ValidationError(_('Invalid Zip code'))
+
+        zip_code = data[0:5]
+        if zip_code.isnumeric():
+            zip_code = int(zip_code)
+            if not ((75000 <= zip_code <= 79999) or (88500 <= zip_code <= 88599)):
+                raise ValidationError(_('Invalid Zip code - we can only see patients in the state of Texas at this '
+                                        'time.'))
+        else:
+            raise ValidationError(_('Invalid Zip code - Zip code must be numeric.'))
+
         if not data:
             raise ValidationError(_('Invalid Zip code - cannot be blank'))
 
@@ -136,13 +149,6 @@ class SymptomsForm(forms.Form):
 
         return data
 
-    def clean_location_name(self):
-        data = self.cleaned_data['location_name']
-        if not data:
-            raise ValidationError(_('Invalid Pharmacy location - cannot be blank'))
-
-        return data
-
 
 class PharmacyForm(forms.Form):
     pharmacy_name = forms.CharField(widget=forms.TextInput(attrs={'class': "form-control form-control",
@@ -157,6 +163,13 @@ class PharmacyForm(forms.Form):
     pharmacy_name.widget.attrs['readonly'] = True
     pharmacy_address.widget.attrs['readonly'] = True
     pharmacy_phone.widget.attrs['readonly'] = True
+
+    def clean_pharmacy_address(self):
+        data = self.cleaned_data['pharmacy_address']
+
+        if data[-13: -11] != 'TX':
+            raise ValidationError(_('Invalid Pharmacy location - must be located in Texas.'))
+
 
 class ProviderForm(forms.Form):
     hpi = forms.CharField(widget=forms.Textarea(

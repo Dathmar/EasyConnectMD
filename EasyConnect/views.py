@@ -85,9 +85,7 @@ def connect_2(request, patient_id):
             symptom_description = symptom_form.cleaned_data['symptom_description']
             allergies = symptom_form.cleaned_data['allergies']
             medications = symptom_form.cleaned_data['medications']
-            diagnosis_list = symptom_form.cleaned_data['previous_diagnosis']
-
-            previous_diagnosis = ', '.join(map(str, diagnosis_list))
+            previous_diagnosis = symptom_form.cleaned_data['previous_diagnosis']
 
             # get existing object if it exists and update.
             symptom_obj = get_object_data_or_set_defaults(Symptoms.objects.filter(patient_id=patient_id).first())
@@ -218,14 +216,26 @@ def provider_view(request, patient_id):
                                             'dob': patient.dob,
                                             'gender': patient.gender,
                                             'zip': patient.zip})
+        symptoms_form = SymptomsForm(initial={'symptom_description': symptoms.symptom_description,
+                                              'allergies': symptoms.allergies,
+                                              'medications': symptoms.medications,
+                                              'previous_diagnosis': symptoms.previous_diagnosis})
+
+        patient_records = Patient.objects.filter(first_name=patient.first_name,
+                                                 last_name=patient.last_name,
+                                                 dob=patient.dob).\
+            exclude(pk=patient_id).values('create_datetime', 'symptoms__allergies', 'symptoms__medications',
+                                          'symptoms__previous_diagnosis', 'symptoms__symptom_description',
+                                          'providernotes__hpi', 'providernotes__followup', 'providernotes__treatment')
 
     context = {
         'provider_form': provider_form,
         'patient': patient,
         'patient_form': patient_form,
         'symptoms': symptoms,
-        'preferred_pharmacy_form': preferred_pharmacy_form
-
+        'symptoms_form': symptoms_form,
+        'preferred_pharmacy_form': preferred_pharmacy_form,
+        'patient_records': patient_records
     }
 
     return render(request, 'EasyConnect/provider-view.html', context)
