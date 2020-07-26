@@ -6,6 +6,7 @@ from django.utils.translation import ugettext_lazy as _
 import re
 from datetime import date
 from EasyConnect.models import Icd10
+from django_select2 import forms as s2forms
 
 
 class PatientForm(forms.Form):
@@ -167,6 +168,7 @@ class PharmacyForm(forms.Form):
     def clean_pharmacy_address(self):
         data = self.cleaned_data['pharmacy_address']
 
+        # this assumes google maps address.
         if data[-13: -11] != 'TX':
             raise ValidationError(_('Invalid Pharmacy location - must be located in Texas.'))
 
@@ -175,7 +177,10 @@ class ProviderForm(forms.Form):
     hpi = forms.CharField(widget=forms.Textarea(
         attrs={"class": "overflow-auto border smaller-field",
                "rows": "3", "cols": "40", "style": "width: 100%; resize: none; border: none"}))
-    #assessments = forms.ModelMultipleChoiceField(queryset=Icd10.objects.all())
+    # Requires Redis server.
+    assessments = forms.CharField(widget=s2forms.ModelSelect2MultipleWidget(queryset=Icd10.objects.all(),
+                                                                            search_fields=['ICD10_DSC__icontains']))
+
     treatment = forms.CharField(widget=forms.Textarea(
         attrs={"class": "overflow-auto border smaller-field",
                "rows": "3", "cols": "40", "style": "width: 100%; resize: none; border: none"}))

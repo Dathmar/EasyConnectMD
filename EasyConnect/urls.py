@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import path, include
 
 from . import views
 
@@ -15,4 +15,5 @@ urlpatterns = [
     path('video-chat/<uuid:patient_id>', views.video_chat, name='video-chat'),
     #path('provider/', views.provider_list_view, name='provider-list-view'),
     path('provider/<uuid:patient_id>', views.provider_view, name='provider-view'),
+
 ]

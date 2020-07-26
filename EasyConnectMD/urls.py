@@ -16,9 +16,16 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import include, path
 
+admin.site.site_header = 'EasyConnectMD Admin'
+admin.site.site_title = 'EasyConnectMD Admin'
+admin.site.site_url = 'https://easyconnectmd.com/'
+admin.site.index_title = 'Easyconnect administration'
+admin.empty_value_display = '**Empty**'
+
 urlpatterns = [
     path('', include('EasyConnect.urls')),
     path('admin/', admin.site.urls),
+    path('select2/', include('django_select2.urls')),
 ]
 
 

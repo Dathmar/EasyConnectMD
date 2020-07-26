@@ -31,8 +31,7 @@
             border: 0;
         }
     </style>
-
-
+    {{ provider_form.media.css }}
 </head>
 
 <body style="padding-top: 0;">
@@ -63,8 +62,7 @@
                             <h6 class="bold-h6 appointment">Assesment(s)</h6>
                             <h6 class="appointment"><em>Select one or more options. Type a few characters to search then wait a second for the options to load.</em></h6>
                             <div class="smaller-field">
-                                <div class="dropdown" style="width: 100%;">{{ provider_form.assessments }}
-                                </div>
+                                <p class="appointment">{{ provider_form.assessments }}</p>
                             </div>
                             <h6 class="bold-h6 appointment" style="margin-top: 1.5em;">Treatment</h6>
                             <div style="height: 6em;">{{ provider_form.treatment }}</div>
@@ -111,7 +109,7 @@
                             </div>
                             <div class="row">
                                 <div class="col">
-                                    <div class="overflow-auto border smaller-field" style="height: 6em;">{{ symptoms_form.symptom_description }}</div>
+                                    <div style="height: 6em;">{{ symptoms_form.symptom_description }}</div>
                                 </div>
                             </div>
                             <div class="row">
@@ -119,7 +117,7 @@
                             </div>
                             <div class="row">
                                 <div class="col">
-                                    <div class="overflow-auto border smaller-field" style="height: 6em;">{{ symptoms_form.allergies }}</div>
+                                    <div style="height: 6em;">{{ symptoms_form.allergies }}</div>
                                 </div>
                             </div>
                             <div class="row">
@@ -127,7 +125,7 @@
                             </div>
                             <div class="row">
                                 <div class="col">
-                                    <div class="overflow-auto border smaller-field" style="height: 6em;">{{ symptoms_form.medications }}</div>
+                                    <div style="height: 6em;">{{ symptoms_form.medications }}</div>
                                 </div>
                             </div>
                             <div class="row">
@@ -135,7 +133,7 @@
                             </div>
                             <div class="row">
                                 <div class="col">
-                                    <div class="overflow-auto border smaller-field" style="height: 6em;">
+                                    <div style="height: 6em;">
                                         {{ symptoms_form.previous_diagnosis }}
                                     </div>
                                 </div>
@@ -236,6 +234,7 @@
     <div class="d-xl-flex justify-content-xl-center"><button class="btn btn-primary border rounded-0 shadow button-white connect-button" type="button" style="margin-top: 1em;"><a class="link-base button-transparent" href="#">Complete Appointment</a></button></div>
     <script src="{% get_static_prefix %}EasyConnect/assets/js/jquery.min.js"></script>
     <script src="{% get_static_prefix %}EasyConnect/assets/bootstrap/js/bootstrap.min.js"></script>
+    {{ provider_form.media.js }}
 </body>
 
 </html>

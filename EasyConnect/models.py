@@ -83,11 +83,13 @@ class Icd10(models.Model):
     IDC10_CDE = models.CharField(max_length=10)
     ICD10_DSC = models.CharField(max_length=500)
 
+    def __str__(self):
+        return self.ICD10_DSC
 
 class ProviderNotes(models.Model):
     patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
     hpi = models.TextField(default=None)
-    #assessments = models.ManyToManyField(Icd10, blank=True, null=True)
+    assessments = models.ManyToManyField(Icd10, blank=True, null=True)
     treatment = models.TextField(default=None)
     followup = models.TextField(default=None)
     return_to_work_notes = models.TextField(default=None)
