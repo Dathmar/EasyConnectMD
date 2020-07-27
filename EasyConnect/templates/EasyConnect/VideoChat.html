@@ -26,9 +26,7 @@
     <section class="d-flex text-center" id="chatSection">
         <div id="otEmbedContainer" style="width:800px; height:640px"></div> <script src="https://tokbox.com/embed/embed/ot-embed.js?embedId=032c81ed-9c14-43b2-89fa-59e4e1ecc59b&room={{ patient_id }}"></script
     </section>
-    <script src="{% get_static_prefix %}EasyConnect/assets/js/jquery.min.js"></script>
-    <script src="{% get_static_prefix %}EasyConnect/assets/bootstrap/js/bootstrap.min.js"></script>
-
+    {% include 'EasyConnect/standard-footer.html' %}
 </body>
 
 </html>

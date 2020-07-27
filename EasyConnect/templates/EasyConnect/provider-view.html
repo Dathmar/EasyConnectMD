@@ -213,8 +213,7 @@
             </div>
         </div>
     </div>
-    <script src="{% get_static_prefix %}EasyConnect/assets/js/jquery.min.js"></script>
-    <script src="{% get_static_prefix %}EasyConnect/assets/bootstrap/js/bootstrap.min.js"></script>
+    {% include 'EasyConnect/standard-footer.html' %}
     {{ provider_form.media.js }}
 </body>
 
