@@ -7,8 +7,8 @@ body {
   padding-top: 180px;
 }
 
-.select2 {
-  width: 100px;
+.django-select2 {
+    width: 100%;
 }
 
 .section.connect {
