@@ -121,26 +121,34 @@
   border: none;
 }
 
-.button-orange:hover {
+.button-white {
   text-decoration: none;
-  color: #ffa500 !important;
-  background-color: #ffffff;
+  color: #ffffff !important;
+  background-color: transparent;
   border: 2px solid #ffa500 !important;
   padding: 0;
 }
 
 .button-white:hover {
   text-decoration: none;
+  color: #fff !important;
   background-color: #ffa500;
   border: 2px solid #ffa500 !important;
-  color: #fff;
   padding: 0;
 }
 
-.button-white {
+.button-white:active {
   text-decoration: none;
-  color: #ffffff !important;
-  background-color: transparent;
+  color: #ffa500 !important;
+  background-color: transparent !important;
+  border: 2px solid #ffa500 !important;
+  padding: 0;
+}
+
+.button-orange:hover {
+  text-decoration: none;
+  color: #ffa500 !important;
+  background-color: #ffffff;
   border: 2px solid #ffa500 !important;
   padding: 0;
 }

@@ -17,7 +17,8 @@
 </head>
 
 <body style="padding-top: 0;">
-    <div class="d-flex">
+    {% include 'EasyConnect/provider_navbar.html' %}
+    <div class="d-flex" style="padding-top: 7em">
         <div id="docviewleft">
             <ul class="nav nav-tabs">
                 <li class="nav-item"><a class="nav-link active" role="tab" data-toggle="tab" href="#tab-1">Appointment</a></li>
@@ -186,10 +187,10 @@
                         </div>
                         <div class="row">
                             <div class="col-md-6 light-grey">
-                                <p>Assessment</p>
+                                <p>Assessments</p>
                             </div>
                             <div class="col-md-6 light-grey">
-                                <p>To Do</p>
+                                <p>{{ patient_record.providernotes__assessments__ICD10_DSC }}</p>
                             </div>
                         </div>
                         <div class="row">
@@ -213,7 +214,7 @@
             </div>
         </div>
     </div>
-    {% include 'EasyConnect/standard-footer.html' %}
+    {% include 'EasyConnect/provider_footer.html' %}
     {{ provider_form.media.js }}
 </body>
 

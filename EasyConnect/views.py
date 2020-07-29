@@ -6,9 +6,11 @@ from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponseRedirect, HttpResponse
 from django.urls import reverse
 from django.conf import settings
+from django.contrib.auth import logout
+from django.contrib.auth.forms import AuthenticationForm
 
 from EasyConnect.forms import PatientForm, SymptomsForm, ProviderForm, PharmacyForm, PaymentForm
-from EasyConnect.models import Patient, Symptoms, ProviderNotes, Preferred_Pharmacy, Video_Chat, Payment
+from EasyConnect.models import Patient, Symptoms, ProviderNotes, Preferred_Pharmacy, Appointments, Payment
 from square.client import Client
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -150,6 +152,11 @@ def connect_2(request, patient_id):
             payment.save()
 
             if payment_status != 'Failed':
+                appointment = Appointments(patient=patient,
+                                           status='Ready for Provider',
+                                           seen_by=None,
+                                           last_update_user=None)
+                appointment.save()
                 return HttpResponseRedirect(reverse('easyconnect:video-chat', args=(patient_id,)))
 
     # If this is a GET (or any other method) create the default form.
@@ -172,40 +179,75 @@ def video_chat(request, patient_id):
     context = {
         'patient_id': patient_id
     }
-
     return render(request, 'EasyConnect/VideoChat.html', context)
+
+
+def provider_dashboard(request):
+    ready_appointments = Patient.objects.values('id', 'create_datetime', 'first_name', 'last_name', 'dob',
+                                                'appointments__status').\
+        filter(appointments__status='Ready for Provider').order_by('-create_datetime')
+    completed_appointments = Patient.objects.values('id', 'first_name', 'last_name', 'dob', 'appointments__status',
+                                                'appointments__seen_by').\
+        filter(appointments__status='Appointment Complete')[:10]
+    active_appointments = Patient.objects.values('id', 'first_name', 'last_name', 'dob', 'appointments__status',
+                                                    'appointments__seen_by'). \
+        filter(appointments__status='Being seen by provider')
+
+    context = {
+        'ready_appointments': ready_appointments,
+        'active_appointments': active_appointments,
+        'completed_appointments': completed_appointments
+    }
+
+    return render(request, "EasyConnect/dashboard.html", context)
 
 
 def provider_view(request, patient_id):
     patient = get_object_or_404(Patient, pk=patient_id)
     symptoms = get_object_or_404(Symptoms, patient_id=patient_id)
     preferred_pharmacy = get_object_or_404(Preferred_Pharmacy, patient_id=patient_id)
+    appointment = get_object_or_404(Appointments, patient_id=patient_id)
 
     if request.method == 'POST':
         # Create a form instance and populate it with data from the request (binding):
         provider_form = ProviderForm(request.POST)
+        patient_form = PatientForm(request.POST)
+        symptoms_form = SymptomsForm(request.POST)
+        preferred_pharmacy_form = PharmacyForm(request.POST)
         if provider_form.is_valid():
-            # process the data in form.cleaned_data as required (here we just write it to the model due_back field)
             hpi = provider_form.cleaned_data['hpi']
-            #assessments = form.cleaned_data['assessments']
+            assessments = provider_form.cleaned_data['assessments']
             treatment = provider_form.cleaned_data['treatment']
             followup = provider_form.cleaned_data['followup']
             return_to_work_notes = provider_form.cleaned_data['return_to_work_notes']
 
-            provider_notes = ProviderNotes(hpi=hpi,
-                              #assessments=assessments,
-                              treatment=treatment,
-                              followup=followup,
-                              return_to_work_notes=return_to_work_notes)
-
+            provider_notes = ProviderNotes(patient=patient,
+                                           hpi=hpi,
+                                           treatment=treatment,
+                                           followup=followup,
+                                           return_to_work_notes=return_to_work_notes)
             provider_notes.save()
+            provider_notes.assessments.set(assessments)
+
+
+
+            # TODO need some edge case stuff here for if the
+            appointment.status = 'Appointment Complete'
+            appointment.update_datetime = datetime.now()
+            appointment.seen_by = request.user
+            appointment.save(update_fields=['status', 'update_datetime', 'seen_by'])
 
             # redirect to a new URL:
-            return HttpResponseRedirect('EasyConnect/index.html')
+            return HttpResponseRedirect(reverse('easyconnect:dashboard'))
 
     # If this is a GET (or any other method) create the default form.
     else:
-        provider_form = ProviderForm()
+        # update appointment status
+        # TODO need some edge case stuff here for if the
+        if appointment.status != 'Appointment Complete':
+            appointment.status = 'Being seen by provider'
+            appointment.save(update_fields=['status'])
+
         preferred_pharmacy_form = PharmacyForm(initial={'pharmacy_phone': preferred_pharmacy.pharmacy_phone,
                                                         'pharmacy_address': preferred_pharmacy.pharmacy_address,
                                                         'pharmacy_name': preferred_pharmacy.pharmacy_name})
@@ -221,12 +263,32 @@ def provider_view(request, patient_id):
                                               'medications': symptoms.medications,
                                               'previous_diagnosis': symptoms.previous_diagnosis})
 
-        patient_records = Patient.objects.filter(first_name=patient.first_name,
-                                                 last_name=patient.last_name,
-                                                 dob=patient.dob).\
-            exclude(pk=patient_id).values('create_datetime', 'symptoms__allergies', 'symptoms__medications',
-                                          'symptoms__previous_diagnosis', 'symptoms__symptom_description',
-                                          'providernotes__hpi', 'providernotes__followup', 'providernotes__treatment')
+        provider_notes = ProviderNotes.objects.filter(patient_id=patient_id).first()
+
+        if provider_notes:
+            provider_form = ProviderForm(initial={'hpi': provider_notes.hpi,
+                                                  'treatment': provider_notes.treatment,
+                                                  'followup': provider_notes.followup,
+                                                  'assessments': provider_notes.assessments.all(),
+                                                  'return_to_work_notes': provider_notes.return_to_work_notes})
+        else:
+            provider_form = ProviderForm()
+
+    patient_records = Patient.objects.filter(first_name=patient.first_name,
+                                             last_name=patient.last_name,
+                                             dob=patient.dob).\
+        exclude(pk=patient_id).values('id', 'create_datetime', 'symptoms__allergies', 'symptoms__medications',
+                                      'symptoms__previous_diagnosis', 'symptoms__symptom_description',
+                                      'providernotes__hpi', 'providernotes__followup', 'providernotes__treatment')\
+        .order_by('-create_datetime')
+
+    #patient_assessments = Patient.objects.filter(first_name=patient.first_name,
+    #                                         last_name=patient.last_name,
+    #                                         dob=patient.dob). \
+    #    exclude(pk=patient_id).values('id', 'providernotes__assessments__ICD10_DSC')
+
+    #print(patient_assessments)
+
 
     context = {
         'provider_form': provider_form,
@@ -235,10 +297,12 @@ def provider_view(request, patient_id):
         'symptoms': symptoms,
         'symptoms_form': symptoms_form,
         'preferred_pharmacy_form': preferred_pharmacy_form,
-        'patient_records': patient_records
+        'patient_records': patient_records,
+        #'patient_assessments': patient_assessments
     }
 
     return render(request, 'EasyConnect/provider-view.html', context)
+
 
 def get_object_data_or_set_defaults(to_get_object):
     return_obj = {}
@@ -250,3 +314,17 @@ def get_object_data_or_set_defaults(to_get_object):
         return_obj['create_datetime'] = None
 
     return return_obj
+
+
+def login_request(request):
+    return HttpResponseRedirect(reverse('easyconnect:login'))
+
+
+def logout_request(request):
+    logout(request)
+    return HttpResponseRedirect(reverse('easyconnect:dashboard'))
+
+
+def password_change(request):
+    return HttpResponseRedirect(reverse('easyconnect:password-change'))
+

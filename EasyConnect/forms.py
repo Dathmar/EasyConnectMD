@@ -1,5 +1,5 @@
 from django import forms
-from EasyConnect.choices import STATE_CHOICES, GENDER_CHOICES, DIAGNOSED_CHOICES
+from EasyConnect.choices import GENDER_CHOICES, DIAGNOSED_CHOICES
 from django.core.exceptions import ValidationError
 from phonenumber_field.formfields import PhoneNumberField
 from django.utils.translation import ugettext_lazy as _
@@ -165,21 +165,16 @@ class PharmacyForm(forms.Form):
     pharmacy_address.widget.attrs['readonly'] = True
     pharmacy_phone.widget.attrs['readonly'] = True
 
-    def clean_pharmacy_address(self):
-        data = self.cleaned_data['pharmacy_address']
-
-        # this assumes google maps address.
-        if data[-13: -11] != 'TX':
-            raise ValidationError(_('Invalid Pharmacy location - must be located in Texas.'))
-
 
 class ProviderForm(forms.Form):
     hpi = forms.CharField(widget=forms.Textarea(
         attrs={"class": "overflow-auto border smaller-field",
                "rows": "3", "cols": "40", "style": "width: 100%; resize: none; border: none"}))
+
     # Requires Redis server.
-    assessments = forms.CharField(widget=s2forms.ModelSelect2MultipleWidget(queryset=Icd10.objects.all(),
-                                                                            search_fields=['ICD10_DSC__icontains']))
+    assessments = forms.ModelMultipleChoiceField(widget=s2forms.ModelSelect2MultipleWidget(queryset=Icd10.objects.all(),
+                                                                            search_fields=['ICD10_DSC__icontains']),
+                                                 queryset=Icd10.objects.all())
 
     treatment = forms.CharField(widget=forms.Textarea(
         attrs={"class": "overflow-auto border smaller-field",
