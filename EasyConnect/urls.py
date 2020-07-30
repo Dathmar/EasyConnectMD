@@ -22,4 +22,6 @@ urlpatterns = [
     path('accounts/logout/', views.logout_request, name='logout'),
     path('accounts/login/', views.login_request, name='login'),
     path('accounts/password_change/', views.password_change, name='password-change')
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
