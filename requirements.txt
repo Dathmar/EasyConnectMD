@@ -1,4 +1,11 @@
 Django>=3.0.6
+python3-dev
+libpq-dev
+psycopg2
 squareup
+phonenumbers
 django-phonenumber-field
 django-select2
+django-redis
+dj-static
+static3

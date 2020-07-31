@@ -1,4 +1,5 @@
 import os
+import csv
 
 from datetime import datetime
 
@@ -9,8 +10,8 @@ from django.conf import settings
 from django.contrib.auth import logout
 from django.contrib.auth.forms import AuthenticationForm
 
-from EasyConnect.forms import PatientForm, SymptomsForm, ProviderForm, PharmacyForm, PaymentForm
-from EasyConnect.models import Patient, Symptoms, ProviderNotes, Preferred_Pharmacy, Appointments, Payment
+from EasyConnect.forms import PatientForm, SymptomsForm, ProviderForm, PharmacyForm, PaymentForm, ICD10CodeLoad
+from EasyConnect.models import Patient, Symptoms, ProviderNotes, Preferred_Pharmacy, Appointments, Payment, Icd10
 from square.client import Client
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -314,6 +315,24 @@ def get_object_data_or_set_defaults(to_get_object):
         return_obj['create_datetime'] = None
 
     return return_obj
+
+
+def icd10_load(request):
+    if request.method == 'POST':
+        form = ICD10CodeLoad(request.POST, request.FILES)
+        if form.is_valid():
+            csv_reader = csv.reader(request.FILES['file'].read().decode("utf-8").splitlines(), delimiter=',')
+            Icd10.objects.all().delete()
+            for row in csv_reader:
+                icd10_row = Icd10(IDC10_CDE=row[1],
+                                  ICD10_DSC=row[2])
+                icd10_row.save()
+
+            return HttpResponseRedirect(reverse('easyconnect:dashboard'))
+    else:
+        form = ICD10CodeLoad()
+    return render(request, 'EasyConnect/load_icd10.html', {'form': form})
+
 
 
 def login_request(request):

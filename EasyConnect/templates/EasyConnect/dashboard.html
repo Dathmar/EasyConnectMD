@@ -17,121 +17,118 @@
 <body style="padding-top: 0;">
     {% include 'EasyConnect/provider_navbar.html' %}
     <div style="padding-top: 7.5em">
-    Hello, {{ user.username|default:'Guest' }}!
-    {% if user.is_authenticated %}
-        {# add header row #}
-        <div class="container">
-            <h6>Appointments - Ready for Provider</h6>
-            <div class="row">
-                <div class="col dark-grey">
-                    <p>First Name</p>
-                </div>
-                <div class="col dark-grey">
-                    <p>Last Name</p>
-                </div>
-                <div class="col dark-grey">
-                    <p>DOB</p>
-                </div>
-                <div class="col dark-grey">
-                    <p>Appointment Status</p>
-                </div>
-            </div>
-            {%  for ready_appointment in ready_appointments %}
+        <p>Hello, {{ user.username|default:'Guest' }}!</p>
+        {% if user.is_authenticated %}
+            <div class="container">
+                <h6>Appointments - Ready for Provider</h6>
                 <div class="row">
-                    <div class="col {{forloop.counter|divisibleby:2|yesno:",light-grey"}}">
-                        <p><a href="{% url 'easyconnect:provider-view' ready_appointment.id %}">{{ ready_appointment.first_name }}</a></p>
+                    <div class="col dark-grey">
+                        <p>First Name</p>
                     </div>
-                    <div class="col {{forloop.counter|divisibleby:2|yesno:",light-grey"}}">
-                        <p>{{ ready_appointment.last_name }}</p>
+                    <div class="col dark-grey">
+                        <p>Last Name</p>
                     </div>
-                    <div class="col {{forloop.counter|divisibleby:2|yesno:",light-grey"}}">
-                        <p>{{ ready_appointment.dob }}</p>
+                    <div class="col dark-grey">
+                        <p>DOB</p>
                     </div>
-                    <div class="col {{forloop.counter|divisibleby:2|yesno:",light-grey"}}">
-                        <p>{{ ready_appointment.appointments__status }}</p>
+                    <div class="col dark-grey">
+                        <p>Appointment Status</p>
                     </div>
                 </div>
-            {% endfor %}
-        </div>
-        <p></p>
-        <div class="container">
-            <h6>Appointments - Active</h6>
-            <div class="row">
-                <div class="col dark-grey">
-                    <p>First Name</p>
-                </div>
-                <div class="col dark-grey">
-                    <p>Last Name</p>
-                </div>
-                <div class="col dark-grey">
-                    <p>DOB</p>
-                </div>
-                <div class="col dark-grey">
-                    <p>Appointment Status</p>
-                </div>
-                <div class="col dark-grey">
-                    <p>Being Seen By</p>
-                </div>
+                {%  for ready_appointment in ready_appointments %}
+                    <div class="row">
+                        <div class="col {{forloop.counter|divisibleby:2|yesno:",light-grey"}}">
+                            <p><a href="{% url 'easyconnect:provider-view' ready_appointment.id %}">{{ ready_appointment.first_name }}</a></p>
+                        </div>
+                        <div class="col {{forloop.counter|divisibleby:2|yesno:",light-grey"}}">
+                            <p>{{ ready_appointment.last_name }}</p>
+                        </div>
+                        <div class="col {{forloop.counter|divisibleby:2|yesno:",light-grey"}}">
+                            <p>{{ ready_appointment.dob }}</p>
+                        </div>
+                        <div class="col {{forloop.counter|divisibleby:2|yesno:",light-grey"}}">
+                            <p>{{ ready_appointment.appointments__status }}</p>
+                        </div>
+                    </div>
+                {% endfor %}
             </div>
-            {%  for active_appointment in active_appointments %}
+            <p></p>
+            <div class="container">
+                <h6>Appointments - Active</h6>
                 <div class="row">
-                    <div class="col {{forloop.counter|divisibleby:2|yesno:",light-grey"}}">
-                        <p><a href="{% url 'easyconnect:provider-view' active_appointment.id %}">{{ active_appointment.first_name }}</a></p>
+                    <div class="col dark-grey">
+                        <p>First Name</p>
                     </div>
-                    <div class="col {{forloop.counter|divisibleby:2|yesno:",light-grey"}}">
-                        <p>{{ active_appointment.last_name }}</p>
+                    <div class="col dark-grey">
+                        <p>Last Name</p>
                     </div>
-                    <div class="col {{forloop.counter|divisibleby:2|yesno:",light-grey"}}">
-                        <p>{{ active_appointment.dob }}</p>
+                    <div class="col dark-grey">
+                        <p>DOB</p>
                     </div>
-                    <div class="col {{forloop.counter|divisibleby:2|yesno:",light-grey"}}">
-                        <p>{{ active_appointment.appointments__status }}</p>
+                    <div class="col dark-grey">
+                        <p>Appointment Status</p>
                     </div>
-                    <div class="col {{forloop.counter|divisibleby:2|yesno:",light-grey"}}">
-                        <p>{{ active_appointment.appointments__seen_by.username }}</p>
+                    <div class="col dark-grey">
+                        <p>Being Seen By</p>
                     </div>
                 </div>
-            {% endfor %}
-        </div>
-        <p></p>
-        <div class="container">
-            <h6>Appointments - Completed</h6>
-            <div class="row">
-                <div class="col dark-grey">
-                    <p>First Name</p>
-                </div>
-                <div class="col dark-grey">
-                    <p>Last Name</p>
-                </div>
-                <div class="col dark-grey">
-                    <p>DOB</p>
-                </div>
-                <div class="col dark-grey">
-                    <p>Appointment Status</p>
-                </div>
+                {%  for active_appointment in active_appointments %}
+                    <div class="row">
+                        <div class="col {{forloop.counter|divisibleby:2|yesno:",light-grey"}}">
+                            <p><a href="{% url 'easyconnect:provider-view' active_appointment.id %}">{{ active_appointment.first_name }}</a></p>
+                        </div>
+                        <div class="col {{forloop.counter|divisibleby:2|yesno:",light-grey"}}">
+                            <p>{{ active_appointment.last_name }}</p>
+                        </div>
+                        <div class="col {{forloop.counter|divisibleby:2|yesno:",light-grey"}}">
+                            <p>{{ active_appointment.dob }}</p>
+                        </div>
+                        <div class="col {{forloop.counter|divisibleby:2|yesno:",light-grey"}}">
+                            <p>{{ active_appointment.appointments__status }}</p>
+                        </div>
+                        <div class="col {{forloop.counter|divisibleby:2|yesno:",light-grey"}}">
+                            <p>{{ active_appointment.appointments__seen_by.username }}</p>
+                        </div>
+                    </div>
+                {% endfor %}
             </div>
-            {%  for completed_appointment in completed_appointments %}
+            <p></p>
+            <div class="container">
+                <h6>Appointments - Completed</h6>
                 <div class="row">
-                    <div class="col {{forloop.counter|divisibleby:2|yesno:",light-grey"}}">
-                        <p><a href="{% url 'easyconnect:provider-view' completed_appointment.id %}">{{ completed_appointment.first_name }}</a></p>
+                    <div class="col dark-grey">
+                        <p>First Name</p>
                     </div>
-                    <div class="col {{forloop.counter|divisibleby:2|yesno:",light-grey"}}">
-                        <p>{{ completed_appointment.last_name }}</p>
+                    <div class="col dark-grey">
+                        <p>Last Name</p>
                     </div>
-                    <div class="col {{forloop.counter|divisibleby:2|yesno:",light-grey"}}">
-                        <p>{{ completed_appointment.dob }}</p>
+                    <div class="col dark-grey">
+                        <p>DOB</p>
                     </div>
-                    <div class="col {{forloop.counter|divisibleby:2|yesno:",light-grey"}}">
-                        <p>{{ completed_appointment.appointments__status }}</p>
+                    <div class="col dark-grey">
+                        <p>Appointment Status</p>
                     </div>
                 </div>
-            {% endfor %}
-        </div>
-        <a href="{% url 'easyconnect:logout' %}">Logout</a>
-
-    {% else %}
-        <a href="{% url 'easyconnect:login' %}">Login</a>
-    {% endif %}
+                {%  for completed_appointment in completed_appointments %}
+                    <div class="row">
+                        <div class="col {{forloop.counter|divisibleby:2|yesno:",light-grey"}}">
+                            <p><a href="{% url 'easyconnect:provider-view' completed_appointment.id %}">{{ completed_appointment.first_name }}</a></p>
+                        </div>
+                        <div class="col {{forloop.counter|divisibleby:2|yesno:",light-grey"}}">
+                            <p>{{ completed_appointment.last_name }}</p>
+                        </div>
+                        <div class="col {{forloop.counter|divisibleby:2|yesno:",light-grey"}}">
+                            <p>{{ completed_appointment.dob }}</p>
+                        </div>
+                        <div class="col {{forloop.counter|divisibleby:2|yesno:",light-grey"}}">
+                            <p>{{ completed_appointment.appointments__status }}</p>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p>Please <a href="{% url 'easyconnect:login' %}">login</a> to perform any actions.
+        {% endif %}
     </div>
     {% include 'EasyConnect/provider_footer.html' %}
 </body>

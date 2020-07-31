@@ -187,3 +187,5 @@ class ProviderForm(forms.Form):
                "rows": "3", "cols": "40", "style": "width: 100%; resize: none; border: none"}))
 
 
+class ICD10CodeLoad(forms.Form):
+    file = forms.FileField()

@@ -2,13 +2,12 @@
     <nav class="navbar navbar-light navbar-expand-md fixed-top d-xl-flex" style="background-color: #ffffff;filter: blur(0px) grayscale(0%) hue-rotate(0deg) invert(0%) saturate(100%) sepia(0%);">
         <div class="container">
             <div><a class="navbar-brand" href="{% url 'easyconnect:index' %}" style="margin-right: 0;"><img src="{% get_static_prefix %}EasyConnect/assets/img/Logo-nav.png" alt="Easy Connect MD logo" style="margin-left: 0;"><br></a></div><button data-toggle="collapse" class="navbar-toggler" data-target="#navcol-1" style="margin-left: 14px;padding: 0;padding-right: 7px;padding-left: 6px;margin-top: 0;height: 40px;margin-bottom: -11px;"><span class="sr-only">Toggle navigation</span><span class="navbar-toggler-icon"></span></button>
-            <div
-                class="collapse navbar-collapse" id="navcol-1">
+            <div class="collapse navbar-collapse" id="navcol-1">
                 <ul class="nav navbar-nav ml-auto" style="font-size: 22px;margin: 0;">
                     <li class="nav-item" role="presentation" style="padding: 0; padding-right: 13px;"><a class="nav-link navi-item our-story-hack" href="{% url 'easyconnect:our-story' %}">Our Story</a></li>
                     <li class="nav-item" role="presentation"><a class="nav-link navi-item" href="{% url 'easyconnect:faq' %}">FAQs</a></li>
                     <li class="nav-item" role="presentation" style="margin-right: -41px;"><button class="btn btn-primary border rounded-0 button-white" type="button"><a id="nav-button" class="link-base button-transparent" href="{% url 'easyconnect:connect-with-a-doctor' %}">Book Now</a></button></li>
                 </ul>
-        </div>
+            </div>
         </div>
     </nav>
