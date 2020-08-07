@@ -4,11 +4,10 @@ import csv
 from datetime import datetime
 
 from django.shortcuts import render, get_object_or_404
-from django.http import HttpResponseRedirect, HttpResponse
+from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.conf import settings
 from django.contrib.auth import logout
-from django.contrib.auth.forms import AuthenticationForm
 
 from EasyConnect.forms import PatientForm, SymptomsForm, ProviderForm, PharmacyForm, PaymentForm, ICD10CodeLoad
 from EasyConnect.models import Patient, Symptoms, ProviderNotes, Preferred_Pharmacy, Appointments, Payment, Icd10

@@ -53,6 +53,13 @@
                     </div>
                     <form action="" method="post">
                         {% csrf_token %}
+                        {% if symptom_form.has_error or pharmacy_form.has_error or payment_form.errors %}
+                        <div class="form-group-wrapper">
+                            {{ symptom_form.errors }}
+                            {{ pharmacy_form.errors }}
+                            {{ payment_form.errors }}
+                        </div>
+                        {%  endif %}
                         <div class="row">
                             <div class="col"><label class="col-form-label">Describe your symptoms*</label></div>
                         </div>

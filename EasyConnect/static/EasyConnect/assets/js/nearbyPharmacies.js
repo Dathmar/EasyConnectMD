@@ -20,16 +20,15 @@ function initMap() {
             latlng = position.coords
 
             map = new google.maps.Map(document.getElementById('map'), {
-                center: latlng,
+                center: {lat: latlng.latitude, lng: latlng.longitude},
                 zoom: 12
             });
-            bounds.extend(latlng);
+            bounds.extend({lat: latlng.latitude, lng: latlng.longitude});
 
-            infoWindow.setPosition(latlng);
-            map.setCenter(latlng);
+            infoWindow.setPosition({lat: latlng.latitude, lng: latlng.longitude});
+            map.setCenter({lat: latlng.latitude, lng: latlng.longitude});
 
-            console.log('blah')
-            getNearbyPlaces(latlng);
+            getNearbyPlaces({lat: latlng.latitude, lng: latlng.longitude});
         }, () => {
             // Browser supports geolocation, but user has denied permission
             handleLocationError(true, infoWindow);
