@@ -1,12 +1,3 @@
-TODO before Launch!
-
-Testimonials:
-    Need new testimonial model.
-    Index: Replace Hero-in-White image with full testimonials
-    Connect: add short testimonials between "Less than 10 questions and 10 minutes to get connected with a doctor." and form steps
-
-Appointments:
-    Create list of appointments
-    Allow search of appointments
-    Styling appointment list
-
+age limit - 18 or popup must have guardian
+e-mail for new appointment
+history for appointments provider

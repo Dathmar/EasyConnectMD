@@ -1,5 +1,7 @@
 import os
 import csv
+import json
+import threading
 
 from datetime import datetime
 
@@ -8,6 +10,7 @@ from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.conf import settings
 from django.contrib.auth import logout
+from django.core.mail import send_mail
 
 from EasyConnect.forms import PatientForm, SymptomsForm, ProviderForm, PharmacyForm, PaymentForm, ICD10CodeLoad
 from EasyConnect.models import Patient, Symptoms, ProviderNotes, Preferred_Pharmacy, Appointments, Payment, Icd10
@@ -147,7 +150,7 @@ def connect_2(request, patient_id):
             payment = Payment(patient=patient,
                               nonce=nonce,
                               status=payment_status,
-                              response=result)
+                              response=result.body)
 
             payment.save()
 
@@ -157,6 +160,11 @@ def connect_2(request, patient_id):
                                            seen_by=None,
                                            last_update_user=None)
                 appointment.save()
+
+                # send e-mails
+                send_patient_notification(patient_id)
+                send_provider_notification(patient_id)
+
                 return HttpResponseRedirect(reverse('easyconnect:video-chat', args=(patient_id,)))
 
     # If this is a GET (or any other method) create the default form.
@@ -228,8 +236,6 @@ def provider_view(request, patient_id):
                                            return_to_work_notes=return_to_work_notes)
             provider_notes.save()
             provider_notes.assessments.set(assessments)
-
-
 
             # TODO need some edge case stuff here for if the
             appointment.status = 'Appointment Complete'
@@ -333,7 +339,6 @@ def icd10_load(request):
     return render(request, 'EasyConnect/load_icd10.html', {'form': form})
 
 
-
 def login_request(request):
     return HttpResponseRedirect(reverse('easyconnect:login'))
 
@@ -346,3 +351,124 @@ def logout_request(request):
 def password_change(request):
     return HttpResponseRedirect(reverse('easyconnect:password-change'))
 
+
+def send_provider_notification(patient_id):
+    patient = Patient.objects.filter(pk=patient_id).first()
+    body = f"""
+            A new video chat has been received from: {patient.first_name} {patient.last_name}.
+            
+            Click the following link to initiate the 1-on-1 video chat:
+            <a href='https://dev-connect.easyconnectmd.com/provider/{patient_id}'>https://dev-connect.easyconnectmd.com/provider/{patient_id}</a>
+            
+            Patient Info
+            Name: {patient.first_name} {patient.last_name}
+            Phone: {patient.phone_number}
+            Email: {patient.email}
+            """
+
+    html_body = f"""
+            <!DOCTYPE html>
+            <html>
+                <head>
+                </head>
+                <body>
+                    <p>A new video chat has been received from: {patient.first_name} {patient.last_name}.</p>
+                    <p></p>
+                    <p>Click the following link to initiate the 1-on-1 video chat:</p>
+                    <p><a href='https://dev-connect.easyconnectmd.com/provider/{patient_id}'>https://dev-connect.easyconnectmd.com/provider/{patient_id}</a></p>
+                    <p></p>
+                    <p>Patient Info</p>
+                    <p>Name: {patient.first_name} {patient.last_name}</p>
+                    <p>Phone: {patient.phone_number}</p>
+                    <p>Email: {patient.email}</p>
+                </body>
+            </html>
+            """
+
+    EmailThread(
+        subject=f'Video Chat for {patient.first_name} {patient.last_name}',
+        message=body,
+        from_email=settings.EMAIL_HOST_USER,
+        recipient_list=['gfarias@easyconnectmd.net', 'acortez@easyconnectmd.net', 'adanner@easyconnectmd.net'],
+        fail_silently=False,
+        html_message=html_body
+    ).start()
+
+
+def send_patient_notification(patient_id):
+    patient = Patient.objects.filter(pk=patient_id).first()
+    payment_info = Payment.objects.filter(patient_id=patient_id, status='Paid').values('response').first()['response']
+    payment_info = json.loads(payment_info.replace("\'", "\""))
+
+    payment_date = payment_info['payment']['created_at']
+    payment_card_type = payment_info['payment']['card_details']['card']['card_brand']
+    payment_card_last4 = payment_info['payment']['card_details']['card']['last_4']
+    payment_amount = payment_info['payment']['amount_money']['amount'] / 100
+
+    body = f"""
+        Hi {patient.first_name},
+
+        If you get disconnected from your online appointment, please click the following link to re-join:
+
+        <a href='https://dev-connect.easyconnectmd.com/video-chat/{patient_id}'>Click to Rejoin</a>
+
+        Thank you for choosing EasyConnectMD!
+
+        Need technical support?
+        You can email us at <a href='mailto:info@easyconnectmd.net'>info@easyconnectmd.net</a>
+
+        === Receipt Information ===
+        Date: {payment_date}
+        Total paid: ${payment_amount}
+        {payment_card_type} ending in {payment_card_last4}
+        """
+
+    html_body = f"""
+        <!DOCTYPE html>
+        <html>
+            <head>
+            </head>
+            <body>
+                <p>Hi {patient.first_name},</p>
+                <p></p>
+                <p>If you get disconnected from your online appointment, please click the following link to re-join:</p>
+                <p></p>
+                <p><a href='https://dev-connect.easyconnectmd.com/video-chat/{patient_id}'>Click to Rejoin</a></p>
+                <p></p>
+                <p>Thank you for choosing EasyConnectMD!</p>
+                <p></p>
+                <p>Need technical support?</p>
+                <p>You can email us at <a href='mailto:info@easyconnectmd.net'>info@easyconnectmd.net</a></p>
+                <p></p>
+                <p>=== Receipt Information ===</p>
+                <p>Date: {payment_date}</p>
+                <p>Total paid: ${payment_amount}</p>
+                <p>{payment_card_type} ending in {payment_card_last4}</p>
+            </body>
+        </html>
+        """
+
+    EmailThread(
+        subject='In case you get disconnected',
+        message=body,
+        from_email=settings.EMAIL_HOST_USER,
+        recipient_list=[patient.email],
+        fail_silently=False,
+        html_message=html_body
+    ).start()
+
+
+class EmailThread(threading.Thread):
+    def __init__(self, subject, message, recipient_list, from_email, fail_silently, html_message):
+        self.subject = subject
+        self.recipient_list = recipient_list
+        self.message = message
+        self.from_email = from_email
+        self.fail_silently = fail_silently
+        self.html_message = html_message
+        threading.Thread.__init__(self)
+
+    def run(self):
+        msg = send_mail(subject=self.subject, message=self.message, from_email=self.from_email,
+                        recipient_list=self.recipient_list, fail_silently=self.fail_silently,
+                        html_message=self.html_message)
