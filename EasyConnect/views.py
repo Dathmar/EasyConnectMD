@@ -11,6 +11,7 @@ from django.urls import reverse
 from django.conf import settings
 from django.contrib.auth import logout
 from django.core.mail import send_mail
+from django.utils import timezone
 
 from EasyConnect.forms import PatientForm, SymptomsForm, ProviderForm, PharmacyForm, PaymentForm, ICD10CodeLoad
 from EasyConnect.models import Patient, Symptoms, ProviderNotes, Preferred_Pharmacy, Appointments, Payment, Icd10
@@ -69,8 +70,14 @@ def connect(request):
     else:
         form = PatientForm()
 
+    value = timezone.now().hour
+    off_hours = False
+    if not (8 <= value < 20):
+        off_hours = True
+
     context = {
-        'form': form
+        'form': form,
+        'off_hours': off_hours
     }
 
     return render(request, 'EasyConnect/connect.html', context)
@@ -211,6 +218,10 @@ def provider_dashboard(request):
 
 
 def provider_view(request, patient_id):
+
+    if not request.user.is_authenticated:
+        return HttpResponseRedirect(reverse('easyconnect:dashboard'))
+
     patient = get_object_or_404(Patient, pk=patient_id)
     symptoms = get_object_or_404(Symptoms, patient_id=patient_id)
     preferred_pharmacy = get_object_or_404(Preferred_Pharmacy, patient_id=patient_id)
@@ -323,6 +334,9 @@ def get_object_data_or_set_defaults(to_get_object):
 
 
 def icd10_load(request):
+    if not request.user.is_authenticated:
+        return HttpResponseRedirect(reverse('easyconnect:dashboard'))
+
     if request.method == 'POST':
         form = ICD10CodeLoad(request.POST, request.FILES)
         if form.is_valid():

@@ -14,97 +14,117 @@
 </head>
 
 <body style="background-image: url('{% get_static_prefix %}EasyConnect/assets/img/Image-waiting-room.jpg');background-size: cover;background-repeat: no-repeat;background-position: center;padding-top: 5em;">
-    <div class="d-md-flex justify-content-md-center" style="margin-right: 10%;margin-left: 10%;">
-        <section class="container-wrapper" style="background-color: #ffffff;padding: 0px;padding-bottom: 4em;">
-            <div>
-                <div class="container">
-                    <div id="textAboveForm">
-                        <div class="row">
-                            <div class="col text-center">
-                                <h1 style="margin-top: 1em;margin-bottom: 1em;">Connect with a doctor</h1>
+
+    {% if off_hours %}
+        <div class="d-md-flex justify-content-md-center" style="margin-right: 10%;margin-left: 10%;">
+            <section class="container-wrapper" style="background-color: #ffffff;padding: 0px;padding-bottom: 4em;">
+                <div id="textAboveForm">
+                    <div class="row">
+                        <div class="col text-center">
+                            <h1 style="margin-top: 1em;margin-bottom: 1em;">We are currently closed.</h1>
+                        </div>
+                    </div>
+                    <div class="row" style="margin-bottom: -42px;">
+                        <div class="col text-center">
+                            <h5><br>We're open everyday from 8:00am - 8:00pm Central<br><br></h5>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    {% else %}
+        <div class="d-md-flex justify-content-md-center" style="margin-right: 10%;margin-left: 10%;">
+            <section class="container-wrapper" style="background-color: #ffffff;padding: 0px;padding-bottom: 4em;">
+                <div>
+                    <div class="container">
+                        <div id="textAboveForm">
+                            <div class="row">
+                                <div class="col text-center">
+                                    <h1 style="margin-top: 1em;margin-bottom: 1em;">Connect with a doctor</h1>
+                                </div>
+                            </div>
+                            <div class="row" style="margin-bottom: -42px;">
+                                <div class="col text-center">
+                                    <h5><br>Less than 10 questions and 10 minutes to get connected with a doctor.<br><br></h5>
+                                </div>
+                            </div>
+                            <div class="row" style="margin-top: 3em;margin-bottom: 0em;">
+                                <div class="col text-center d-sm-flex align-items-sm-end m-sm-auto justify-content-lg-center three-headings"><span style="padding-right: 1em;padding-left: 1em;"><br><strong>1.</strong>About you<br><br></span><span style="padding-right: 1em;padding-left: 1em;"><br><br><strong>2.</strong>Symptoms &amp; Payment<br><br></span><span style="padding-right: 1em;padding-left: 1em;"><br><br><strong>3.</strong>Video Chat<br><br></span></div>
+                            </div>
+                            <div class="row" style="margin-top: 1em;">
+                                <div class="col">
+                                    <h5>1.About you</h5>
+                                    <div class="seperator"></div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col">
+                                    <h5></h5>
+                                </div>
                             </div>
                         </div>
-                        <div class="row" style="margin-bottom: -42px;">
-                            <div class="col text-center">
-                                <h5><br>Less than 10 questions and 10 minutes to get connected with a doctor.<br><br></h5>
+                        <form action="" method="post">
+                            {% csrf_token %}
+                            {% if form.has_error %}
+                            <div class="form-group-wrapper">
+                                {{ form.errors }}
                             </div>
-                        </div>
+                            {%  endif %}
+                            <div class="input-wrapper">
+                                <div class="form-group half-width">{{ form.first_name }}</div>
+                                <div class="form-group half-width">{{ form.last_name }}</div>
+                            </div>
+                            <div class="d-xl-flex input-wrapper">
+                                <div class="form-group half-width">{{ form.phone_number }}</div>
+                                <div class="form-group half-width">{{ form.email }}</div>
+                            </div>
+                            <div class="form-group">{{ form.zip }}</div>
+                            <div class="form-group-wrapper">
+                                <div id="birthday" class="form-group half-width"><label>Birthday*</label>{{ form.dob }}</div>
+                                <div class="form-group half-width"><label>Gender*</label>
+                                    <div class="d-md-flex justify-content-md-start">
+                                        {{ form.gender }}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row tos-title">
+                                <div class="col">
+                                    <h5>Terms*</h5>
+                                </div>
+                            </div>
+                            <div class="row tos-box">
+                                <div class="col">
+                                    <div id="terms" class="overflow-auto" style="height: 150px;">
+                                        <p style="margin-left: 1em;margin-top: 1em;"><strong>Services</strong> <br>The service provided by EasyConnectMD is for acute, urgent care type <br>visits. Anxiety and depression cannot be diagnosed or treated. <br><strong>Prescriptions</strong> <br>Prescriptions
+                                            for controlled substances for non-therapeutic use, and/or those <br>which may be harmful (potential for abuse or addiction) as well as general <br>medicine refills (for chronic conditions) <strong><em>will not be written here.</em></strong>                                        <br><strong>Refunds</strong> <br>Refunds will not be processed because we were unable to diagnose or treat you <br>nor because a prescription was unable to be filled due to medical restrictions. <br>We will however
+                                            issue a refund if you are unable to connect with a member of <br>our staff. <br><br></p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col" style="margin-top: 5px;">
+                                    <div class="form-check">{{ form.tos }}{{ form.tos.label_tag }}</div>
+                                </div>
+                            </div>
+                            <div class="row seperator" id="light">
+                                <div class="col">
+                                    <div></div>
+                                </div>
+                            </div>
+                            <div class="row" style="margin-top: 1em;">
+                                <div class="col"><input class="btn btn-primary border rounded-0 connect-button" type="submit" style="background-color: rgb(255,255,255);color: #ffa500;border: 2px solid #ffa500 !important;"
+                                                        value="Step 2: Symptoms &amp; Payment"/>
+                                </div>
+                            </div>
+                        </form>
                         <div class="row" style="margin-top: 3em;margin-bottom: 0em;">
                             <div class="col text-center d-sm-flex align-items-sm-end m-sm-auto justify-content-lg-center three-headings"><span style="padding-right: 1em;padding-left: 1em;"><br><strong>1.</strong>About you<br><br></span><span style="padding-right: 1em;padding-left: 1em;"><br><br><strong>2.</strong>Symptoms &amp; Payment<br><br></span><span style="padding-right: 1em;padding-left: 1em;"><br><br><strong>3.</strong>Video Chat<br><br></span></div>
                         </div>
-                        <div class="row" style="margin-top: 1em;">
-                            <div class="col">
-                                <h5>1.About you</h5>
-                                <div class="seperator"></div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col">
-                                <h5></h5>
-                            </div>
-                        </div>
-                    </div>
-                    <form action="" method="post">
-                        {% csrf_token %}
-                        {% if form.has_error %}
-                        <div class="form-group-wrapper">
-                            {{ form.errors }}
-                        </div>
-                        {%  endif %}
-                        <div class="input-wrapper">
-                            <div class="form-group half-width">{{ form.first_name }}</div>
-                            <div class="form-group half-width">{{ form.last_name }}</div>
-                        </div>
-                        <div class="d-xl-flex input-wrapper">
-                            <div class="form-group half-width">{{ form.phone_number }}</div>
-                            <div class="form-group half-width">{{ form.email }}</div>
-                        </div>
-                        <div class="form-group">{{ form.zip }}</div>
-                        <div class="form-group-wrapper">
-                            <div id="birthday" class="form-group half-width"><label>Birthday*</label>{{ form.dob }}</div>
-                            <div class="form-group half-width"><label>Gender*</label>
-                                <div class="d-md-flex justify-content-md-start">
-                                    {{ form.gender }}
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row tos-title">
-                            <div class="col">
-                                <h5>Terms*</h5>
-                            </div>
-                        </div>
-                        <div class="row tos-box">
-                            <div class="col">
-                                <div id="terms" class="overflow-auto" style="height: 150px;">
-                                    <p style="margin-left: 1em;margin-top: 1em;"><strong>Services</strong> <br>The service provided by EasyConnectMD is for acute, urgent care type <br>visits. Anxiety and depression cannot be diagnosed or treated. <br><strong>Prescriptions</strong> <br>Prescriptions
-                                        for controlled substances for non-therapeutic use, and/or those <br>which may be harmful (potential for abuse or addiction) as well as general <br>medicine refills (for chronic conditions) <strong><em>will not be written here.</em></strong>                                        <br><strong>Refunds</strong> <br>Refunds will not be processed because we were unable to diagnose or treat you <br>nor because a prescription was unable to be filled due to medical restrictions. <br>We will however
-                                        issue a refund if you are unable to connect with a member of <br>our staff. <br><br></p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col" style="margin-top: 5px;">
-                                <div class="form-check">{{ form.tos }}{{ form.tos.label_tag }}</div>
-                            </div>
-                        </div>
-                        <div class="row seperator" id="light">
-                            <div class="col">
-                                <div></div>
-                            </div>
-                        </div>
-                        <div class="row" style="margin-top: 1em;">
-                            <div class="col"><input class="btn btn-primary border rounded-0 connect-button" type="submit" style="background-color: rgb(255,255,255);color: #ffa500;border: 2px solid #ffa500 !important;"
-                                                    value="Step 2: Symptoms &amp; Payment"/>
-                            </div>
-                        </div>
-                    </form>
-                    <div class="row" style="margin-top: 3em;margin-bottom: 0em;">
-                        <div class="col text-center d-sm-flex align-items-sm-end m-sm-auto justify-content-lg-center three-headings"><span style="padding-right: 1em;padding-left: 1em;"><br><strong>1.</strong>About you<br><br></span><span style="padding-right: 1em;padding-left: 1em;"><br><br><strong>2.</strong>Symptoms &amp; Payment<br><br></span><span style="padding-right: 1em;padding-left: 1em;"><br><br><strong>3.</strong>Video Chat<br><br></span></div>
                     </div>
                 </div>
-            </div>
-        </section>
-    </div>
+            </section>
+        </div>
+    {%  endif %}
     {% include 'EasyConnect/standard-footer.html' %}
 </body>
 
