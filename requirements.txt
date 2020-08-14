@@ -9,3 +9,4 @@ django-select2
 django-redis
 dj-static
 static3
+twilio

@@ -12,10 +12,15 @@ from django.conf import settings
 from django.contrib.auth import logout
 from django.core.mail import send_mail
 from django.utils import timezone
+from django.db import connection
 
 from EasyConnect.forms import PatientForm, SymptomsForm, ProviderForm, PharmacyForm, PaymentForm, ICD10CodeLoad
 from EasyConnect.models import Patient, Symptoms, ProviderNotes, Preferred_Pharmacy, Appointments, Payment, Icd10
+
 from square.client import Client
+
+from twilio.jwt.access_token import AccessToken
+from twilio.jwt.access_token.grants import VideoGrant
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -70,9 +75,8 @@ def connect(request):
     else:
         form = PatientForm()
 
-    value = timezone.now().hour
     off_hours = False
-    if not (8 <= value < 20):
+    if not (8 <= timezone.localtime().hour < 20):
         off_hours = True
 
     context = {
@@ -152,7 +156,19 @@ def connect_2(request, patient_id):
             if result.is_success():
                 payment_status = "Paid"
             elif result.is_error():
+                payment_form = PaymentForm()
                 payment_status = "Failed"
+                payment_errors = []
+
+                print(result)
+                for error in result.errors:
+                    if error['code'] == 'GENERIC_DECLINE':
+                        payment_errors.append('Sorry but the card processing did not complete.  Please check your card'
+                                              ' or try another payment method.')
+                    elif error['code'] == 'CCV_ERROR':
+                        payment_errors.append('The CCV did not match the card number.')
+                    else:
+                        payment_errors.append(error)
 
             payment = Payment(patient=patient,
                               nonce=nonce,
@@ -173,26 +189,38 @@ def connect_2(request, patient_id):
                 send_provider_notification(patient_id)
 
                 return HttpResponseRedirect(reverse('easyconnect:video-chat', args=(patient_id,)))
-
     # If this is a GET (or any other method) create the default form.
     else:
         symptom_form = SymptomsForm()
         pharmacy_form = PharmacyForm()
         payment_form = PaymentForm()
+        payment_errors = None
 
     context = {
         'symptom_form': symptom_form,
         'pharmacy_form': pharmacy_form,
         'payment_form': payment_form,
-        'zip': patient.zip
+        'zip': patient.zip,
+        'payment_errors': payment_errors
     }
 
     return render(request, 'EasyConnect/connect-2.html', context)
 
 
 def video_chat(request, patient_id):
+    patient = get_object_or_404(Patient, pk=patient_id)
+    twilio_account_sid = settings.TWILIO_ACCOUNT_SID
+    twilio_api_key_sid = settings.TWILIO_API_KEY_SID
+    twilio_api_key_secret = settings.TWILIO_API_KEY_SECRET
+    patient_name = f'{patient.first_name} {patient.last_name}'
+    token = AccessToken(twilio_account_sid, twilio_api_key_sid,
+                        twilio_api_key_secret, identity=patient_name)
+    token.add_grant(VideoGrant(room=str(patient_id)))
+
     context = {
-        'patient_id': patient_id
+        'patient_id': patient_id,
+        'token': token.to_jwt(),
+        'username': patient_name
     }
     return render(request, 'EasyConnect/VideoChat.html', context)
 
@@ -225,7 +253,7 @@ def provider_view(request, patient_id):
     patient = get_object_or_404(Patient, pk=patient_id)
     symptoms = get_object_or_404(Symptoms, patient_id=patient_id)
     preferred_pharmacy = get_object_or_404(Preferred_Pharmacy, patient_id=patient_id)
-    appointment = get_object_or_404(Appointments, patient_id=patient_id)
+    appointment = Appointments.objects.filter(patient_id=patient_id).order_by('-create_datetime').first()
 
     if request.method == 'POST':
         # Create a form instance and populate it with data from the request (binding):
@@ -248,7 +276,7 @@ def provider_view(request, patient_id):
             provider_notes.save()
             provider_notes.assessments.set(assessments)
 
-            # TODO need some edge case stuff here for if the
+            # TODO need some edge case stuff here
             appointment.status = 'Appointment Complete'
             appointment.update_datetime = datetime.now()
             appointment.seen_by = request.user
@@ -260,7 +288,7 @@ def provider_view(request, patient_id):
     # If this is a GET (or any other method) create the default form.
     else:
         # update appointment status
-        # TODO need some edge case stuff here for if the
+        # TODO need some edge case stuff here
         if appointment.status != 'Appointment Complete':
             appointment.status = 'Being seen by provider'
             appointment.save(update_fields=['status'])
@@ -296,15 +324,15 @@ def provider_view(request, patient_id):
                                              dob=patient.dob).\
         exclude(pk=patient_id).values('id', 'create_datetime', 'symptoms__allergies', 'symptoms__medications',
                                       'symptoms__previous_diagnosis', 'symptoms__symptom_description',
-                                      'providernotes__hpi', 'providernotes__followup', 'providernotes__treatment')\
+                                      'providernotes__hpi', 'providernotes__followup', 'providernotes__treatment',
+                                      'providernotes__id')\
         .order_by('-create_datetime')
 
-    #patient_assessments = Patient.objects.filter(first_name=patient.first_name,
-    #                                         last_name=patient.last_name,
-    #                                         dob=patient.dob). \
-    #    exclude(pk=patient_id).values('id', 'providernotes__assessments__ICD10_DSC')
+    #providernote_ids = []
+    #for patient_record in patient_records:
+    #    providernote_ids.append(patient_record['providernotes__id'])
 
-    #print(patient_assessments)
+    #patient_assessments = get_patient_assessments(providernote_ids)
 
 
     context = {
@@ -319,6 +347,27 @@ def provider_view(request, patient_id):
     }
 
     return render(request, 'EasyConnect/provider-view.html', context)
+
+
+def get_patient_assessments(provider_note_ids):
+    patient_assessments = []
+    if provider_note_ids:
+        for provider_note_id in provider_note_ids:
+            note_assessment = []
+            if provider_note_id:
+                sql = 'SELECT ' \
+                      'icd10."ICD10_DSC" FROM public."EasyConnect_icd10" as icd10 where id in ' \
+                      '(select ecpa."icd10_id" from public."EasyConnect_providernotes_assessments" ' \
+                      f'as ecpa where ecpa."providernotes_id"={provider_note_id});'
+                with connection.cursor() as cursor:
+                    result = cursor.execute(sql)
+                    if result:
+                        for row in result:
+                            note_assessment.append(row[0])
+
+            patient_assessments.append(','.join(note_assessment))
+
+    return patient_assessments
 
 
 def get_object_data_or_set_defaults(to_get_object):

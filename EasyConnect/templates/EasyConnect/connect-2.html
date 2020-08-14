@@ -5,7 +5,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
-    <title>connectMD</title>
+    <title>EasyconnectMD</title>
     <link rel="stylesheet" href="{% get_static_prefix %}EasyConnect/assets/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Antic">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Cambay">
@@ -53,11 +53,14 @@
                     </div>
                     <form action="" method="post">
                         {% csrf_token %}
-                        {% if symptom_form.has_error or pharmacy_form.has_error or payment_form.errors %}
+                        {% if symptom_form.has_error or pharmacy_form.has_error or payment_form.errors or payment_errors %}
                         <div class="form-group-wrapper">
                             {{ symptom_form.errors }}
                             {{ pharmacy_form.errors }}
                             {{ payment_form.errors }}
+                            {% for payment_error in payment_errors %}
+                                {{ payment_error }}
+                            {% endfor %}
                         </div>
                         {%  endif %}
                         <div class="row">
