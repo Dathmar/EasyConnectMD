@@ -21,5 +21,5 @@ urlpatterns = [
     url(r'^accounts/', include("django.contrib.auth.urls")),
     path('accounts/logout/', views.logout_request, name='logout'),
     path('accounts/login/', views.login_request, name='login'),
-    path('accounts/password_change/', views.password_change, name='password-change')
+    path('video-token/', views.video_token, name='video-token'),
 ]

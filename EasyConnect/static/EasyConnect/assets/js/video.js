@@ -5,7 +5,7 @@ const button = $('join_leave');
 const container = $('chat_container');
 const count = $('count');
 const username = $('username').innerHTML;
-const token = $('token').innerHTML;
+const patient_id = $('patient_id').innerHTML;
 let room;
 const connect_string = 'Start Video Chat'
 const disconnect_string = 'Leave Video'
@@ -23,7 +23,7 @@ function connectButtonHandler(event) {
     if (!connected) {
         button.disabled = true;
         button.innerHTML = 'Connecting...';
-        connect(username).then(() => {
+        connect().then(() => {
             button.innerHTML = disconnect_string;
             button.disabled = false;
         }).catch(() => {
@@ -39,10 +39,17 @@ function connectButtonHandler(event) {
     }
 };
 
-function connect(username) {
-
-    let twilio_promise = new Promise((resolve, reject) => {
-        twilio_video_connect(token).then(_room => {
+function connect() {
+    let promise = new Promise((resolve, reject) => {
+        // get a token from the back end
+        fetch('/video-token/', {
+            method: 'POST',
+            headers: {"X-Requested-With": "XMLHttpRequest", "X-CSRFToken": getCookie("csrftoken")},
+            body: JSON.stringify({'username': username, 'patient_id': patient_id})
+        }).then(res => res.json()).then(data => {
+            // join video call
+            return Twilio.Video.connect(data.token);
+        }).then(_room => {
             room = _room;
             room.participants.forEach(participantConnected);
             room.on('participantConnected', participantConnected);
@@ -54,13 +61,24 @@ function connect(username) {
             reject();
         });
     });
-
-    return twilio_promise;
+    return promise;
 };
 
-function room_setup(_room) {
-
-};
+function getCookie(c_name)
+{
+    if (document.cookie.length > 0)
+    {
+        c_start = document.cookie.indexOf(c_name + "=");
+        if (c_start != -1)
+        {
+            c_start = c_start + c_name.length + 1;
+            c_end = document.cookie.indexOf(";", c_start);
+            if (c_end == -1) c_end = document.cookie.length;
+            return unescape(document.cookie.substring(c_start,c_end));
+        }
+    }
+    return "";
+ }
 
 function twilio_video_connect(token) {
     let connection;
@@ -69,13 +87,10 @@ function twilio_video_connect(token) {
     } catch (error) {
         console.error('error in twilio connection')
     }
-    console.log(connection)
-
     return connection
 };
 
 function disconnect() {
-    console.log('disconnect');
     room.disconnect();
     while (container.lastChild.id != 'local')
         container.removeChild(container.lastChild);
@@ -85,7 +100,6 @@ function disconnect() {
 };
 
 function updateParticipantCount() {
-    console.log(connected)
     if (!connected)
         count.innerHTML = 'Disconnected.';
     else

@@ -6,7 +6,7 @@ import threading
 from datetime import datetime
 
 from django.shortcuts import render, get_object_or_404
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from django.urls import reverse
 from django.conf import settings
 from django.contrib.auth import logout
@@ -211,18 +211,18 @@ def connect_2(request, patient_id):
 
 def video_chat(request, patient_id):
     patient = get_object_or_404(Patient, pk=patient_id)
-    twilio_account_sid = settings.TWILIO_ACCOUNT_SID
+    """twilio_account_sid = settings.TWILIO_ACCOUNT_SID
     twilio_api_key_sid = settings.TWILIO_API_KEY_SID
     twilio_api_key_secret = settings.TWILIO_API_KEY_SECRET
-    patient_name = f'{patient.first_name} {patient.last_name}'
     token = AccessToken(twilio_account_sid, twilio_api_key_sid,
                         twilio_api_key_secret, identity=patient_name)
-    token.add_grant(VideoGrant(room=str(patient_id)))
+    token.add_grant(VideoGrant(room=str(patient_id)))"""
+
+    patient_name = f'{patient.first_name} {patient.last_name}'
 
     context = {
-        'patient_id': patient_id,
-        'token': token.to_jwt().decode(),
-        'username': patient_name
+        'username': patient_name,
+        'patient_id': str(patient_id),
     }
     return render(request, 'EasyConnect/VideoChat.html', context)
 
@@ -242,7 +242,6 @@ def provider_dashboard(request):
 
 
 def provider_view(request, patient_id):
-
     if not request.user.is_authenticated:
         return HttpResponseRedirect(reverse('easyconnect:dashboard'))
 
@@ -272,7 +271,7 @@ def provider_view(request, patient_id):
             provider_notes.save()
             provider_notes.assessments.set(assessments)
 
-            # TODO need some edge case stuff here
+            # TODO need some edge case stuff here for when a doctor is already seeing a patient
             appointment.status = 'Appointment Complete'
             appointment.update_datetime = datetime.now()
             appointment.seen_by = request.user
@@ -284,10 +283,11 @@ def provider_view(request, patient_id):
     # If this is a GET (or any other method) create the default form.
     else:
         # update appointment status
-        # TODO need some edge case stuff here
-        if appointment.status != 'Appointment Complete':
+        # TODO need some edge case stuff here for when a doctor is already seeing a patient
+        if appointment.status != 'Appointment Complete' and not appointment.seen_by:
             appointment.status = 'Being seen by provider'
-            appointment.save(update_fields=['status'])
+            appointment.seen_by = request.user
+            appointment.save(update_fields=['status', 'seen_by'])
 
         preferred_pharmacy_form = PharmacyForm(initial={'pharmacy_phone': preferred_pharmacy.pharmacy_phone,
                                                         'pharmacy_address': preferred_pharmacy.pharmacy_address,
@@ -329,15 +329,7 @@ def provider_view(request, patient_id):
     #    providernote_ids.append(patient_record['providernotes__id'])
 
     #patient_assessments = get_patient_assessments(providernote_ids)
-
-    twilio_account_sid = settings.TWILIO_ACCOUNT_SID
-    twilio_api_key_sid = settings.TWILIO_API_KEY_SID
-    twilio_api_key_secret = settings.TWILIO_API_KEY_SECRET
     provider_name = 'Provider'
-    token = AccessToken(twilio_account_sid, twilio_api_key_sid,
-                        twilio_api_key_secret, identity=provider_name)
-    token.add_grant(VideoGrant(room=str(patient_id)))
-
     context = {
         'provider_form': provider_form,
         'patient': patient,
@@ -347,12 +339,28 @@ def provider_view(request, patient_id):
         'preferred_pharmacy_form': preferred_pharmacy_form,
         'patient_records': patient_records,
         'username': provider_name,
-        'token': token.to_jwt().decode()
         #'patient_assessments': patient_assessments
     }
 
     return render(request, 'EasyConnect/provider-view.html', context)
 
+
+def video_token(request):
+    if request.method == 'POST':
+        patient_id = json.loads(request.body)['patient_id']
+        identity = json.loads(request.body)['username']
+
+        twilio_account_sid = settings.TWILIO_ACCOUNT_SID
+        twilio_api_key_sid = settings.TWILIO_API_KEY_SID
+        twilio_api_key_secret = settings.TWILIO_API_KEY_SECRET
+        token = AccessToken(twilio_account_sid, twilio_api_key_sid,
+                            twilio_api_key_secret, identity=identity)
+        token.add_grant(VideoGrant(room=patient_id))
+        data = {'token': token.to_jwt().decode()}
+        data = json.dumps(data)
+        return HttpResponse(data, status=200, content_type='application/json')
+
+    return HttpResponse(None, status=401)
 
 def get_appointments(status, count=100, order_by='ASC'):
     sql = f'''SELECT 
@@ -439,10 +447,6 @@ def login_request(request):
 def logout_request(request):
     logout(request)
     return HttpResponseRedirect(reverse('easyconnect:dashboard'))
-
-
-def password_change(request):
-    return HttpResponseRedirect(reverse('easyconnect:password-change'))
 
 
 def send_provider_notification(patient_id):
