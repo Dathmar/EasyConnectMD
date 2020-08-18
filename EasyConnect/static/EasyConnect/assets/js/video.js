@@ -2,11 +2,13 @@ function $(x) { return document.getElementById(x)}
 
 let connected = false;
 const button = $('join_leave');
-const container = $('container');
+const container = $('chat_container');
 const count = $('count');
 const username = $('username').innerHTML;
 const token = $('token').innerHTML;
 let room;
+const connect_string = 'Start Video Chat'
+const disconnect_string = 'Leave Video'
 
 
 function addLocalVideo() {
@@ -22,25 +24,25 @@ function connectButtonHandler(event) {
         button.disabled = true;
         button.innerHTML = 'Connecting...';
         connect(username).then(() => {
-            button.innerHTML = 'Leave call';
+            button.innerHTML = disconnect_string;
             button.disabled = false;
         }).catch(() => {
-            alert('Connection failed. Is the backend running?');
-            button.innerHTML = 'Join call';
+            alert('Connection failed. Please contact info@easyconnectmd.net');
+            button.innerHTML = connect_string;
             button.disabled = false;
         });
     }
     else {
         disconnect();
-        button.innerHTML = 'Join call';
+        button.innerHTML = connect_string;
         connected = false;
     }
 };
 
 function connect(username) {
-    let promise = new Promise((resolve, reject) => {
-        // get a token from the back end
-        Twilio.Video.connect(token).then(_room => {
+
+    let twilio_promise = new Promise((resolve, reject) => {
+        twilio_video_connect(token).then(_room => {
             room = _room;
             room.participants.forEach(participantConnected);
             room.on('participantConnected', participantConnected);
@@ -52,19 +54,38 @@ function connect(username) {
             reject();
         });
     });
-    return promise;
+
+    return twilio_promise;
+};
+
+function room_setup(_room) {
+
+};
+
+function twilio_video_connect(token) {
+    let connection;
+    try {
+        connection =  Twilio.Video.connect(token)
+    } catch (error) {
+        console.error('error in twilio connection')
+    }
+    console.log(connection)
+
+    return connection
 };
 
 function disconnect() {
+    console.log('disconnect');
     room.disconnect();
     while (container.lastChild.id != 'local')
         container.removeChild(container.lastChild);
-    button.innerHTML = 'Join call';
+    button.innerHTML = connect_string;
     connected = false;
     updateParticipantCount();
 };
 
 function updateParticipantCount() {
+    console.log(connected)
     if (!connected)
         count.innerHTML = 'Disconnected.';
     else

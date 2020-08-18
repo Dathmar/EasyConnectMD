@@ -24,31 +24,31 @@
                 <h6>Appointments - Ready for Provider</h6>
                 <div class="row">
                     <div class="col dark-grey">
-                        <p>First Name</p>
-                    </div>
-                    <div class="col dark-grey">
-                        <p>Last Name</p>
+                        <p>Patient Name</p>
                     </div>
                     <div class="col dark-grey">
                         <p>DOB</p>
                     </div>
                     <div class="col dark-grey">
-                        <p>Appointment Status</p>
+                        <p>Status</p>
+                    </div>
+                    <div class="col dark-grey">
+                        <p>ID</p>
                     </div>
                 </div>
                 {%  for ready_appointment in ready_appointments %}
                     <div class="row">
                         <div class="col {{forloop.counter|divisibleby:2|yesno:",light-grey"}}">
-                            <p><a href="{% url 'easyconnect:provider-view' ready_appointment.id %}">{{ ready_appointment.first_name }}</a></p>
+                            <p><a href="{% url 'easyconnect:provider-view' ready_appointment.patient_id %}">{{ ready_appointment.patient_name }}</a></p>
                         </div>
                         <div class="col {{forloop.counter|divisibleby:2|yesno:",light-grey"}}">
-                            <p>{{ ready_appointment.last_name }}</p>
+                            <p>{{ ready_appointment.patient_dob }}</p>
                         </div>
                         <div class="col {{forloop.counter|divisibleby:2|yesno:",light-grey"}}">
-                            <p>{{ ready_appointment.dob }}</p>
+                            <p>{{ ready_appointment.appointment_status }}</p>
                         </div>
                         <div class="col {{forloop.counter|divisibleby:2|yesno:",light-grey"}}">
-                            <p>{{ ready_appointment.appointments__status }}</p>
+                            <p>{{ ready_appointment.patient_id }}</p>
                         </div>
                     </div>
                 {% endfor %}
@@ -58,10 +58,7 @@
                 <h6>Appointments - Active</h6>
                 <div class="row">
                     <div class="col dark-grey">
-                        <p>First Name</p>
-                    </div>
-                    <div class="col dark-grey">
-                        <p>Last Name</p>
+                        <p>Patient Name</p>
                     </div>
                     <div class="col dark-grey">
                         <p>DOB</p>
@@ -72,23 +69,26 @@
                     <div class="col dark-grey">
                         <p>Being Seen By</p>
                     </div>
+                    <div class="col dark-grey">
+                        <p>ID</p>
+                    </div>
                 </div>
                 {%  for active_appointment in active_appointments %}
                     <div class="row">
                         <div class="col {{forloop.counter|divisibleby:2|yesno:",light-grey"}}">
-                            <p><a href="{% url 'easyconnect:provider-view' active_appointment.id %}">{{ active_appointment.first_name }}</a></p>
+                            <p><a href="{% url 'easyconnect:provider-view' active_appointment.patient_id %}">{{ active_appointment.patient_name }}</a></p>
                         </div>
                         <div class="col {{forloop.counter|divisibleby:2|yesno:",light-grey"}}">
-                            <p>{{ active_appointment.last_name }}</p>
+                            <p>{{ active_appointment.patient_dob }}</p>
                         </div>
                         <div class="col {{forloop.counter|divisibleby:2|yesno:",light-grey"}}">
-                            <p>{{ active_appointment.dob }}</p>
+                            <p>{{ active_appointment.appointment_status }}</p>
                         </div>
                         <div class="col {{forloop.counter|divisibleby:2|yesno:",light-grey"}}">
-                            <p>{{ active_appointment.appointments__status }}</p>
+                            <p>{{ active_appointment.seen_by }}</p>
                         </div>
                         <div class="col {{forloop.counter|divisibleby:2|yesno:",light-grey"}}">
-                            <p>{{ active_appointment.appointments__seen_by.username }}</p>
+                            <p>{{ active_appointment.patient_id }}</p>
                         </div>
                     </div>
                 {% endfor %}
@@ -98,10 +98,7 @@
                 <h6>Appointments - Completed</h6>
                 <div class="row">
                     <div class="col dark-grey">
-                        <p>First Name</p>
-                    </div>
-                    <div class="col dark-grey">
-                        <p>Last Name</p>
+                        <p>Patient Name</p>
                     </div>
                     <div class="col dark-grey">
                         <p>DOB</p>
@@ -109,20 +106,29 @@
                     <div class="col dark-grey">
                         <p>Appointment Status</p>
                     </div>
+                    <div class="col dark-grey">
+                        <p>Seen By</p>
+                    </div>
+                     <div class="col dark-grey">
+                        <p>ID</p>
+                    </div>
                 </div>
                 {%  for completed_appointment in completed_appointments %}
                     <div class="row">
                         <div class="col {{forloop.counter|divisibleby:2|yesno:",light-grey"}}">
-                            <p><a href="{% url 'easyconnect:provider-view' completed_appointment.id %}">{{ completed_appointment.first_name }}</a></p>
+                            <p><a href="{% url 'easyconnect:provider-view' completed_appointment.patient_id %}">{{ completed_appointment.patient_name }}</a></p>
                         </div>
                         <div class="col {{forloop.counter|divisibleby:2|yesno:",light-grey"}}">
-                            <p>{{ completed_appointment.last_name }}</p>
+                            <p>{{ completed_appointment.patient_dob }}</p>
                         </div>
                         <div class="col {{forloop.counter|divisibleby:2|yesno:",light-grey"}}">
-                            <p>{{ completed_appointment.dob }}</p>
+                            <p>{{ completed_appointment.appointment_status }}</p>
                         </div>
                         <div class="col {{forloop.counter|divisibleby:2|yesno:",light-grey"}}">
-                            <p>{{ completed_appointment.appointments__status }}</p>
+                            <p>{{ completed_appointment.seen_by }}</p>
+                        </div>
+                        <div class="col {{forloop.counter|divisibleby:2|yesno:",light-grey"}}">
+                            <p>{{ completed_appointment.patient_id }}</p>
                         </div>
                     </div>
                 {% endfor %}

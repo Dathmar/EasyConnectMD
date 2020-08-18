@@ -76,8 +76,8 @@ def connect(request):
         form = PatientForm()
 
     off_hours = False
-    if not (8 <= timezone.localtime().hour < 20):
-        off_hours = True
+    # if not (8 <= timezone.localtime().hour < 20):
+    #    off_hours = True
 
     context = {
         'form': form,
@@ -89,6 +89,8 @@ def connect(request):
 
 def connect_2(request, patient_id):
     patient = get_object_or_404(Patient, pk=patient_id)
+    if Appointments.objects.filter(patient_id=patient.id):
+        return HttpResponseRedirect(reverse('easyconnect:video-chat', args=(patient_id,)))
 
     if request.method == 'POST':
         # Create a form instance and populate it with data from the request (binding):
@@ -160,7 +162,6 @@ def connect_2(request, patient_id):
                 payment_status = "Failed"
                 payment_errors = []
 
-                print(result)
                 for error in result.errors:
                     if error['code'] == 'GENERIC_DECLINE':
                         payment_errors.append('Sorry but the card processing did not complete.  Please check your card'
@@ -178,15 +179,16 @@ def connect_2(request, patient_id):
             payment.save()
 
             if payment_status != 'Failed':
-                appointment = Appointments(patient=patient,
-                                           status='Ready for Provider',
-                                           seen_by=None,
-                                           last_update_user=None)
-                appointment.save()
+                if not Appointments.objects.filter(patient_id=patient.id):
+                    appointment = Appointments(patient=patient,
+                                               status='Ready for Provider',
+                                               seen_by=None,
+                                               last_update_user=None)
+                    appointment.save()
 
-                # send e-mails
-                send_patient_notification(patient_id)
-                send_provider_notification(patient_id)
+                    # send e-mails
+                    send_patient_notification(patient_id)
+                    send_provider_notification(patient_id)
 
                 return HttpResponseRedirect(reverse('easyconnect:video-chat', args=(patient_id,)))
     # If this is a GET (or any other method) create the default form.
@@ -219,22 +221,16 @@ def video_chat(request, patient_id):
 
     context = {
         'patient_id': patient_id,
-        'token': token.to_jwt(),
+        'token': token.to_jwt().decode(),
         'username': patient_name
     }
     return render(request, 'EasyConnect/VideoChat.html', context)
 
 
 def provider_dashboard(request):
-    ready_appointments = Patient.objects.values('id', 'create_datetime', 'first_name', 'last_name', 'dob',
-                                                'appointments__status').\
-        filter(appointments__status='Ready for Provider').order_by('-create_datetime')
-    completed_appointments = Patient.objects.values('id', 'first_name', 'last_name', 'dob', 'appointments__status',
-                                                'appointments__seen_by').\
-        filter(appointments__status='Appointment Complete')[:10]
-    active_appointments = Patient.objects.values('id', 'first_name', 'last_name', 'dob', 'appointments__status',
-                                                    'appointments__seen_by'). \
-        filter(appointments__status='Being seen by provider')
+    ready_appointments = get_appointments('Ready for Provider')
+    completed_appointments = get_appointments('Appointment Complete', 10, 'DESC')
+    active_appointments = get_appointments('Being seen by provider')
 
     context = {
         'ready_appointments': ready_appointments,
@@ -334,6 +330,13 @@ def provider_view(request, patient_id):
 
     #patient_assessments = get_patient_assessments(providernote_ids)
 
+    twilio_account_sid = settings.TWILIO_ACCOUNT_SID
+    twilio_api_key_sid = settings.TWILIO_API_KEY_SID
+    twilio_api_key_secret = settings.TWILIO_API_KEY_SECRET
+    provider_name = 'Provider'
+    token = AccessToken(twilio_account_sid, twilio_api_key_sid,
+                        twilio_api_key_secret, identity=provider_name)
+    token.add_grant(VideoGrant(room=str(patient_id)))
 
     context = {
         'provider_form': provider_form,
@@ -343,10 +346,37 @@ def provider_view(request, patient_id):
         'symptoms_form': symptoms_form,
         'preferred_pharmacy_form': preferred_pharmacy_form,
         'patient_records': patient_records,
+        'username': provider_name,
+        'token': token.to_jwt().decode()
         #'patient_assessments': patient_assessments
     }
 
     return render(request, 'EasyConnect/provider-view.html', context)
+
+
+def get_appointments(status, count=100, order_by='ASC'):
+    sql = f'''SELECT 
+                ecp.id as "patient_id",
+                eca.status as "appointment_status",
+                concat(au.first_name, ' ', au.last_name)  as "seen_by",
+                concat(ecp.first_name, ' ', ecp.last_name) as "patient_name",
+                ecp.dob as "patient_dob"
+            FROM "EasyConnect_appointments" as eca
+            LEFT JOIN "EasyConnect_patient" as ecp on eca.patient_id=ecp.id
+            LEFT JOIN "auth_user" as au on eca.seen_by_id=au.id
+            WHERE eca.status='{status}'
+            ORDER BY eca.create_datetime {order_by}
+            LIMIT {count}'''
+
+    with connection.cursor() as cursor:
+        cursor.execute(sql)
+        result = cursor.fetchall()
+
+    if not result:
+        return None
+
+    return [dict(zip([key[0] for key in cursor.description], row)) for row in result]
+
 
 
 def get_patient_assessments(provider_note_ids):
