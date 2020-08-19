@@ -48,6 +48,7 @@ function connect() {
             body: JSON.stringify({'username': username, 'patient_id': patient_id})
         }).then(res => res.json()).then(data => {
             // join video call
+            console.log(data.token)
             return Twilio.Video.connect(data.token);
         }).then(_room => {
             room = _room;
@@ -58,6 +59,7 @@ function connect() {
             updateParticipantCount();
             resolve();
         }).catch(() => {
+            // can add error catching for incorrect device, or no access.
             reject();
         });
     });

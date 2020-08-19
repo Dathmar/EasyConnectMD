@@ -54,7 +54,7 @@
                     </div>
                     <form action="" method="post">
                         {% csrf_token %}
-                        {% if symptom_form.has_error or pharmacy_form.has_error or payment_form.errors or payment_errors %}
+                        {% if symptom_form.errors or pharmacy_form.errors or payment_form.errors or payment_errors %}
                         <div class="form-group-wrapper">
                             {{ symptom_form.errors }}
                             {{ pharmacy_form.errors }}

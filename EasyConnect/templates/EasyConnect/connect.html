@@ -66,8 +66,8 @@
                         </div>
                         <form action="" method="post">
                             {% csrf_token %}
-                            {% if form.has_error %}
-                            <div class="form-group-wrapper">
+                            {% if form.errors %}
+                            <div class="form-group-wrapper errorlist">
                                 {{ form.errors }}
                             </div>
                             {%  endif %}

@@ -32,7 +32,7 @@
                         <div class="tab-style">
                             <h6 class="col-form-label">Patient Submitted Information</h6>
                             <h4></h4>
-                            <p class="appointment"><strong>Name:</strong> {{ patient.first_name }} {{ patient.last_name }} | <strong>DOB:</strong> {{ patient.dob }} | <strong>Phone:</strong> {{ patient.phone_number }} | <strong>Email:</strong> {{ patient.email }} | <strong>Gender:</strong> {{ patient.gender }}</p>
+                            <p class="appointment"><strong>Name:</strong> {{ patient.first_name }} {{ patient.last_name }} | <strong>DOB:</strong> {{ patient.dob }} | <strong>Age:</strong> {{ patient_age }} | <strong>Phone:</strong> {{ patient.phone_number }} | <strong>Email:</strong> {{ patient.email }} | <strong>Gender:</strong> {{ patient.gender }}</p>
                             <h6 class="appointment"><strong>Chief Complaint (<em>Describe your symptoms</em>):</strong><br></h6>
                             <p class="appointment">{{ symptoms.symptom_description }}</p>
                             <h6 class="bold-h6 appointment"><strong>HPI</strong></h6>
@@ -133,10 +133,11 @@
         <div id="docviewright">
             <div style="position: fixed; overflow: hidden; width: 40%; z-index: 1">
                 <div id="chat_container">
-                <div id="local" class="participant"><div></div></div>
-                 <div id="count"></div>
-            </div>
-            <button id="join_leave" type="button">Start Video Chat</button>
+                    <div id="local" class="participant"><div></div></div>
+                    <!-- more participants will be added dynamically here -->
+                </div>
+                <div id="count">Click the button to join</div>
+                <button id="join_leave" type="button">Start Video Chat</button>
             </div>
             <div id="prevapps" style="z-index: 2">
                 <h6 style="margin-top: 350px;">Previous Appointments</h6>
@@ -220,7 +221,7 @@
         </div>
     </div>
     <div id="username" class="hidden">{{ username }}</div>
-    <div id="patient_id" class="hidden">{{ patient.id }}</div>
+    <div id="patient_id" class="hidden">{{ patient_id }}</div>
 
     {% include 'EasyConnect/provider_footer.html' %}
     {{ provider_form.media.js }}

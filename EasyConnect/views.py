@@ -211,13 +211,6 @@ def connect_2(request, patient_id):
 
 def video_chat(request, patient_id):
     patient = get_object_or_404(Patient, pk=patient_id)
-    """twilio_account_sid = settings.TWILIO_ACCOUNT_SID
-    twilio_api_key_sid = settings.TWILIO_API_KEY_SID
-    twilio_api_key_secret = settings.TWILIO_API_KEY_SECRET
-    token = AccessToken(twilio_account_sid, twilio_api_key_sid,
-                        twilio_api_key_secret, identity=patient_name)
-    token.add_grant(VideoGrant(room=str(patient_id)))"""
-
     patient_name = f'{patient.first_name} {patient.last_name}'
 
     context = {
@@ -303,7 +296,8 @@ def provider_view(request, patient_id):
                                               'allergies': symptoms.allergies,
                                               'medications': symptoms.medications,
                                               'previous_diagnosis': symptoms.previous_diagnosis})
-
+        today = timezone.localdate()
+        patient_age = today.year - patient.dob.year - ((today.month, today.day) < (patient.dob.month, patient.dob.day))
         provider_notes = ProviderNotes.objects.filter(patient_id=patient_id).first()
 
         if provider_notes:
@@ -329,6 +323,7 @@ def provider_view(request, patient_id):
     #    providernote_ids.append(patient_record['providernotes__id'])
 
     #patient_assessments = get_patient_assessments(providernote_ids)
+
     provider_name = 'Provider'
     context = {
         'provider_form': provider_form,
@@ -339,6 +334,7 @@ def provider_view(request, patient_id):
         'preferred_pharmacy_form': preferred_pharmacy_form,
         'patient_records': patient_records,
         'username': provider_name,
+        'patient_age': patient_age
         #'patient_assessments': patient_assessments
     }
 

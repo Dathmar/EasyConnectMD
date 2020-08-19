@@ -7,6 +7,7 @@ import re
 from datetime import date
 from EasyConnect.models import Icd10
 from django_select2 import forms as s2forms
+from django.utils import timezone
 
 
 class PatientForm(forms.Form):
@@ -64,8 +65,14 @@ class PatientForm(forms.Form):
 
     def clean_dob(self):
         data = self.cleaned_data['dob']
+
         if not data:
             raise ValidationError(_('Invalid Birthday - cannot be blank'))
+
+        today = timezone.localdate()
+        patient_age = today.year - data.year - ((today.month, today.day) < (data.month, data.day))
+        if patient_age < 18:
+            raise ValidationError(_('You must be 18 or over to use this service.'))
 
         # Check if a date is not in the past.
         if data > date.today():
