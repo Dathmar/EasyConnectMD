@@ -137,11 +137,11 @@ def connect_2(request, patient_id):
 
             # each payment attempt will generate a new nonce
             nonce = payment_form.cleaned_data['nonce']
-
+            previous_payments = Payment.objects.filter(patient_id=patient_id).count()
             # process the payment
             body = {
                 'source_id': nonce,
-                'idempotency_key': str(patient_id),
+                'idempotency_key': str(patient_id) + '-' + str(previous_payments),
                 'amount_money': {
                     'amount': 3995,
                     'currency': 'USD'

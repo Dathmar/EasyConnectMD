@@ -27,7 +27,7 @@ function connectButtonHandler(event) {
             button.innerHTML = disconnect_string;
             button.disabled = false;
         }).catch(() => {
-            alert('Connection failed. Please contact info@easyconnectmd.net');
+            alert('Connection failed. Please make sure you have allowed access to your camera and microphone.');
             button.innerHTML = connect_string;
             button.disabled = false;
         });
@@ -48,7 +48,6 @@ function connect() {
             body: JSON.stringify({'username': username, 'patient_id': patient_id})
         }).then(res => res.json()).then(data => {
             // join video call
-            console.log(data.token)
             return Twilio.Video.connect(data.token);
         }).then(_room => {
             room = _room;
