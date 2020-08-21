@@ -264,7 +264,7 @@ def provider_view(request, patient_id):
             provider_notes.save()
             provider_notes.assessments.set(assessments)
 
-            # TODO need some edge case stuff here for when a doctor is already seeing a patient
+            # TODO need some edge case stuff here for when a provider is already seeing a patient
             appointment.status = 'Appointment Complete'
             appointment.update_datetime = datetime.now()
             appointment.seen_by = request.user
@@ -276,7 +276,7 @@ def provider_view(request, patient_id):
     # If this is a GET (or any other method) create the default form.
     else:
         # update appointment status
-        # TODO need some edge case stuff here for when a doctor is already seeing a patient
+        # TODO need some edge case stuff here for when a provider is already seeing a patient
         if appointment.status != 'Appointment Complete' and not appointment.seen_by:
             appointment.status = 'Being seen by provider'
             appointment.seen_by = request.user
@@ -309,20 +309,8 @@ def provider_view(request, patient_id):
         else:
             provider_form = ProviderForm()
 
-    patient_records = Patient.objects.filter(first_name=patient.first_name,
-                                             last_name=patient.last_name,
-                                             dob=patient.dob).\
-        exclude(pk=patient_id).values('id', 'create_datetime', 'symptoms__allergies', 'symptoms__medications',
-                                      'symptoms__previous_diagnosis', 'symptoms__symptom_description',
-                                      'providernotes__hpi', 'providernotes__followup', 'providernotes__treatment',
-                                      'providernotes__id')\
-        .order_by('-create_datetime')
+    patient_records = get_patient_records(patient_id)
 
-    #providernote_ids = []
-    #for patient_record in patient_records:
-    #    providernote_ids.append(patient_record['providernotes__id'])
-
-    #patient_assessments = get_patient_assessments(providernote_ids)
 
     provider_name = 'Provider'
     context = {
@@ -335,7 +323,6 @@ def provider_view(request, patient_id):
         'patient_records': patient_records,
         'username': provider_name,
         'patient_age': patient_age
-        #'patient_assessments': patient_assessments
     }
 
     return render(request, 'EasyConnect/provider-view.html', context)
@@ -357,6 +344,53 @@ def video_token(request):
         return HttpResponse(data, status=200, content_type='application/json')
 
     return HttpResponse(None, status=401)
+
+
+def get_patient_records(patient_id):
+    sql = f'''
+            with PNA as ( 
+                select STRING_AGG(icd."ICD10_DSC"::character varying, ', ') icd10_dsc, ecpa.providernotes_id from 
+                    public."EasyConnect_providernotes_assessments" ecpa
+                inner join public."EasyConnect_icd10" icd on ecpa."icd10_id"=icd.id
+                group by ecpa.providernotes_id
+            ),
+            PNMax as (
+            SELECT 
+                max(PN2.create_datetime) AS mxdate, PN2.patient_id
+            FROM public."EasyConnect_providernotes" AS PN2
+            GROUP BY PN2.patient_id
+            ),
+            patient as (
+            SELECT
+                pat.id, concat(pat.first_name, ' ', pat.last_name) patient_name, pat.dob
+            FROM public."EasyConnect_patient" pat
+            ) 
+            SELECT
+                PNMax.mxdate create_datetime, sym.symptom_description symptom_description, sym.allergies allergies, 
+                sym.medications medications, sym.previous_diagnosis previous_diagnosis, PN.hpi hpi, 
+                PNA.icd10_dsc icd10_dsc, PN.treatment treatment, PN.followup, 
+                concat(au.first_name, ' ', last_name) seen_by, patient.patient_name, patient.dob
+            FROM public."EasyConnect_providernotes" AS PN
+                INNER JOIN PNMax ON PN.patient_id=PNMax.patient_id AND PN.create_datetime=PNMax.mxdate
+                INNER JOIN PNA ON PN.id=PNA.providernotes_id
+                INNER JOIN public."EasyConnect_symptoms" sym ON PN.patient_id=sym.patient_id
+                INNER JOIN public."EasyConnect_appointments" eca ON PN.patient_id=eca.patient_id
+                INNER JOIN patient ON patient.id=eca.patient_id
+                LEFT JOIN "auth_user" as au on eca.seen_by_id=au.id
+            WHERE PN.patient_id!='{patient_id}' and patient.patient_name=(select pat.patient_name from patient pat where
+                pat.id='{patient_id}') and patient.dob=(select pat.dob from patient pat where
+                pat.id='{patient_id}')
+            ORDER BY create_datetime DESC
+        '''
+
+    with connection.cursor() as cursor:
+        cursor.execute(sql)
+        result = cursor.fetchall()
+
+    if not result:
+        return None
+
+    return [dict(zip([key[0] for key in cursor.description], row)) for row in result]
 
 def get_appointments(status, count=100, order_by='ASC'):
     sql = f'''SELECT 

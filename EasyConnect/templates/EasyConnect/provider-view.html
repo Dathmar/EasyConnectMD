@@ -148,7 +148,7 @@
                                 <p>{{ patient_record.create_datetime }}</p>
                             </div>
                             <div class="col-md-6 dark-grey">
-                                <p>Seen By: </p>
+                                <p>Seen By: {{ patient_record.seen_by }}</p>
                             </div>
                         </div>
                         <div class="row">
@@ -156,7 +156,7 @@
                                 <p>Chief Complaint</p>
                             </div>
                             <div class="col-md-6">
-                                <p>{{ patient_record.symptoms__symptom_description }}</p>
+                                <p>{{ patient_record.symptom_description }}</p>
                             </div>
                         </div>
                         <div class="row">
@@ -164,7 +164,7 @@
                                 <p>Allergies to Medications</p>
                             </div>
                             <div class="col-md-6 light-grey">
-                                <p>{{ patient_record.symptoms__allergies }}</p>
+                                <p>{{ patient_record.allergies }}</p>
                             </div>
                         </div>
                         <div class="row">
@@ -172,7 +172,7 @@
                                 <p>Current Medications</p>
                             </div>
                             <div class="col-md-6">
-                                <p>{{ patient_record.symptoms__medications }}</p>
+                                <p>{{ patient_record.medications }}</p>
                             </div>
                         </div>
                         <div class="row">
@@ -180,7 +180,7 @@
                                 <p>Medical History</p>
                             </div>
                             <div class="col-md-6 light-grey">
-                                <p>{{ patient_record.symptoms__previous_diagnosis }}</p>
+                                <p>{{ patient_record.revious_diagnosis }}</p>
                             </div>
                         </div>
                         <div class="row">
@@ -188,7 +188,7 @@
                                 <p>HIP</p>
                             </div>
                             <div class="col-md-6">
-                                <p>{{ patient_record.providernotes__hpi }}</p>
+                                <p>{{ patient_record.hpi }}</p>
                             </div>
                         </div>
                         <div class="row">
@@ -196,7 +196,7 @@
                                 <p>Assessments</p>
                             </div>
                             <div class="col-md-6 light-grey">
-                                <p>{{ patient_record.providernotes__assessments__ICD10_DSC }}</p>
+                                <p>{{ patient_record.icd10_dsc }}</p>
                             </div>
                         </div>
                         <div class="row">
@@ -204,7 +204,7 @@
                                 <p>Treatment</p>
                             </div>
                             <div class="col-md-6">
-                                <p>{{ patient_record.providernotes__treatment }}</p>
+                                <p>{{ patient_record.treatment }}</p>
                             </div>
                         </div>
                         <div class="row">
@@ -212,7 +212,7 @@
                                 <p>Follow up</p>
                             </div>
                             <div class="col-md-6 light-grey">
-                                <p>{{ patient_record.providernotes__followup }}</p>
+                                <p>{{ patient_record.followup }}</p>
                             </div>
                         </div>
                     </div>
