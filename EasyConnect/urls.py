@@ -16,6 +16,7 @@ urlpatterns = [
     path('video-chat/<uuid:patient_id>', views.video_chat, name='video-chat'),
     path('provider/<uuid:patient_id>', views.provider_view, name='provider-view'),
     path('icd10-load/', views.icd10_load, name='icd10-load'),
+    path('connect-timeless/', views.connect_timeless, name='connect-timeless'),
 
     url(r'^dashboard/', provider_dashboard, name='dashboard'),
     url(r'^accounts/', include("django.contrib.auth.urls")),

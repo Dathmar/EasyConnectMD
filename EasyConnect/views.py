@@ -76,8 +76,50 @@ def connect(request):
         form = PatientForm()
 
     off_hours = False
-    # if not (8 <= timezone.localtime().hour < 20):
-    #    off_hours = True
+    if not (8 <= timezone.localtime().hour < 20):
+        off_hours = True
+
+    context = {
+        'form': form,
+        'off_hours': off_hours
+    }
+
+    return render(request, 'EasyConnect/connect.html', context)
+
+
+def connect_timeless(request):
+    if request.method == 'POST':
+        # Create a form instance and populate it with data from the request (binding):
+        form = PatientForm(request.POST)
+        if form.is_valid():
+            # process the data in form.cleaned_data as required (here we just write it to the model due_back field)
+            first_name = form.cleaned_data['first_name']
+            last_name = form.cleaned_data['last_name']
+            phone_number = form.cleaned_data['phone_number']
+            email = form.cleaned_data['email']
+            dob = form.cleaned_data['dob']
+            gender = form.cleaned_data['gender']
+            zip = form.cleaned_data['zip']
+            tos = form.cleaned_data['tos']
+
+            patient = Patient(first_name=first_name,
+                              last_name=last_name,
+                              phone_number=phone_number,
+                              email=email,
+                              dob=dob,
+                              gender=gender,
+                              zip=zip,
+                              tos=tos)
+            patient.save()
+
+            # redirect to a new URL:
+            return HttpResponseRedirect(reverse('easyconnect:connect-2', args=(patient.id,)))
+
+    # If this is a GET (or any other method) create the default form.
+    else:
+        form = PatientForm()
+
+    off_hours = False
 
     context = {
         'form': form,
@@ -398,7 +440,8 @@ def get_appointments(status, count=100, order_by='ASC'):
                 eca.status as "appointment_status",
                 concat(au.first_name, ' ', au.last_name)  as "seen_by",
                 concat(ecp.first_name, ' ', ecp.last_name) as "patient_name",
-                ecp.dob as "patient_dob"
+                ecp.dob as "patient_dob",
+                eca.create_datetime as "created_at"
             FROM "EasyConnect_appointments" as eca
             LEFT JOIN "EasyConnect_patient" as ecp on eca.patient_id=ecp.id
             LEFT JOIN "auth_user" as au on eca.seen_by_id=au.id

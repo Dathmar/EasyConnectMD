@@ -33,6 +33,9 @@
                         <p>Status</p>
                     </div>
                     <div class="col dark-grey">
+                        <p>Created at</p>
+                    </div>
+                    <div class="col dark-grey">
                         <p>ID</p>
                     </div>
                 </div>
@@ -46,6 +49,9 @@
                         </div>
                         <div class="col {{forloop.counter|divisibleby:2|yesno:",light-grey"}}">
                             <p>{{ ready_appointment.appointment_status }}</p>
+                        </div>
+                        <div class="col {{forloop.counter|divisibleby:2|yesno:",light-grey"}}">
+                            <p>{{ ready_appointment.created_at }}</p>
                         </div>
                         <div class="col {{forloop.counter|divisibleby:2|yesno:",light-grey"}}">
                             <p>{{ ready_appointment.patient_id }}</p>
@@ -70,6 +76,9 @@
                         <p>Being Seen By</p>
                     </div>
                     <div class="col dark-grey">
+                        <p>Created at</p>
+                    </div>
+                    <div class="col dark-grey">
                         <p>ID</p>
                     </div>
                 </div>
@@ -86,6 +95,9 @@
                         </div>
                         <div class="col {{forloop.counter|divisibleby:2|yesno:",light-grey"}}">
                             <p>{{ active_appointment.seen_by }}</p>
+                        </div>
+                        <div class="col {{forloop.counter|divisibleby:2|yesno:",light-grey"}}">
+                            <p>{{ active_appointment.created_at }}</p>
                         </div>
                         <div class="col {{forloop.counter|divisibleby:2|yesno:",light-grey"}}">
                             <p>{{ active_appointment.patient_id }}</p>
@@ -109,6 +121,9 @@
                     <div class="col dark-grey">
                         <p>Seen By</p>
                     </div>
+                    <div class="col dark-grey">
+                        <p>Created at</p>
+                    </div>
                      <div class="col dark-grey">
                         <p>ID</p>
                     </div>
@@ -126,6 +141,9 @@
                         </div>
                         <div class="col {{forloop.counter|divisibleby:2|yesno:",light-grey"}}">
                             <p>{{ completed_appointment.seen_by }}</p>
+                        </div>
+                        <div class="col {{forloop.counter|divisibleby:2|yesno:",light-grey"}}">
+                            <p>{{ completed_appointment.created_at }}</p>
                         </div>
                         <div class="col {{forloop.counter|divisibleby:2|yesno:",light-grey"}}">
                             <p>{{ completed_appointment.patient_id }}</p>

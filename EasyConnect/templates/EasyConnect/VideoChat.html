@@ -26,19 +26,26 @@
             <p style="font-size: 15px;"><em>Need technical support</em><br><em>Click on "Need Help?" (top right) or email <a href="mailto:info@easyconnectmd.net">info@easyconnectmd.net</a></em></p>
         </div>
         <section class="d-flex text-center" id="chatSection">
+            <div id="otEmbedContainer" style="width:800px; height:640px"></div> <script src="https://tokbox.com/embed/embed/ot-embed.js?embedId=032c81ed-9c14-43b2-89fa-59e4e1ecc59b&room={{ patient_id }}"></script
+        </section>
+        <!-- Future Twilio Video integration
+        <section class="d-flex text-center" id="chatSection">
              <div id="chat_container">
                 <div id="local" class="participant"><div></div><div>Me</div></div>
-                <!-- more participants will be added dynamically here -->
+
             </div>
             <div id="count">Click the button to join</div>
             <button id="join_leave" type="button">Start Video Chat</button>
         </section>
         <div id="username" class="hidden">{{ username }}</div>
         <div id="patient_id" class="hidden">{{ patient_id }}</div>
+        -->
     </div>
     {% include 'EasyConnect/standard-footer.html' %}
+    <!-- Future Twilio Video integration
     <script src="//media.twiliocdn.com/sdk/js/video/releases/2.3.0/twilio-video.min.js"></script>
     <script src="{% get_static_prefix %}EasyConnect/assets/js/video.js"></script>
+    -->
 </body>
 
 </html>

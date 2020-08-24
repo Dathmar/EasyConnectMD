@@ -132,13 +132,17 @@
 
         <div id="docviewright">
             <div style="position: fixed; overflow: hidden; width: 40%; z-index: 1">
+                <iframe src="https://tokbox.com/embed/embed/ot-embed.js?embedId=032c81ed-9c14-43b2-89fa-59e4e1ecc59b&room={{ patient.id }}&iframe=true" class="videoChat" width="100%" height="315" scrolling="auto" allow="microphone; camera" ></iframe>
+            </div>
+            <!--
+            <div style="position: fixed; overflow: hidden; width: 40%; z-index: 1">
                 <div id="chat_container">
                     <div id="local" class="participant"><div></div></div>
-                    <!-- more participants will be added dynamically here -->
                 </div>
                 <div id="count">Click the button to join</div>
                 <button id="join_leave" type="button">Start Video Chat</button>
             </div>
+            -->
             <div id="prevapps" style="z-index: 2">
                 <h6 style="margin-top: 350px;">Previous Appointments</h6>
                 {% for patient_record in patient_records %}
@@ -220,13 +224,17 @@
             </div>
         </div>
     </div>
+    <!-- Future Twilio Video integration
     <div id="username" class="hidden">{{ username }}</div>
     <div id="patient_id" class="hidden">{{ patient.id }}</div>
+    -->
 
     {% include 'EasyConnect/provider_footer.html' %}
     {{ provider_form.media.js }}
+    <!-- Future Twilio Video integration
     <script src="//media.twiliocdn.com/sdk/js/video/releases/2.3.0/twilio-video.min.js"></script>
     <script src="{% get_static_prefix %}EasyConnect/assets/js/video.js"></script>
+    -->
 </body>
 
 </html>
