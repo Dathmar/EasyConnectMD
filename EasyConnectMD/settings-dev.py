@@ -25,10 +25,19 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'gk)#z-uq9s$bjt(_xjqckfxv%lpfyq2xevdmr#jd!q9din!#m9')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-# DEBUG = True
-DEBUG = DEBUG = os.environ.get('DJANGO_DEBUG', '') != 'False'
+DEBUG = True
+# DEBUG = False
 
-ALLOWED_HOSTS = ['easyconnectmd.com']
+ALLOWED_HOSTS = ['dev-connect.easyconnectmd.com']
+
+# deploy security settings
+SECURE_SSL_REDIRECT = True
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
+SECURE_REFERRER_POLICY = "same-origin"
+SECURE_HSTS_SECONDS = 31_536_000
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+SECURE_HSTS_PRELOAD = True
 
 
 # Application definition
@@ -84,62 +93,33 @@ WSGI_APPLICATION = 'EasyConnectMD.wsgi.application'
 # create db user account
 # open ports
 # in postgres ALTER USER username PASSWORD = "password";
-if DEBUG:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'NAME': 'easyconnect',
-            'USER': 'easyconnect',
-            'PASSWORD': 'abacabb',
-            'HOST': '216.177.177.7',
-            'PORT': '5432',
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'easyconnectmd_dev',
+        'USER': 'easyconnectmd_devUser',
+        'PASSWORD': 'u435Wz8STwWZBdkA2tn9Y%wp7Chz8M!!qV^sj9MHNyw3fqe@F5',
+        'HOST': '127.0.0.1',
+        'PORT': '5432',
+    }
+}
+# redis Cache https://django-select2.readthedocs.io/en/latest/
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://127.0.0.1:6379/1",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        }
+    },
+    'select2': {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://127.0.0.1:6379/2",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
         }
     }
-    # redis Cache https://django-select2.readthedocs.io/en/latest/
-    CACHES = {
-        "default": {
-            "BACKEND": "django_redis.cache.RedisCache",
-            "LOCATION": "redis://216.177.177.7:6379/1",
-            "OPTIONS": {
-                "CLIENT_CLASS": "django_redis.client.DefaultClient",
-            }
-        },
-        'select2': {
-            "BACKEND": "django_redis.cache.RedisCache",
-            "LOCATION": "redis://192.168.1.122:6379/2",
-            "OPTIONS": {
-                "CLIENT_CLASS": "django_redis.client.DefaultClient",
-            }
-        }
-    }
-else:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'NAME': 'easyconnectmd_dev',
-            'USER': 'easyconnectmd_devUser',
-            'PASSWORD': 'u435Wz8STwWZBdkA2tn9Y%wp7Chz8M!!qV^sj9MHNyw3fqe@F5',
-            'HOST': '127.0.0.1',
-            'PORT': '5432',
-        }
-    }
-    # redis Cache https://django-select2.readthedocs.io/en/latest/
-    CACHES = {
-        "default": {
-            "BACKEND": "django_redis.cache.RedisCache",
-            "LOCATION": "redis://127.0.0.1:6379/1",
-            "OPTIONS": {
-                "CLIENT_CLASS": "django_redis.client.DefaultClient",
-            }
-        },
-        'select2': {
-            "BACKEND": "django_redis.cache.RedisCache",
-            "LOCATION": "redis://127.0.0.1:6379/2",
-            "OPTIONS": {
-                "CLIENT_CLASS": "django_redis.client.DefaultClient",
-            }
-        }
-    }
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
@@ -183,26 +163,71 @@ LOGOUT_REDIRECT_URL = 'easyconnect:dashboard'
 PHONENUMBER_DB_FORMAT = 'NATIONAL'
 PHONENUMBER_DEFAULT_REGION = 'US'
 
+# logging https://stackoverflow.com/questions/19256919/location-of-django-logs-and-errors
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'filters': {
+        'require_debug_false': {
+            '()': 'django.utils.log.RequireDebugFalse'
+        }
+    },
+    'handlers': {
+        'mail_admins': {
+            'level': 'DEBUG',
+            'filters': ['require_debug_false'],
+            'class': 'django.utils.log.AdminEmailHandler'
+        },
+        'applogfile': {
+            'level':'DEBUG',
+            'class':'logging.handlers.RotatingFileHandler',
+            'filename': os.path.join(BASE_DIR, 'EasyConnectMD.log'),
+            'maxBytes': 1024*1024*10, # 10MB
+            'backupCount': 10,
+        },
+    },
+    'loggers': {
+        'django.request': {
+            'handlers': ['mail_admins'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+        'EasyConnect': {
+            'handlers': ['applogfile',],
+            'level': 'DEBUG',
+        },
+    },
+}
+ADMINS = (
+   ('ME', 'adanner@easyconnectmd.net'),
+)
+MANAGERS = ADMINS
+
+
+########## EMAIL CONFIGURATION
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'mail.easyconnectmd.com'
+EMAIL_USE_SSL = True
+EMAIL_PORT = 465
+EMAIL_HOST_USER = 'test@easyconnectmd.com'
+EMAIL_HOST_PASSWORD = '5YvpyYs%mS$FQG##eawp#FbQ7ap7pCcu4um5b7cba@7cknY6E#'
+SERVER_EMAIL = EMAIL_HOST_USER
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+########## END EMAIL CONFIGURATION
+
+# Keys for Twilio
+TWILIO_ACCOUNT_SID = 'AC054c0bebed2b5e6217d2595ff5a356cf'
+TWILIO_API_KEY_SID ='SKff607158e17fc34873f8084f1eee4a55'
+TWILIO_API_KEY_SECRET = 'pYIA1P0SIe3Fzb6kC0rXzWukDsZ5wued'
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 # Payment keys for Square
-if DEBUG:
-    STATIC_URL = '/static/'
-    STATIC_ROOT = os.path.join(BASE_DIR, "static/")
-    STATICFILES_DIR = (
-        os.path.join(BASE_DIR, 'EasyConnect/static')
-    )
-    MEDIA_URL = '/media/'
-    MEDIA_ROOT = os.path.join(BASE_DIR, "static_media")
+SQUARE_APP_ID = 'sandbox-sq0idb-tOPCaqqjNhHwoh3Vi_ihkg'
+SQUARE_ACCESS_TOKEN = 'EAAAEEIFPF_5Utik58cM9dKzOjqh_f0IpljAftfPdwo36EFxWRUjExV9I1Y30pBf'
 
-    SQUARE_APP_ID = 'sandbox-sq0idb-tOPCaqqjNhHwoh3Vi_ihkg'
-    SQUARE_ACCESS_TOKEN = 'EAAAEEIFPF_5Utik58cM9dKzOjqh_f0IpljAftfPdwo36EFxWRUjExV9I1Y30pBf'
-else:
-    STATIC_URL = '/static/'
-    STATIC_ROOT = os.path.join(BASE_DIR, 'static_files')
-    MEDIA_URL = '/media/'
-    MEDIA_ROOT = os.path.join(BASE_DIR, "static_media")
 
-    SQUARE_APP_ID = 'sq0idp-vxCXwuvwxA919yaoe5wczQ'
-    SQUARE_ACCESS_TOKEN = 'EAAAELBWv5rGYdtNtubLvPBZEXR5vb0yav0RypCREkZnRoPkOQfcETJL0C6MxmFR'
+STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, "static_media")

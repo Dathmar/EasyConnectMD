@@ -17,6 +17,7 @@ urlpatterns = [
     path('provider/<uuid:patient_id>', views.provider_view, name='provider-view'),
     path('icd10-load/', views.icd10_load, name='icd10-load'),
     path('connect-timeless/', views.connect_timeless, name='connect-timeless'),
+    path('lucky-provider/', views.lucky_provider, name='lucky_provider'),
 
     url(r'^dashboard/', provider_dashboard, name='dashboard'),
     url(r'^accounts/', include("django.contrib.auth.urls")),

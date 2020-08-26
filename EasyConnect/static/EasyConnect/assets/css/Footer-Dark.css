@@ -123,7 +123,7 @@
 
 .button-white {
   text-decoration: none;
-  color: #ffffff !important;
+
   background-color: transparent;
   border: 2px solid #ffa500 !important;
   padding: 0;
@@ -316,20 +316,6 @@ p {
   font-size: larger;
 }
 
-.cardItem {
-  min-width: 47%;
-  border: 2px Solid #cdcdcd;
-  height: 68%;
-  margin-right: 3%;
-  margin-bottom: 1em;
-  float: left;
-}
-
-.card-container-bottom {
-  overflow-y: scroll;
-  overflow-x: hidden;
-}
-
 .videoChat {
   background-color: grey;
 }
@@ -343,11 +329,6 @@ body {
 
 #videoBody {
   margin-top: -120px;
-}
-
-.card-container {
-  width: 100% !important;
-  height: 50%;
 }
 
 #map-card-container {
@@ -370,47 +351,18 @@ body {
   text-decoration: none;
 }
 
-.cardItem {
-  min-width: 47%;
-  border: 2px Solid #cdcdcd;
-  height: 68%;
-  margin-right: 3%;
-  margin-bottom: 1em;
-  float: left;
-}
-
-.card-container-bottom {
-  overflow-y: scroll;
-  overflow-x: hidden;
-}
-
 .videoChat {
   background-color: grey;
 }
 
 #chatSection {
   margin: 1em;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 #videoBody {
   margin-top: -120px;
-}
-
-.card-container {
-  width: 100% !important;
-  height: 50%;
-}
-
-#map-card-container {
-  margin: 0.5em;
-}
-
-#white-button {
-  background-color: white;
-}
-
-#white-button:hover {
-  background-color: #ffa500;
 }
 
 #location-link {
@@ -465,23 +417,56 @@ body {
   border: 1px solid lightgrey;
 }
 
+.chatSection {
+  width: 800px;
+  height: 480px;
+  position: relative;
+}
 
+.participant-overlay {
+  width: 20%;
+  height: 20%;
+}
 
+.participant-overlay video{
+  width: 20%;
+  height: 20%;
+  position: absolute;
+  top: 5%;
+  left: 5%;
+  z-index: 3;
+}
+
+.remote {
+  min-width: 100px;
+  min-height: 100px;
+  width: 100%;
+  height: 100%;
+}
+
+.remote video{
+  min-width: 100px;
+  min-height: 100px;
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  background-color: #4e555b;
+  top: 0;
+  left: 0;
+  z-index: 2;
+}
 
 .participant {
-    margin-bottom: 5px;
-    margin-right: 5px;
+  margin-bottom: 5px;
+  margin-right: 5px;
 }
 .participant div {
-    text-align: center;
+  text-align: center;
 }
-.participant div:first-child {
-    width: 240px;
-    height: 180px;
-    background-color: #ccc;
-    border: 1px solid black;
-}
+
 .participant video {
-    width: 100%;
-    height: 100%;
+  width: 100%;
+  height: 100%;
+  background-color: #ccc;
+  border: 1px solid black;
 }

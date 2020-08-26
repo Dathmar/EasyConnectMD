@@ -192,7 +192,7 @@ def connect_2(request, patient_id):
 
             client = Client(
                 access_token=settings.SQUARE_ACCESS_TOKEN,
-                environment='sandbox',
+                environment=settings.SQUARE_ENVIRONMENT,
             )
 
             payments_api = client.payments
@@ -261,6 +261,17 @@ def video_chat(request, patient_id):
     }
     return render(request, 'EasyConnect/VideoChat.html', context)
 
+
+def lucky_provider(request):
+    ready_appointments = get_appointments('Ready for Provider')
+
+    if ready_appointments:
+        patient_id = ready_appointments[0]['patient_id']
+        patient_name = ready_appointments[0]['patient_name']
+
+        return provider_view(request, patient_id)
+    else:
+        return provider_dashboard(request)
 
 def provider_dashboard(request):
     ready_appointments = get_appointments('Ready for Provider')
