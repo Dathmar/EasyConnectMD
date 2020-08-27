@@ -26,9 +26,11 @@
             <p style="font-size: 15px;"><em>Need technical support</em><br><em>Click on "Need Help?" (top right) or email <a href="mailto:info@easyconnectmd.net">info@easyconnectmd.net</a></em></p>
             <button id="join_leave" class="btn btn-primary border rounded-0 button-transparent button-white" style="padding: 1.5em" type="button">Start Video Chat</button>
         </div>
-        <section class="chatSection" style="max-width:800px; max-height:640px;" id="chatSection">
-                 <div id="local" class="participant"><div></div></div>
-        </section>
+        <div class="chat_container">
+            <section class="chatSection" style="width:90%;" id="chatSection">
+                     <div id="local" class="participant"><div></div></div>
+            </section>
+        </div>
         <div id="username" class="hidden">{{ username }}</div>
         <div id="patient_id" class="hidden">{{ patient_id }}</div>
     </div>

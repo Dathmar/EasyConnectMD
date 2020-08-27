@@ -361,6 +361,12 @@ body {
   margin-right: auto;
 }
 
+.chat_container {
+  margin-left: auto;
+  margin-right: auto;
+  width: 60%
+}
+
 #videoBody {
   margin-top: -120px;
 }
@@ -418,8 +424,8 @@ body {
 }
 
 .chatSection {
-  width: 800px;
-  height: 480px;
+  width: 100%;
+  padding-top: 67.6%;
   position: relative;
 }
 
@@ -444,7 +450,7 @@ body {
   height: 100%;
 }
 
-.remote video{
+.remote video {
   min-width: 100px;
   min-height: 100px;
   width: 100%;
@@ -459,7 +465,10 @@ body {
 .participant {
   margin-bottom: 5px;
   margin-right: 5px;
+  width: 100%;
+  height: 100%;
 }
+
 .participant div {
   text-align: center;
 }
@@ -467,6 +476,9 @@ body {
 .participant video {
   width: 100%;
   height: 100%;
-  background-color: #ccc;
+  background-color: #4e555b;
   border: 1px solid black;
+  position: absolute;
+  top: 0;
+  left: 0;
 }

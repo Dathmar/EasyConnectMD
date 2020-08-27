@@ -105,19 +105,12 @@ function participantConnected(participant) {
     let tracksDiv = document.createElement('div');
     participantDiv.appendChild(tracksDiv);
 
-    let labelDiv = document.createElement('div');
-    labelDiv.innerHTML = participant.identity;
-    participantDiv.appendChild(labelDiv);
-
     container.appendChild(participantDiv);
 
     // update local video to show in upper left corner of remote video
     let local_overlay = document.getElementsByClassName('participant-overlay');
-    console.log('trying to set participant-overlay');
-    console.log(local_overlay.length);
     if (local_overlay.length === 0) {
-        console.log('trying to change classes')
-        let video = $('local')
+        let video = $('local');
         video.classList.remove('participant');
         video.classList.add('participant-overlay');
     }
@@ -131,16 +124,15 @@ function participantConnected(participant) {
 }
 
 function participantDisconnected(participant) {
-    console.log('test participantDisconnected')
     //change local back to full if this is the last participant
     document.getElementById(participant.sid).remove();
-    let participant_div = document.getElementsByClassName('remote');
+    let remote_div = document.getElementsByClassName('remote');
     let local_overlay = document.getElementsByClassName('participant-overlay');
 
-    if (participant_div.length === 0 && local_overlay.length === 0) {
-        let video = $('local')
-        video.classList.remove('participant');
-        video.classList.add('participant-overlay');
+    if (remote_div.length === 0 && local_overlay.length !== 0) {
+        let video = $('local');
+        video.classList.remove('participant-overlay');
+        video.classList.add('participant');
     }
 }
 
@@ -154,3 +146,10 @@ function trackUnsubscribed(track) {
 
 addLocalVideo();
 button.addEventListener('click', connectButtonHandler);
+// Listen to the "beforeunload" event on window to leave the Room
+// when the tab/browser is being closed.
+window.addEventListener('beforeunload', () => room.disconnect());
+
+// iOS Safari does not emit the "beforeunload" event on window.
+// Use "pagehide" instead.
+window.addEventListener('pagehide', () => room.disconnect());

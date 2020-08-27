@@ -132,14 +132,14 @@
 
         <div id="docviewright">
             <div style="position: fixed; overflow: hidden; width: 40%; z-index: 1">
-                <div id="chat_container">
+                <div class="chatSection" style="width:90%;" id="chatSection">
                     <div id="local" class="participant"><div></div></div>
                 </div>
-                <div id="count">Click the button to join</div>
-                <button id="join_leave" type="button">Start Video Chat</button>
+                <div id="button-container" style="padding-left: 15%"><button id="join_leave"  type="button">Start Video Chat</button></div>
+
             </div>
-            <div id="prevapps" style="z-index: 10">
-                <h6 style="margin-top: 350px;">Previous Appointments</h6>
+            <div id="prevapps" style="z-index: 10; margin-top: 450px;">
+                <h6 style="padding-top: 10px; padding-left: 10px">Previous Appointments</h6>
                 {% for patient_record in patient_records %}
                     <div class="container">
                         <div class="row">
