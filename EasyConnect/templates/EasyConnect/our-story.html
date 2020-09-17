@@ -1,4 +1,5 @@
 {% load static %}
+{% load math_filters %}
 <!DOCTYPE html>
 <html>
 
@@ -28,21 +29,21 @@
                 </div>
             </div>
             <div class="row">
-                <div class="col text-center d-flex d-xl-flex justify-content-xl-center">
-                    <p style="font-family: Antic, sans-serif;font-size: 19px;"><br>We believe that quality healthcare shouldn’t give you a headache. That’s&nbsp;why we decided to cut out <br>the in-office doctor visits and provide patients an easier, more cost-effective way to feel better. <br>We connect patients
-                        to providers virtually, so that you can feel better faster. It’s simple: fill out the <br>form, video chat with a doctor and have your prescriptions sent directly to your local pharmacy. <br>It’s that easy—it’s EasyConnectMD.<br><br></p>
+                <div class="col d-flex d-xl-flex justify-content" style="padding-top: 1em; padding-bottom: 1em; padding-left: 15%; padding-right: 15%">
+                    <p style="font-family: Antic, sans-serif;font-size: 19px;">We believe that quality healthcare shouldn’t give you a headache. That’s why we decided to cut out the in-office doctor visits and provide patients an easier, more cost-effective way to feel better. We connect patients
+                        to providers virtually, so that you can feel better faster. It’s simple: fill out the form, video chat with a doctor and have your prescriptions sent directly to your local pharmacy. It’s that easy — it’s EasyConnectMD.</p>
                 </div>
             </div>
         </div>
     </section>
     <div class="justify-content-center align-items-center align-self-center orange-box">
         <div class="d-xl-flex justify-content-xl-center">
-            <h1 class="text-center" style="font-weight: normal;color: rgb(255,255,255);padding-top: 10px;font-family: Antic, sans-serif;">Skip the line, Go online.<br></h1>
+            <h1 class="text-center" style="font-weight: normal;color: rgb(255,255,255);padding-top: 10px;font-family: Antic, sans-serif;">Skip the line, Go online.</h1>
         </div>
         <div class="text-center">
-            <p style="background-color: rgba(0,0,0,0);color: #ffffff;font-size: 20px;font-family: Antic, sans-serif;">A doctor is ready to chat right now.<br></p>
+            <p style="background-color: rgba(0,0,0,0);color: #ffffff;font-size: 20px;font-family: Antic, sans-serif;">A doctor is ready to chat right now.</p>
         </div>
-        <div class="d-flex d-sm-flex d-md-flex d-lg-flex d-xl-flex justify-content-center justify-content-sm-center justify-content-md-center justify-content-lg-center justify-content-xl-center"><button class="btn btn-primary border rounded-0 shadow-sm button-white" id="orange-box-button" type="button"><a id="orange-box-link" class="link-base orange-btn" href="../EasyConnect/templates/EasyConnect/connect.html">Connect now for just $39.95</a></button></div>
+        <div class="d-flex d-sm-flex d-md-flex d-lg-flex d-xl-flex justify-content-center justify-content-sm-center justify-content-md-center justify-content-lg-center justify-content-xl-center"><button class="btn btn-primary border rounded-0 shadow-sm button-white" id="orange-box-button" type="button"><a id="orange-box-link" class="link-base orange-btn" href="{% if affiliate.affiliate_url %}{% url 'easyconnect:connect-with-a-doctor-affiliate' affiliate.affiliate_url %}{% else %}{% url 'easyconnect:connect-with-a-doctor' %}{% endif %}">Connect now for just ${{ affiliate.affiliate_price|div:100 }}</a></button></div>
         <div class="text-center">
             <p style="background-color: rgba(0,0,0,0);color: #ffffff;font-family: Antic, sans-serif;">No insurance required</p>
         </div>

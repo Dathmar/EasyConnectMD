@@ -11,7 +11,7 @@
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col d-flex d-sm-flex d-md-flex d-lg-flex d-xl-flex justify-content-center justify-content-sm-center justify-content-md-center justify-content-lg-center justify-content-xl-center"><a id="privacy-policy" href="{% url 'easyconnect:privacy-policy' %}" style="color: rgb(122,122,122);font-family: Antic, sans-serif;">Privacy Policy</a></div>
+                    <div class="col d-flex d-sm-flex d-md-flex d-lg-flex d-xl-flex justify-content-center justify-content-sm-center justify-content-md-center justify-content-lg-center justify-content-xl-center"><a id="privacy-policy" href="{% if affiliate.affiliate_url %}{% url 'easyconnect:privacy-policy-affiliate' affiliate.affiliate_url %}{% else %}{% url 'easyconnect:privacy-policy' %}{% endif %}" style="color: rgb(122,122,122);font-family: Antic, sans-serif;">Privacy Policy</a></div>
                 </div>
             </div>
         </footer>

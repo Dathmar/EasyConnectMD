@@ -4,7 +4,18 @@ from EasyConnect.choices import GENDER_CHOICES, DIAGNOSED_CHOICES
 from phonenumber_field.modelfields import PhoneNumberField
 from django.conf import settings
 
+
 # Create your models here.
+class Affiliate(models.Model):
+    affiliate_name = models.TextField()
+    affiliate_logo = models.TextField()
+    affiliate_url = models.TextField(null=True)
+    affiliate_price = models.TextField()
+
+    def __str__(self):
+        return self.affiliate_name
+
+
 class Patient(models.Model):
     # page 1
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -16,6 +27,7 @@ class Patient(models.Model):
     gender = models.CharField(choices=GENDER_CHOICES, max_length=1, default=None)
     zip = models.CharField(max_length=10, default=0)
     tos = models.BooleanField(default=None)
+    affiliate = models.ForeignKey(Affiliate, null=True, on_delete=models.PROTECT)
 
     create_datetime = models.DateTimeField('date created', auto_now_add=True)
     update_datetime = models.DateTimeField('date updated', auto_now=True)

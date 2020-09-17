@@ -1,4 +1,5 @@
 {%  load static %}
+{% load math_filters %}
 <!DOCTYPE html>
 <html>
 
@@ -20,7 +21,7 @@
             defer
     ></script>
     <script src="{% get_static_prefix %}EasyConnect/assets/js/nearbyPharmacies.js"></script>
-    <script type="text/javascript" src="https://js.squareupsandbox.com/v2/paymentform"></script>
+    <script type="text/javascript" src="{{ square_js_url }}"></script>
 </head>
 
 <body style="background-image: url('{% get_static_prefix %}EasyConnect/assets/img/Image-waiting-room.jpg');background-size: cover;background-repeat: no-repeat;padding-top: 5em; background-attachment: fixed; background-position: center;">
@@ -118,7 +119,7 @@
                         </div>
                         <div class="row">
                             <div class="col"><label style="margin-left: 0.6rem;">Total</label>
-                                <div><span style="margin-left: 0.5em;color: #ffa500;">$39.95</span></div>
+                                <div><span style="margin-left: 0.5em;color: #ffa500;">${{ affiliate.affiliate_price|div:100 }}</span></div>
                             </div>
                         </div>
 

@@ -429,9 +429,12 @@ body {
   position: relative;
 }
 
-.participant-overlay {
-  width: 20%;
-  height: 20%;
+.video-buffer {
+  width: 100%;
+  padding-top: 67.6%;
+}
+.button-buffer{
+  margin-top: 40px;
 }
 
 .participant-overlay video{
@@ -445,16 +448,12 @@ body {
 
 .remote {
   min-width: 100px;
-  min-height: 100px;
   width: 100%;
-  height: 100%;
 }
 
 .remote video {
   min-width: 100px;
-  min-height: 100px;
   width: 100%;
-  height: 100%;
   position: absolute;
   background-color: #4e555b;
   top: 0;

@@ -4,6 +4,8 @@ import json
 import threading
 
 from datetime import datetime
+from pytz import timezone
+import pytz
 
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponseRedirect, HttpResponse
@@ -11,39 +13,94 @@ from django.urls import reverse
 from django.conf import settings
 from django.contrib.auth import logout
 from django.core.mail import send_mail
-from django.utils import timezone
 from django.db import connection
 
-from EasyConnect.forms import PatientForm, SymptomsForm, ProviderForm, PharmacyForm, PaymentForm, ICD10CodeLoad
-from EasyConnect.models import Patient, Symptoms, ProviderNotes, Preferred_Pharmacy, Appointments, Payment, Icd10
+from EasyConnect.forms import PatientForm, SymptomsForm, ProviderForm, PharmacyForm, PaymentForm, ICD10CodeLoad, \
+    AffiliateForm
+from EasyConnect.models import Patient, Symptoms, ProviderNotes, Preferred_Pharmacy, Appointments, Payment, Icd10, \
+    Affiliate
 
 from square.client import Client
 
 from twilio.jwt.access_token import AccessToken
 from twilio.jwt.access_token.grants import VideoGrant
+from twilio.rest import Client as twilio_client
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
+def get_affiliate_context(affiliate_url):
+    affiliate = None
+    if affiliate_url:
+        affiliate = Affiliate.objects.filter(affiliate_url=affiliate_url).first()
+
+    if not affiliate:
+        affiliate = Affiliate.objects.filter(affiliate_name='EasyConnect').first()
+
+    context = {
+        'affiliate': affiliate,
+    }
+
+    return context
+
+
+def get_affiliate_object(affiliate_url):
+    if affiliate_url:
+        affiliate = Affiliate.objects.filter(affiliate_url=affiliate_url).first()
+        if affiliate:
+            return affiliate
+
+    return Affiliate.objects.filter(affiliate_name='EasyConnect').first()
+
+
 # Create your views here.
 def index(request):
-    return render(request, 'EasyConnect/index.html')
+    return index_affiliate(request, '')
+
+
+def index_affiliate(request, affiliate_url):
+    affiliate_url = affiliate_url.lower()
+    context = get_affiliate_context(affiliate_url)
+    return render(request, 'EasyConnect/index.html', context)
 
 
 def our_story(request):
-    return render(request, 'EasyConnect/our-story.html')
+    return our_story_affiliate(request, '')
+
+
+def our_story_affiliate(request, affiliate_url):
+    affiliate_url = affiliate_url.lower()
+    context = get_affiliate_context(affiliate_url)
+    return render(request, 'EasyConnect/our-story.html', context)
 
 
 def faq(request):
-    return render(request, 'EasyConnect/faq.html')
+    return faq_affiliate(request, '')
+
+
+def faq_affiliate(request, affiliate_url):
+    affiliate_url = affiliate_url.lower()
+    context = get_affiliate_context(affiliate_url)
+    return render(request, 'EasyConnect/faq.html', context)
 
 
 def privacy_policy(request):
-    return render(request, 'EasyConnect/privacy-policy.html')
+    return faq_affiliate(request, '')
+
+
+def privacy_policy_affiliate(request, affiliate_url):
+    affiliate_url = affiliate_url.lower()
+    context = get_affiliate_context(affiliate_url)
+    return render(request, 'EasyConnect/privacy-policy.html', context)
 
 
 def connect(request):
+    return connect_affiliate(request, '')
+
+
+def connect_affiliate(request, affiliate_url):
+    affiliate_url = affiliate_url.lower()
     if request.method == 'POST':
         # Create a form instance and populate it with data from the request (binding):
         form = PatientForm(request.POST)
@@ -57,7 +114,7 @@ def connect(request):
             gender = form.cleaned_data['gender']
             zip = form.cleaned_data['zip']
             tos = form.cleaned_data['tos']
-
+            affiliate = get_affiliate_object(affiliate_url=affiliate_url)
             patient = Patient(first_name=first_name,
                               last_name=last_name,
                               phone_number=phone_number,
@@ -65,25 +122,37 @@ def connect(request):
                               dob=dob,
                               gender=gender,
                               zip=zip,
-                              tos=tos)
+                              tos=tos,
+                              affiliate=affiliate)
             patient.save()
 
             # redirect to a new URL:
-            return HttpResponseRedirect(reverse('easyconnect:connect-2', args=(patient.id,)))
+            if affiliate_url:
+                return HttpResponseRedirect(reverse('easyconnect:connect-2-affiliate',
+                                                    kwargs={'patient_id': patient.id,
+                                                            'affiliate_url': affiliate_url}))
+            else:
+                return HttpResponseRedirect(reverse('easyconnect:connect-2', args=(patient.id,)))
 
     # If this is a GET (or any other method) create the default form.
     else:
         form = PatientForm()
 
+    server_time = datetime.now(pytz.utc)
+
+    tz = timezone(settings.DISPLAY_TZ)
+    loc_dt = server_time.astimezone(tz)
     off_hours = False
-    if not (8 <= timezone.localtime().hour < 20):
+    if not (8 <= loc_dt.hour < 20):
         off_hours = True
+
+    affiliate = get_affiliate_context(affiliate_url=affiliate_url)
 
     context = {
         'form': form,
-        'off_hours': off_hours
+        'off_hours': off_hours,
     }
-
+    context.update(affiliate)
     return render(request, 'EasyConnect/connect.html', context)
 
 
@@ -101,6 +170,7 @@ def connect_timeless(request):
             gender = form.cleaned_data['gender']
             zip = form.cleaned_data['zip']
             tos = form.cleaned_data['tos']
+            affiliate = get_affiliate_object(affiliate_url='')
 
             patient = Patient(first_name=first_name,
                               last_name=last_name,
@@ -109,7 +179,8 @@ def connect_timeless(request):
                               dob=dob,
                               gender=gender,
                               zip=zip,
-                              tos=tos)
+                              tos=tos,
+                              affiliate=affiliate)
             patient.save()
 
             # redirect to a new URL:
@@ -130,16 +201,27 @@ def connect_timeless(request):
 
 
 def connect_2(request, patient_id):
+    return connect_2_affiliate(request, patient_id, '')
+
+
+def connect_2_affiliate(request, patient_id, affiliate_url):
+    affiliate_url = affiliate_url.lower()
     patient = get_object_or_404(Patient, pk=patient_id)
+    payment_errors = None
     if Appointments.objects.filter(patient_id=patient.id):
-        return HttpResponseRedirect(reverse('easyconnect:video-chat', args=(patient_id,)))
+        if affiliate_url:
+            return HttpResponseRedirect(reverse('easyconnect:video-chat', kwargs={'patient_id': patient.id,
+                                                                                  'affiliate_url': affiliate_url}))
+        else:
+            return HttpResponseRedirect(reverse('easyconnect:video-chat', args=(patient_id,)))
+
+    affiliate = get_affiliate_object(affiliate_url=affiliate_url)
 
     if request.method == 'POST':
         # Create a form instance and populate it with data from the request (binding):
         symptom_form = SymptomsForm(request.POST)
         pharmacy_form = PharmacyForm(request.POST)
         payment_form = PaymentForm(request.POST)
-
         if symptom_form.is_valid() and pharmacy_form.is_valid() and payment_form.is_valid():
             # process the data in form.cleaned_data as required (here we just write it to the model due_back field)
             symptom_description = symptom_form.cleaned_data['symptom_description']
@@ -180,12 +262,13 @@ def connect_2(request, patient_id):
             # each payment attempt will generate a new nonce
             nonce = payment_form.cleaned_data['nonce']
             previous_payments = Payment.objects.filter(patient_id=patient_id).count()
+
             # process the payment
             body = {
                 'source_id': nonce,
                 'idempotency_key': str(patient_id) + '-' + str(previous_payments),
                 'amount_money': {
-                    'amount': 3995,
+                    'amount': int(affiliate.affiliate_price),
                     'currency': 'USD'
                 }
             }
@@ -231,34 +314,49 @@ def connect_2(request, patient_id):
                     # send e-mails
                     send_patient_notification(patient_id)
                     send_provider_notification(patient_id)
+                if affiliate_url:
+                    return HttpResponseRedirect(reverse('easyconnect:video-chat-affiliate',
+                                                        kwargs={'patient_id': patient.id,
+                                                                'affiliate_url': affiliate_url}))
+                else:
+                    return HttpResponseRedirect(reverse('easyconnect:video-chat', args=(patient_id,)))
 
-                return HttpResponseRedirect(reverse('easyconnect:video-chat', args=(patient_id,)))
     # If this is a GET (or any other method) create the default form.
     else:
         symptom_form = SymptomsForm()
         pharmacy_form = PharmacyForm()
         payment_form = PaymentForm()
-        payment_errors = None
+
+    affiliate = get_affiliate_context(affiliate_url=affiliate_url)
 
     context = {
         'symptom_form': symptom_form,
         'pharmacy_form': pharmacy_form,
         'payment_form': payment_form,
         'zip': patient.zip,
-        'payment_errors': payment_errors
+        'payment_errors': payment_errors,
+        'square_js_url': settings.SQUARE_JS_URL,
     }
-
+    context.update(affiliate)
     return render(request, 'EasyConnect/connect-2.html', context)
 
 
 def video_chat(request, patient_id):
+    return video_chat_affiliate(request, patient_id, '')
+
+
+def video_chat_affiliate(request, patient_id, affiliate_url):
+    affiliate_url = affiliate_url.lower()
     patient = get_object_or_404(Patient, pk=patient_id)
     patient_name = f'{patient.first_name} {patient.last_name}'
+
+    affiliate = get_affiliate_context(affiliate_url=affiliate_url)
 
     context = {
         'username': patient_name,
         'patient_id': str(patient_id),
     }
+    context.update(affiliate)
     return render(request, 'EasyConnect/VideoChat.html', context)
 
 
@@ -272,6 +370,7 @@ def lucky_provider(request):
         return provider_view(request, patient_id)
     else:
         return provider_dashboard(request)
+
 
 def provider_dashboard(request):
     ready_appointments = get_appointments('Ready for Provider')
@@ -349,7 +448,9 @@ def provider_view(request, patient_id):
                                               'allergies': symptoms.allergies,
                                               'medications': symptoms.medications,
                                               'previous_diagnosis': symptoms.previous_diagnosis})
-        today = timezone.localdate()
+
+        tz = timezone(settings.DISPLAY_TZ)
+        today = tz.localize(datetime.today())
         patient_age = today.year - patient.dob.year - ((today.month, today.day) < (patient.dob.month, patient.dob.day))
         provider_notes = ProviderNotes.objects.filter(patient_id=patient_id).first()
 
@@ -389,14 +490,46 @@ def video_token(request):
         twilio_account_sid = settings.TWILIO_ACCOUNT_SID
         twilio_api_key_sid = settings.TWILIO_API_KEY_SID
         twilio_api_key_secret = settings.TWILIO_API_KEY_SECRET
+        # twilio_auth_token = settings.TWILIO_AUTH_TOKEN
+
+        # client = twilio_client(twilio_account_sid, twilio_auth_token)
+        # rooms = client.video.rooms.list(unique_name=patient_id, limit=20)
+
         token = AccessToken(twilio_account_sid, twilio_api_key_sid,
                             twilio_api_key_secret, identity=identity)
+
+        '''if not rooms:
+            client.video.rooms.create(
+                record_participants_on_connect=False,
+                type='group-small',
+                unique_name=patient_id
+            )'''
+
         token.add_grant(VideoGrant(room=patient_id))
+
         data = {'token': token.to_jwt().decode()}
         data = json.dumps(data)
         return HttpResponse(data, status=200, content_type='application/json')
 
     return HttpResponse(None, status=401)
+
+
+def server_time(request):
+    server_time = datetime.now(pytz.utc)
+
+    tz = timezone(settings.DISPLAY_TZ)
+    loc_dt = server_time.astimezone(tz)
+    off_hours = False
+    if not (8 <= loc_dt.hour < 20):
+        off_hours = True
+
+    context = {
+        'local_time': datetime.strftime(loc_dt, '%m/%d/%Y %H:%M'),
+        'server_time': datetime.strftime(server_time, '%m/%d/%Y %H:%M'),
+        'local_hour': datetime.strftime(loc_dt, '%H'),
+        'off_hours': off_hours
+    }
+    return render(request, 'EasyConnect/server-time.html', context)
 
 
 def get_patient_records(patient_id):
@@ -419,7 +552,8 @@ def get_patient_records(patient_id):
             FROM public."EasyConnect_patient" pat
             ) 
             SELECT
-                PNMax.mxdate create_datetime, sym.symptom_description symptom_description, sym.allergies allergies, 
+                PNMax.mxdate as create_datetime, 
+                sym.symptom_description symptom_description, sym.allergies allergies, 
                 sym.medications medications, sym.previous_diagnosis previous_diagnosis, PN.hpi hpi, 
                 PNA.icd10_dsc icd10_dsc, PN.treatment treatment, PN.followup, 
                 concat(au.first_name, ' ', last_name) seen_by, patient.patient_name, patient.dob
@@ -468,7 +602,6 @@ def get_appointments(status, count=100, order_by='ASC'):
         return None
 
     return [dict(zip([key[0] for key in cursor.description], row)) for row in result]
-
 
 
 def get_patient_assessments(provider_note_ids):
@@ -521,7 +654,32 @@ def icd10_load(request):
             return HttpResponseRedirect(reverse('easyconnect:dashboard'))
     else:
         form = ICD10CodeLoad()
-    return render(request, 'EasyConnect/load_icd10.html', {'form': form})
+
+    context = {'form': form}
+    return render(request, 'EasyConnect/load_icd10.html', context)
+
+
+def affiliate_load(request):
+    if request.method == 'POST':
+        form = AffiliateForm(request.POST)
+        if form.is_valid():
+            affiliate_name = form.cleaned_data['affiliate_name']
+            affiliate_logo = form.cleaned_data['affiliate_logo']
+            affiliate_url = form.cleaned_data['affiliate_url']
+            affiliate_price = form.cleaned_data['affiliate_price']
+
+            affiliate = Affiliate(affiliate_name=affiliate_name,
+                                  affiliate_logo=affiliate_logo,
+                                  affiliate_url=affiliate_url,
+                                  affiliate_price=affiliate_price)
+
+            affiliate.save()
+            return HttpResponseRedirect(reverse('easyconnect:dashboard'))
+    else:
+        form = AffiliateForm()
+
+    context = {'form': form}
+    return render(request, 'EasyConnect/load_affiliate.html', context)
 
 
 def login_request(request):
@@ -539,7 +697,7 @@ def send_provider_notification(patient_id):
             A new video chat has been received from: {patient.first_name} {patient.last_name}.
             
             Click the following link to initiate the 1-on-1 video chat:
-            <a href='https://dev-connect.easyconnectmd.com/provider/{patient_id}'>https://dev-connect.easyconnectmd.com/provider/{patient_id}</a>
+            <a href='{settings.EMAIL_BASE_URL}/provider/{patient_id}'>{settings.EMAIL_BASE_URL}/provider/{patient_id}</a>
             
             Patient Info
             Name: {patient.first_name} {patient.last_name}
@@ -556,7 +714,7 @@ def send_provider_notification(patient_id):
                     <p>A new video chat has been received from: {patient.first_name} {patient.last_name}.</p>
                     <p></p>
                     <p>Click the following link to initiate the 1-on-1 video chat:</p>
-                    <p><a href='https://dev-connect.easyconnectmd.com/provider/{patient_id}'>https://dev-connect.easyconnectmd.com/provider/{patient_id}</a></p>
+                    <p><a href='{settings.EMAIL_BASE_URL}/provider/{patient_id}'>{settings.EMAIL_BASE_URL}/provider/{patient_id}</a></p>
                     <p></p>
                     <p>Patient Info</p>
                     <p>Name: {patient.first_name} {patient.last_name}</p>
@@ -570,7 +728,7 @@ def send_provider_notification(patient_id):
         subject=f'Video Chat for {patient.first_name} {patient.last_name}',
         message=body,
         from_email=settings.EMAIL_HOST_USER,
-        recipient_list=['gfarias@easyconnectmd.net', 'acortez@easyconnectmd.net', 'adanner@easyconnectmd.net'],
+        recipient_list=settings.APPOINTMENT_RECIPIENT_LIST,
         fail_silently=False,
         html_message=html_body
     ).start()
@@ -591,7 +749,7 @@ def send_patient_notification(patient_id):
 
         If you get disconnected from your online appointment, please click the following link to re-join:
 
-        <a href='https://dev-connect.easyconnectmd.com/video-chat/{patient_id}'>Click to Rejoin</a>
+        <a href='{settings.EMAIL_BASE_URL}/video-chat/{patient_id}'>Click to Rejoin</a>
 
         Thank you for choosing EasyConnectMD!
 
@@ -614,7 +772,7 @@ def send_patient_notification(patient_id):
                 <p></p>
                 <p>If you get disconnected from your online appointment, please click the following link to re-join:</p>
                 <p></p>
-                <p><a href='https://dev-connect.easyconnectmd.com/video-chat/{patient_id}'>Click to Rejoin</a></p>
+                <p><a href='{settings.EMAIL_BASE_URL}/video-chat/{patient_id}'>Click to Rejoin</a></p>
                 <p></p>
                 <p>Thank you for choosing EasyConnectMD!</p>
                 <p></p>

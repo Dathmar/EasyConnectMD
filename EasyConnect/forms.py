@@ -7,7 +7,9 @@ import re
 from datetime import date
 from EasyConnect.models import Icd10
 from django_select2 import forms as s2forms
-from django.utils import timezone
+
+from datetime import datetime
+from pytz import timezone
 
 
 class PatientForm(forms.Form):
@@ -69,7 +71,8 @@ class PatientForm(forms.Form):
         if not data:
             raise ValidationError(_('Invalid Birthday - cannot be blank'))
 
-        today = timezone.localdate()
+        tz = timezone('US/Central')
+        today = tz.localize(datetime.today())
         patient_age = today.year - data.year - ((today.month, today.day) < (data.month, data.day))
         if patient_age < 18:
             raise ValidationError(_('You must be 18 or over to use this service.'))
@@ -106,6 +109,18 @@ class PatientForm(forms.Form):
             raise ValidationError(_('Invalid Zip code - cannot be blank'))
 
         return data
+
+
+class AffiliateForm(forms.Form):
+    affiliate_name = forms.CharField(widget=forms.TextInput(attrs={'class': "form-control form-control",
+                                                           'placeholder': 'Affiliate Name*'}), max_length=200)
+    affiliate_logo = forms.CharField(widget=forms.TextInput(attrs={'class': "form-control form-control",
+                                                           'placeholder': 'Logo static location*'}), max_length=200)
+    affiliate_url = forms.CharField(widget=forms.TextInput(attrs={'class': "form-control form-control",
+                                                                    'placeholder': 'Base URL*'}),
+                                      max_length=200)
+    affiliate_price = forms.CharField(widget=forms.NumberInput(attrs={'class': "form-control form-control half-width",
+                                                          'placeholder': 'Price in pennies*'}), max_length=20)
 
 
 class PaymentForm(forms.Form):
@@ -176,22 +191,28 @@ class PharmacyForm(forms.Form):
 class ProviderForm(forms.Form):
     hpi = forms.CharField(widget=forms.Textarea(
         attrs={"class": "overflow-auto border smaller-field",
-               "rows": "3", "cols": "40", "style": "width: 100%; resize: none; border: none"}))
+               "rows": "3", "cols": "40", "style": "width: 100%; resize: none; border: none"}),
+        required=False)
 
     # Requires Redis server.
     assessments = forms.ModelMultipleChoiceField(widget=s2forms.ModelSelect2MultipleWidget(queryset=Icd10.objects.all(),
                                                                             search_fields=['ICD10_DSC__icontains']),
-                                                 queryset=Icd10.objects.all())
+                                                 queryset=Icd10.objects.all(), required=False)
 
     treatment = forms.CharField(widget=forms.Textarea(
         attrs={"class": "overflow-auto border smaller-field",
-               "rows": "3", "cols": "40", "style": "width: 100%; resize: none; border: none"}))
+               "rows": "3", "cols": "40", "style": "width: 100%; resize: none; border: none"}),
+        required=False)
+
     followup = forms.CharField(widget=forms.Textarea(
         attrs={"class": "overflow-auto border smaller-field",
-               "rows": "3", "cols": "40", "style": "width: 100%; resize: none; border: none"}))
+               "rows": "3", "cols": "40", "style": "width: 100%; resize: none; border: none"}),
+        required=False)
+
     return_to_work_notes = forms.CharField(widget=forms.Textarea(
         attrs={"class": "overflow-auto border smaller-field",
-               "rows": "3", "cols": "40", "style": "width: 100%; resize: none; border: none"}))
+               "rows": "3", "cols": "40", "style": "width: 100%; resize: none; border: none"}),
+        required=False)
 
 
 class ICD10CodeLoad(forms.Form):

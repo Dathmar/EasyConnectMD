@@ -1,0 +1,56 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>EasyConnectMD</title>
+    <link rel="shortcut icon" type="image/png" href="{% get_static_prefix %}EasyConnect/assets/img/favicon-color.png"/>
+    <link rel="stylesheet" href="{% get_static_prefix %}EasyConnect/assets/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Antic">
+    <link rel="stylesheet" href="{% get_static_prefix %}EasyConnect/assets/css/Footer-Dark.css">
+    <link rel="stylesheet" href="{% get_static_prefix %}EasyConnect/assets/css/styles.css">
+</head>
+
+<body style="background-image: url('{% get_static_prefix %}EasyConnect/assets/img/Image-waiting-room.jpg');background-size: cover;background-repeat: no-repeat;background-position: center;padding-top: 5em;">
+    <div class="d-md-flex justify-content-md-center" style="margin-right: 10%;margin-left: 10%;">
+        <div class="container">
+            <div class="row">
+                <div class="col-4">
+                    Server Time
+                </div>
+                <div class="col-4">
+                    {{ server_time }}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-4">
+                    Local time
+                </div>
+                <div class="col-4">
+                    {{ local_time }}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-4">
+                    Hour
+                </div>
+                <div class="col-4">
+                    {{ local_hour }}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-4">
+                    Off Hours
+                </div>
+                <div class="col-4">
+                    {{ off_hours }}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% include 'EasyConnect/standard-footer.html' %}
+</body>
+
+</html>

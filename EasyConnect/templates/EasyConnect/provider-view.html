@@ -136,9 +136,12 @@
                     <div id="local" class="participant"><div></div></div>
                 </div>
                 <div id="button-container" style="padding-left: 15%"><button id="join_leave"  type="button">Start Video Chat</button></div>
-
             </div>
-            <div id="prevapps" style="z-index: 10; margin-top: 450px;">
+            <div class="button-buffer"></div>
+            <div class="video-buffer"></div>
+            <div class="button-buffer"></div>
+            <div id="prevapps" style="z-index: 10;">
+
                 <h6 style="padding-top: 10px; padding-left: 10px">Previous Appointments</h6>
                 {% for patient_record in patient_records %}
                     <div class="container">
@@ -221,10 +224,10 @@
     </div>
     <div id="username" class="hidden">{{ username }}</div>
     <div id="patient_id" class="hidden">{{ patient.id }}</div>
-
+    <div id="log"></div>
     {% include 'EasyConnect/provider_footer.html' %}
     {{ provider_form.media.js }}
-    <script src="//media.twiliocdn.com/sdk/js/video/releases/2.3.0/twilio-video.min.js"></script>
+    <script src="//media.twiliocdn.com/sdk/js/video/releases/2.7.2/twilio-video.min.js"></script>
     <script src="{% get_static_prefix %}EasyConnect/assets/js/video.js"></script>
 </body>
 
