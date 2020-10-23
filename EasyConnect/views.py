@@ -138,13 +138,7 @@ def connect_affiliate(request, affiliate_url):
     else:
         form = PatientForm()
 
-    server_time = datetime.now(pytz.utc)
-
-    tz = timezone(settings.DISPLAY_TZ)
-    loc_dt = server_time.astimezone(tz)
-    off_hours = False
-    if not (8 <= loc_dt.hour < 20):
-        off_hours = True
+    off_hours = is_offhours()
 
     affiliate = get_affiliate_context(affiliate_url=affiliate_url)
 
@@ -516,12 +510,10 @@ def video_token(request):
 
 def server_time(request):
     server_time = datetime.now(pytz.utc)
-
     tz = timezone(settings.DISPLAY_TZ)
     loc_dt = server_time.astimezone(tz)
-    off_hours = False
-    if not (8 <= loc_dt.hour < 20):
-        off_hours = True
+
+    off_hours = is_offhours()
 
     context = {
         'local_time': datetime.strftime(loc_dt, '%m/%d/%Y %H:%M'),
@@ -531,6 +523,41 @@ def server_time(request):
     }
     return render(request, 'EasyConnect/server-time.html', context)
 
+
+def is_offhours():
+    server_time = datetime.now(pytz.utc)
+
+    tz = timezone(settings.DISPLAY_TZ)
+    loc_dt = server_time.astimezone(tz)
+
+    # get day of week
+    # 0 = Monday
+    # 1 = Tuesday
+    # 2 = Wednesday
+    # 3 = Thursday
+    # 4 = Friday
+    # 5 = Saturday
+    # 6 = Sunday
+    day_of_week = loc_dt.weekday()
+
+    if day_of_week in (3, 4, 5):
+        start_time = 8
+        end_time = 0
+    else:
+        start_time = 8
+        end_time = 20
+
+    off_hours = False
+
+    if start_time < end_time:
+        # e.g. if not (8 <= loc_dt.hour < 20):
+        if not (start_time <= loc_dt.hour < end_time):
+            off_hours = True
+    else:
+        if (end_time <= loc_dt.hour < start_time):
+            off_hours = True
+
+    return off_hours
 
 def get_patient_records(patient_id):
     sql = f'''

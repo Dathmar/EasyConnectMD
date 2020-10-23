@@ -13,7 +13,7 @@ let err_log = $('log');
 let msg = 'null';
 
 function addToLog() {
-    var error_p = document.createElement('P');
+    let error_p = document.createElement('P');
     error_p.innerText = msg;
     err_log.append(error_p);
     console.log(msg);
