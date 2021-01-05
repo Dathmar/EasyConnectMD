@@ -202,9 +202,11 @@ def connect_2_affiliate(request, patient_id, affiliate_url):
     affiliate_url = affiliate_url.lower()
     patient = get_object_or_404(Patient, pk=patient_id)
     payment_errors = None
+
+    # TODO add handling for completed appointments.
     if Appointments.objects.filter(patient_id=patient.id):
         if affiliate_url:
-            return HttpResponseRedirect(reverse('easyconnect:video-chat', kwargs={'patient_id': patient.id,
+            return HttpResponseRedirect(reverse('easyconnect:video-chat-affiliate', kwargs={'patient_id': patient.id,
                                                                                   'affiliate_url': affiliate_url}))
         else:
             return HttpResponseRedirect(reverse('easyconnect:video-chat', args=(patient_id,)))
