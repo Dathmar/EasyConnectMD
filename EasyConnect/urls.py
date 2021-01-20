@@ -11,10 +11,12 @@ urlpatterns = [
     path('faqs/', views.faq, name='faq'),
     path('faq/', views.faq, name='faq'),
     path('privacy-policy/', views.privacy_policy, name='privacy-policy'),
+    path('splash-page/', views.splash_page, name='splash-page'),
     path('connect/', views.connect, name='connect-with-a-doctor'),
     path('connect-with-a-doctor/', views.connect, name='connect-with-a-doctor'),
     path('connect-2/<uuid:patient_id>', views.connect_2, name='connect-2'),
     path('video-chat/<uuid:patient_id>', views.video_chat, name='video-chat'),
+
 
     #loading data
     path('icd10-load/', views.icd10_load, name='icd10-load'),

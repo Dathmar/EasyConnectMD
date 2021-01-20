@@ -95,6 +95,16 @@ def privacy_policy_affiliate(request, affiliate_url):
     return render(request, 'EasyConnect/privacy-policy.html', context)
 
 
+def splash_page(request):
+    return splash_page_affiliate(request, '')
+
+
+def splash_page_affiliate(request, affiliate_url):
+    affiliate_url = affiliate_url.lower()
+    context = get_affiliate_context(affiliate_url)
+    return render(request, 'EasyConnect/splash-page.html', context)
+
+
 def connect(request):
     return connect_affiliate(request, '')
 

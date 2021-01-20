@@ -1,0 +1,102 @@
+{% load static %}
+{% load math_filters %}
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>EasyConnectMD</title>
+    <link rel="shortcut icon" type="image/png" href="{% get_static_prefix %}EasyConnect/assets/img/favicon-color.png"/>
+    <link rel="stylesheet" href="{% get_static_prefix %}EasyConnect/assets/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Antic">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Cambay">
+    <link rel="stylesheet" href="{% get_static_prefix %}EasyConnect/assets/css/Footer-Dark.css">
+    <link rel="stylesheet" href="{% get_static_prefix %}EasyConnect/assets/css/styles.css">
+    <link rel="stylesheet" href="{% get_static_prefix %}EasyConnect/assets/css/untitled.css">
+</head>
+
+<body>
+    {% include 'EasyConnect/standard_navbar.html' %}
+    <section>
+        <div class="container">
+            <div class="row">
+                <div class="col d-flex d-sm-flex d-md-flex d-lg-flex d-xl-flex justify-content-center justify-content-sm-center justify-content-md-center justify-content-lg-center justify-content-xl-center">
+                    <iframe width="560" height="315" src="https://www.youtube.com/embed/uiB41wFWbtc" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col d-flex d-sm-flex d-md-flex d-lg-flex d-xl-flex justify-content-center justify-content-sm-center justify-content-md-center justify-content-lg-center justify-content-xl-center">
+                    <h1 style="font-family: Antic, sans-serif;margin-top: 20px;">Why Visit Easy Connect MD.com?</h1>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col d-flex d-xl-flex justify-content" style="padding-top: 1em; padding-bottom: 1em; padding-left: 15%; padding-right: 15%">
+                    <p style="font-family: Antic, sans-serif;font-size: 19px;">Telemedicine provides patients who are feeling bad and in need of non-emergency medical attention or information an opportunity to see a provider from their home, office or any place  where they can use a phone, tablet or computer and there is a good internet connection.</p>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col d-flex d-sm-flex d-md-flex d-lg-flex d-xl-flex justify-content-center justify-content-sm-center justify-content-md-center justify-content-lg-center justify-content-xl-center">
+                    <h1 style="font-family: Antic, sans-serif;margin-top: 20px;">How can EasyConnectMD.com help you?</h1>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col d-flex d-xl-flex justify-content" style="padding-top: 1em; padding-bottom: 1em; padding-left: 15%; padding-right: 15%">
+                    <p style="font-family: Antic, sans-serif;font-size: 19px;">EasyConnectMD.com offers quality, convenient health care on a platform that is easy to use all for only $39.95.  It is our goal to provide you with great medical care all while keeping you out of crowded waiting rooms.  EasyConnectMD.com – Embracing the next level of patient care.</p>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col d-flex d-sm-flex d-md-flex d-lg-flex d-xl-flex justify-content-center justify-content-sm-center justify-content-md-center justify-content-lg-center justify-content-xl-center">
+                    <h1 style="font-family: Antic, sans-serif;margin-top: 20px;">EasyConnectMD.com patients can be seen for a variety of ailments to include:</h1>
+                </div>
+            </div>
+            <div class="row" style="padding-bottom:1.5em">
+                <div class="col-4">
+                    <ul class="list-group">
+                        <li class="list-group-item">Respiratory Infection</li>
+                        <li class="list-group-item">Ear Infection</li>
+                        <li class="list-group-item">Allergies</li>
+                        <li class="list-group-item">Sinus Pressure</li>
+                        <li class="list-group-item">Loss of Taste</li>
+                        <li class="list-group-item">Headache</li>
+                        <li class="list-group-item">Fever</li>
+                        <li class="list-group-item">Sore Throat</li>
+                        <li class="list-group-item">Fatigue</li>
+                        <li class="list-group-item">Diarrhea </li>
+                        <li class="list-group-item">Conjunctivitis (Pink Eye)</li>
+                    </ul>
+                </div>
+                <div class="col-4">
+                    <ul class="list-group">
+                        <li class="list-group-item">Tooth pain</li>
+                        <li class="list-group-item">Bruises</li>
+                        <li class="list-group-item">Muscle pain</li>
+                        <li class="list-group-item">Urinary tract infections</li>
+                        <li class="list-group-item">Rash</li>
+                        <li class="list-group-item">Acne</li>
+                        <li class="list-group-item">Insect bites</li>
+                        <li class="list-group-item">Nausea</li>
+                        <li class="list-group-item">Vomiting</li>
+                        <li class="list-group-item">Cold sore</li>
+                        <li class="list-group-item">And more</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+    <div class="justify-content-center align-items-center align-self-center orange-box">
+        <div class="d-xl-flex justify-content-xl-center">
+            <h1 class="text-center" style="font-weight: normal;color: rgb(255,255,255);padding-top: 10px;font-family: Antic, sans-serif;">Skip the line, Go online.</h1>
+        </div>
+        <div class="text-center">
+            <p style="background-color: rgba(0,0,0,0);color: #ffffff;font-size: 20px;font-family: Antic, sans-serif;">A doctor is ready to chat right now.</p>
+        </div>
+        <div class="d-flex d-sm-flex d-md-flex d-lg-flex d-xl-flex justify-content-center justify-content-sm-center justify-content-md-center justify-content-lg-center justify-content-xl-center"><button class="btn btn-primary border rounded-0 shadow-sm button-white" id="orange-box-button" type="button"><a id="orange-box-link" class="link-base orange-btn" href="{% if affiliate.affiliate_url %}{% url 'easyconnect:connect-with-a-doctor-affiliate' affiliate.affiliate_url %}{% else %}{% url 'easyconnect:connect-with-a-doctor' %}{% endif %}">Connect now for just ${{ affiliate.affiliate_price|div:100 }}</a></button></div>
+        <div class="text-center">
+            <p style="background-color: rgba(0,0,0,0);color: #ffffff;font-family: Antic, sans-serif;">No insurance required</p>
+        </div>
+    </div>
+    {% include 'EasyConnect/standard-footer.html' %}
+</body>
+
+</html>
