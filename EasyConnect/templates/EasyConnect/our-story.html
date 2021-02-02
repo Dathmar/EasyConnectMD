@@ -20,20 +20,113 @@
 
 <body>
     {% include 'EasyConnect/standard_navbar.html' %}
-    <section>
-        <div class="container">
-            <div class="row">
-                <div class="col d-flex d-sm-flex d-md-flex d-lg-flex d-xl-flex justify-content-center justify-content-sm-center justify-content-md-center justify-content-lg-center justify-content-xl-center"><img src="{% get_static_prefix %}EasyConnect/assets/img/Icon-what-were-about.png" style="margin: 10px;"></div>
+
+    <section class="section connect">
+        <div class="container" style="padding-bottom: 1em">
+            <div class="col d-flex d-sm-flex d-md-flex d-lg-flex d-xl-flex justify-content-center justify-content-sm-center justify-content-md-center justify-content-lg-center justify-content-xl-center">
+                <h1 style="font-family: Antic, sans-serif;margin-top: 20px;">About EasyConnectMD.com</h1>
             </div>
             <div class="row">
+                <div class="col-xl-9 d-xl-flex justify-content-xl-center align-items-xl-center" style="padding-left: 10%">
+                    <div>
+                        <div class="col-sm d-xl-flex justify-content-xl-center align-items-xl-center">
+                            <p style="font-family: Antic, sans-serif;font-size: 19px; padding-left: 1em">
+                                EasyConnectMD is the evolution of the telemedicine program originated at Kellum Family Medicine in
+                                San Antonio Texas.  Dr. Daniel H. Kellum Jr. MD, a Board Certified Family Practice physician, is the
+                                co-owner and medical director who led the establishment of the EasyConnectMD platform in an effort to
+                                offer quality health care at an affordable cost to communities throughout the State of Texas.  To date,
+                                EasyConnectMD has served every major City and quadrant in the State of Texas from El Paso to Houston to
+                                Dallas to the Rio Grande Valley.  EasyConnectMD is powered by Kellum Family Medicine and has fully
+                                licensed medical providers working throughout the State of Texas.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col d-sm-flex align-items-sm-end">
+                    <img class="rounded mx-auto d-block" src="{% get_static_prefix %}EasyConnect/assets/img/DRKELLUM-300x300.png" alt="Photo of Doctor Kellum">
+                </div>
+            </div>
+        </div>
+
+    </section>
+    <section id="section-2">
+        <div class="container" style="padding-bottom: 1em">
+            <div class="col d-flex d-sm-flex d-md-flex d-lg-flex d-xl-flex justify-content-center justify-content-sm-center justify-content-md-center justify-content-lg-center justify-content-xl-center">
+                <h1 style="font-family: Antic, sans-serif;margin-top: 20px;">Why Visit EasyConnectMD.com?</h1>
+            </div>
+            <div class="row">
+                <div class="col-xl d-xl-flex justify-content-xl-center align-items-xl-center" style="padding-left: 10%">
+                    <div>
+                        <div class="col-sm d-xl-flex justify-content-xl-center align-items-xl-center">
+                            <p style="font-family: Antic, sans-serif;font-size: 19px; padding-left: 1em">
+                                Telemedicine provides patients who are feeling bad and in need of non-emergency medical attention or
+                                information an opportunity to see a provider from their home, office or any place  where they can use a
+                                phone, tablet or computer and there is a good internet connection.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm d-sm-flex align-items-sm-end">
+                    <div class="embed-responsive embed-responsive-16by9">
+                        <iframe class="embed-responsive-item" src="https://www.youtube.com/embed/uiB41wFWbtc" allow="picture-in-picture" allowfullscreen></iframe>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section id="section-3">
+        <div class="container">
+            <div class="row">
                 <div class="col d-flex d-sm-flex d-md-flex d-lg-flex d-xl-flex justify-content-center justify-content-sm-center justify-content-md-center justify-content-lg-center justify-content-xl-center">
-                    <h1 style="font-family: Antic, sans-serif;margin-top: 20px;">What We're About</h1>
+                    <h1 style="font-family: Antic, sans-serif;margin-top: 20px;">How can EasyConnectMD.com help you?</h1>
                 </div>
             </div>
             <div class="row">
-                <div class="col d-flex d-xl-flex justify-content" style="padding-top: 1em; padding-bottom: 1em; padding-left: 15%; padding-right: 15%">
-                    <p style="font-family: Antic, sans-serif;font-size: 19px;">We believe that quality healthcare shouldn’t give you a headache. That’s why we decided to cut out the in-office doctor visits and provide patients an easier, more cost-effective way to feel better. We connect patients
-                        to providers virtually, so that you can feel better faster. It’s simple: fill out the form, video chat with a doctor and have your prescriptions sent directly to your local pharmacy. It’s that easy — it’s EasyConnectMD.</p>
+                <div class="col d-flex d-xl-flex justify-content" style="padding-left: 15%; padding-right: 15%">
+                    <p style="font-family: Antic, sans-serif;font-size: 19px;">EasyConnectMD.com offers quality, convenient health care on a platform that is easy to use all for only
+                        ${{ affiliate.affiliate_price|div:100 }}.  It is our goal to provide you with great medical care all while keeping you out of crowded waiting rooms.
+                        EasyConnectMD.com – Embracing the next level of patient care.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section>
+        <div class="container" style="padding-bottom: 1em">
+            <div class="row">
+                <div class="col d-flex d-sm-flex d-md-flex d-lg-flex d-xl-flex justify-content-center justify-content-sm-center justify-content-md-center justify-content-lg-center justify-content-xl-center">
+                    <h1 style="font-family: Antic, sans-serif;margin-top: 20px;">EasyConnectMD.com patients can be seen for a variety of ailments to include:</h1>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col d-flex d-sm-flex d-md-flex d-lg-flex d-xl-flex justify-content-center justify-content-sm-center justify-content-md-center justify-content-lg-center justify-content-xl-center">
+                    <ul style="font-family: Antic, sans-serif;font-size: 19px;">
+                        <li>Respiratory Infection</li>
+                        <li>Ear Infection</li>
+                        <li>Allergies</li>
+                        <li>Sinus Pressure</li>
+                        <li>Loss of Taste</li>
+                        <li>Headache</li>
+                        <li>Fever</li>
+                        <li>Sore Throat</li>
+                        <li>Fatigue</li>
+                        <li>Diarrhea </li>
+                        <li>Conjunctivitis (Pink Eye)</li>
+                    </ul>
+                </div>
+                <div class="col">
+                    <ul style="font-family: Antic, sans-serif;font-size: 19px;">
+                        <li>Tooth pain</li>
+                        <li>Bruises</li>
+                        <li>Muscle pain</li>
+                        <li>Urinary tract infections</li>
+                        <li>Rash</li>
+                        <li>Acne</li>
+                        <li>Insect bites</li>
+                        <li>Nausea</li>
+                        <li>Vomiting</li>
+                        <li>Cold sore</li>
+                        <li>And more</li>
+                    </ul>
                 </div>
             </div>
         </div>

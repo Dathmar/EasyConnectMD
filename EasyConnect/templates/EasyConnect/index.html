@@ -69,9 +69,15 @@
             <h2 class="text-center d-xl-flex justify-content-xl-center" style="margin-bottom: 1em;">About time, right?</h2>
         </div>
         <div>
-            <p class="text-center d-xl-flex justify-content-xl-center">We thought so too. It’s 2020 and time healthcare should be more convenient and affordable. <br>Our mission is to get you back to your life and keep you healthy.<br></p>
+            <p class="text-center d-xl-flex justify-content-xl-center">We thought so too. It’s 2021 and time healthcare should be more convenient and affordable. <br>Our mission is to get you back to your life and keep you healthy.<br></p>
         </div>
-        <div class="d-flex d-sm-flex d-md-flex d-lg-flex d-xl-flex justify-content-center justify-content-sm-center justify-content-md-center justify-content-lg-center justify-content-xl-center"><button class="btn btn-primary border rounded-0 shadow button-white" type="button" style="margin-top: 1em;"><a class="link-base button-transparent" href="{% if affiliate.affiliate_url %}{% url 'easyconnect:our-story-affiliate' affiliate.affiliate_url %}{% else %}{% url 'easyconnect:our-story' %}{% endif %}">Our Vision</a></button></div>
+        <div class="d-flex d-sm-flex d-md-flex d-lg-flex d-xl-flex justify-content-center justify-content-sm-center justify-content-md-center justify-content-lg-center justify-content-xl-center">
+            <button class="btn btn-primary border rounded-0 shadow button-white" type="button" style="margin-top: 1em;">
+                <a class="link-base button-transparent" href="{% if affiliate.affiliate_url %}{% url 'easyconnect:our-story-affiliate' affiliate.affiliate_url %}{% else %}{% url 'easyconnect:our-story' %}{% endif %}">
+                    Our Vision
+                </a>
+            </button>
+        </div>
     </section>
     <section id="section-4">
         <div class="d-xl-flex justify-content-xl-center">
@@ -111,7 +117,13 @@
                 <div class="text-center">
                     <p class="orange-box-font">A doctor is ready to chat right now.<br></p>
                 </div>
-                <div class="d-flex d-sm-flex d-md-flex d-lg-flex d-xl-flex justify-content-center justify-content-sm-center justify-content-md-center justify-content-lg-center justify-content-xl-center"><button class="btn btn-primary border rounded-0 shadow-sm button-white" id="orange-box-button" type="button"><a id="orange-box-link" class="link-base orange-btn" href="{% if affiliate.affiliate_url %}{% url 'easyconnect:connect-with-a-doctor-affiliate' affiliate.affiliate_url %}{% else %}{% url 'easyconnect:connect-with-a-doctor' %}{% endif %}">Connect now for just ${{ affiliate.affiliate_price|div:100 }}</a></button></div>
+                <div class="d-flex d-sm-flex d-md-flex d-lg-flex d-xl-flex justify-content-center justify-content-sm-center justify-content-md-center justify-content-lg-center justify-content-xl-center">
+                   <button class="btn btn-primary border rounded-0 shadow button-white-2" type="button"">
+                        <a class="link-base button-transparent" href="{% if affiliate.affiliate_url %}{% url 'easyconnect:connect-with-a-doctor-affiliate' affiliate.affiliate_url %}{% else %}{% url 'easyconnect:connect-with-a-doctor' %}{% endif %}">
+                            Connect now for just ${{ affiliate.affiliate_price|div:100 }}
+                        </a>
+                    </button>
+                </div>
                 <div class="text-center">
                     <p class="orange-box-font" style="margin-top: 0.5em;">No insurance required</p>
                 </div>

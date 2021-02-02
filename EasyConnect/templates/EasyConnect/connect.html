@@ -17,7 +17,7 @@
 </head>
 
 <body style="background-image: url('{% get_static_prefix %}EasyConnect/assets/img/Image-waiting-room.jpg');background-size: cover;background-repeat: no-repeat;background-position: center;padding-top: 5em;">
-
+    {% include 'EasyConnect/standard_navbar.html' %}
     {% if off_hours %}
         <div class="d-md-flex justify-content-md-center" style="margin-right: 10%;margin-left: 10%;">
             <section class="container-wrapper" style="background-color: #ffffff;padding: 0px;padding-bottom: 4em;">

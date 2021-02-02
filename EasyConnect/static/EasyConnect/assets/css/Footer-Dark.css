@@ -123,7 +123,6 @@
 
 .button-white {
   text-decoration: none;
-
   background-color: transparent;
   border: 2px solid #ffa500 !important;
   padding: 0;
@@ -144,6 +143,30 @@
   border: 2px solid #ffa500 !important;
   padding: 0;
 }
+
+.button-white-2 {
+  text-decoration: none;
+  background-color: #FFFFFF;
+  border: 2px solid #ffa500 !important;
+  padding: 0;
+}
+
+.button-white-2:hover {
+  text-decoration: none;
+  color: #FFFFFF !important;
+  background-color: #ffa500;
+  border: 2px solid #ffa500 !important;
+  padding: 0;
+}
+
+.button-white-2:active {
+  text-decoration: none;
+  color: #ffa500 !important;
+  background-color: #FFFFFF !important;
+  border: 2px solid #ffa500 !important;
+  padding: 0;
+}
+
 
 .button-orange:hover {
   text-decoration: none;
