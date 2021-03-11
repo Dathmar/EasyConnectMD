@@ -81,6 +81,7 @@ function connect() {
     return promise;
 }
 
+
 function getCookie(c_name)
 {
     if (document.cookie.length > 0)
@@ -140,7 +141,7 @@ function participantConnected(participant) {
 
 function participantDisconnected(participant) {
     //change local back to full if this is the last participant
-    document.getElementById(participant.sid).remove();
+    $(participant.sid).remove();
     let remote_div = document.getElementsByClassName('remote');
     let local_overlay = document.getElementsByClassName('participant-overlay');
 

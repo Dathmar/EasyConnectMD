@@ -123,6 +123,11 @@ class AffiliateForm(forms.Form):
                                                           'placeholder': 'Price in pennies*'}), max_length=20)
 
 
+class CouponForm(forms.Form):
+    code = forms.CharField(widget=forms.TextInput(attrs={'class': "form-control form-control",
+                                                           'placeholder': 'Coupon'}), max_length=200)
+
+
 class PaymentForm(forms.Form):
     nonce = forms.CharField(widget=forms.TextInput(attrs={'class': "form-control form-control half-width",
                                                           'placeholder': 'nonce'}), max_length=2000, required=False)

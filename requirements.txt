@@ -1,6 +1,6 @@
 Django>=3.0.6
-python3-dev
-libpq-dev
+#python-dev
+#libpq-dev
 psycopg2
 squareup
 phonenumbers
@@ -10,3 +10,4 @@ django-redis
 dj-static
 static3
 twilio
+psycopg2

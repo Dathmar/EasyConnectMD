@@ -36,6 +36,8 @@ urlpatterns = [
     path('accounts/logout/', views.logout_request, name='logout'),
     path('accounts/login/', views.login_request, name='login'),
     path('video-token/', views.video_token, name='video-token'),
+    path('apply-coupon/', views.apply_coupon, name='apply-coupon'),
+    path('patient-cost/', views.patient_cost, name='patient-cost'),
 
     #affiliate views
     path('<slug:affiliate_url>/', views.index_affiliate, name='index-affiliate'),

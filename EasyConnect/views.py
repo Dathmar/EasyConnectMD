@@ -8,7 +8,7 @@ from pytz import timezone
 import pytz
 
 from django.shortcuts import render, get_object_or_404
-from django.http import HttpResponseRedirect, HttpResponse
+from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
 from django.urls import reverse
 from django.conf import settings
 from django.contrib.auth import logout
@@ -16,9 +16,9 @@ from django.core.mail import send_mail
 from django.db import connection
 
 from EasyConnect.forms import PatientForm, SymptomsForm, ProviderForm, PharmacyForm, PaymentForm, ICD10CodeLoad, \
-    AffiliateForm
+    AffiliateForm, CouponForm
 from EasyConnect.models import Patient, Symptoms, ProviderNotes, Preferred_Pharmacy, Appointments, Payment, Icd10, \
-    Affiliate
+    Affiliate, Coupon, Patient_Cost
 
 from square.client import Client
 
@@ -136,6 +136,9 @@ def connect_affiliate(request, affiliate_url):
                               affiliate=affiliate)
             patient.save()
 
+            patient_cost = Patient_Cost(patient_id=patient.id, cost=affiliate.affiliate_price)
+            patient_cost.save()
+
             # redirect to a new URL:
             if affiliate_url:
                 return HttpResponseRedirect(reverse('easyconnect:connect-2-affiliate',
@@ -187,6 +190,9 @@ def connect_timeless(request):
                               affiliate=affiliate)
             patient.save()
 
+            patient_cost = Patient_Cost(patient_id=patient.id, cost=affiliate.affiliate_price)
+            patient_cost.save()
+
             # redirect to a new URL:
             return HttpResponseRedirect(reverse('easyconnect:connect-2', args=(patient.id,)))
 
@@ -211,6 +217,7 @@ def connect_2(request, patient_id):
 def connect_2_affiliate(request, patient_id, affiliate_url):
     affiliate_url = affiliate_url.lower()
     patient = get_object_or_404(Patient, pk=patient_id)
+    patient_cost = Patient_Cost.objects.filter(patient=patient_id).first()
     payment_errors = None
 
     # TODO add handling for completed appointments.
@@ -221,14 +228,14 @@ def connect_2_affiliate(request, patient_id, affiliate_url):
         else:
             return HttpResponseRedirect(reverse('easyconnect:video-chat', args=(patient_id,)))
 
-    affiliate = get_affiliate_object(affiliate_url=affiliate_url)
-
     if request.method == 'POST':
         # Create a form instance and populate it with data from the request (binding):
         symptom_form = SymptomsForm(request.POST)
         pharmacy_form = PharmacyForm(request.POST)
         payment_form = PaymentForm(request.POST)
-        if symptom_form.is_valid() and pharmacy_form.is_valid() and payment_form.is_valid():
+        coupon_form = CouponForm(request.POST)
+
+        if symptom_form.is_valid() and pharmacy_form.is_valid() and (payment_form.is_valid() or patient_cost <= 0):
             # process the data in form.cleaned_data as required (here we just write it to the model due_back field)
             symptom_description = symptom_form.cleaned_data['symptom_description']
             allergies = symptom_form.cleaned_data['allergies']
@@ -265,49 +272,54 @@ def connect_2_affiliate(request, patient_id, affiliate_url):
                                           update_datetime=datetime.now())
             pharmacy.save()
 
-            # each payment attempt will generate a new nonce
-            nonce = payment_form.cleaned_data['nonce']
-            previous_payments = Payment.objects.filter(patient_id=patient_id).count()
 
-            # process the payment
-            body = {
-                'source_id': nonce,
-                'idempotency_key': str(patient_id) + '-' + str(previous_payments),
-                'amount_money': {
-                    'amount': int(affiliate.affiliate_price),
-                    'currency': 'USD'
+            # only generate payment if patient cost is greater than 0
+            if int(patient_cost.cost) > 0:
+                # each payment attempt will generate a new nonce
+                nonce = payment_form.cleaned_data['nonce']
+                previous_payments = Payment.objects.filter(patient_id=patient_id).count()
+
+                # process the payment
+                body = {
+                    'source_id': nonce,
+                    'idempotency_key': str(patient_id) + '-' + str(previous_payments),
+                    'amount_money': {
+                        'amount': int(patient_cost.cost),
+                        'currency': 'USD'
+                    }
                 }
-            }
 
-            client = Client(
-                access_token=settings.SQUARE_ACCESS_TOKEN,
-                environment=settings.SQUARE_ENVIRONMENT,
-            )
+                client = Client(
+                    access_token=settings.SQUARE_ACCESS_TOKEN,
+                    environment=settings.SQUARE_ENVIRONMENT,
+                )
 
-            payments_api = client.payments
-            result = payments_api.create_payment(body)
-            if result.is_success():
-                payment_status = "Paid"
-            elif result.is_error():
-                payment_form = PaymentForm()
-                payment_status = "Failed"
-                payment_errors = []
+                payments_api = client.payments
+                result = payments_api.create_payment(body)
+                if result.is_success():
+                    payment_status = "Paid"
+                elif result.is_error():
+                    payment_form = PaymentForm()
+                    payment_status = "Failed"
+                    payment_errors = []
 
-                for error in result.errors:
-                    if error['code'] == 'GENERIC_DECLINE':
-                        payment_errors.append('Sorry but the card processing did not complete.  Please check your card'
-                                              ' or try another payment method.')
-                    elif error['code'] == 'CCV_ERROR':
-                        payment_errors.append('The CCV did not match the card number.')
-                    else:
-                        payment_errors.append(error)
+                    for error in result.errors:
+                        if error['code'] == 'GENERIC_DECLINE':
+                            payment_errors.append('Sorry but the card processing did not complete.  Please check your card'
+                                                  ' or try another payment method.')
+                        elif error['code'] == 'CCV_ERROR':
+                            payment_errors.append('The CCV did not match the card number.')
+                        else:
+                            payment_errors.append(error)
 
-            payment = Payment(patient=patient,
-                              nonce=nonce,
-                              status=payment_status,
-                              response=result.body)
+                payment = Payment(patient=patient,
+                                  nonce=nonce,
+                                  status=payment_status,
+                                  response=result.body)
 
-            payment.save()
+                payment.save()
+            else:
+                payment_status = "NA"
 
             if payment_status != 'Failed':
                 if not Appointments.objects.filter(patient_id=patient.id):
@@ -332,6 +344,7 @@ def connect_2_affiliate(request, patient_id, affiliate_url):
         symptom_form = SymptomsForm()
         pharmacy_form = PharmacyForm()
         payment_form = PaymentForm()
+        coupon_form = CouponForm()
 
     affiliate = get_affiliate_context(affiliate_url=affiliate_url)
 
@@ -339,6 +352,9 @@ def connect_2_affiliate(request, patient_id, affiliate_url):
         'symptom_form': symptom_form,
         'pharmacy_form': pharmacy_form,
         'payment_form': payment_form,
+        'coupon_form': coupon_form,
+        'patient_id': patient_id,
+        'patient_cost': patient_cost,
         'zip': patient.zip,
         'payment_errors': payment_errors,
         'square_js_url': settings.SQUARE_JS_URL,
@@ -520,6 +536,51 @@ def video_token(request):
     return HttpResponse(None, status=401)
 
 
+def apply_coupon(request):
+    if request.method == 'POST':
+        patient_id = json.loads(request.body)['patient_id']
+        coupon_code = json.loads(request.body)['coupon_code']
+        coupon = None
+
+        default_cost = 3999
+
+        if coupon_code:
+            coupon = Coupon.objects.filter(code=coupon_code).first()
+
+        patient_cost = Patient_Cost.objects.filter(patient_id=patient_id).first()
+        status = 'Invalid coupon'
+
+        if coupon:
+            patient_cost.cost = int(default_cost) - int(coupon.discount)
+            patient_cost.save(update_fields=['cost'])
+            status = 'Success'
+
+        data = {
+            'patient_cost': patient_cost.cost,
+            'status_msg': status,
+            'default_cost': default_cost
+        }
+
+        return JsonResponse(data, safe=False)
+
+    return HttpResponse(None, status=401)
+
+
+def patient_cost(request):
+    if request.method == 'POST':
+        patient_id = json.loads(request.body)['patient_id']
+
+        patient_cost = Patient_Cost.objects.filter(patient_id=patient_id).first()
+
+        data = {
+            'patient_cost': patient_cost.cost,
+        }
+
+        return JsonResponse(data, safe=False)
+
+    return HttpResponse(None, status=401)
+
+
 def server_time(request):
     server_time = datetime.now(pytz.utc)
     tz = timezone(settings.DISPLAY_TZ)
@@ -557,7 +618,7 @@ def is_offhours():
         end_time = 0
     else:
         start_time = 8
-        end_time = 20
+        end_time = 0 # 20
 
     off_hours = False
 
@@ -775,13 +836,24 @@ def send_provider_notification(patient_id):
 
 def send_patient_notification(patient_id):
     patient = Patient.objects.filter(pk=patient_id).first()
-    payment_info = Payment.objects.filter(patient_id=patient_id, status='Paid').values('response').first()['response']
-    payment_info = json.loads(payment_info.replace("\'", "\""))
 
-    payment_date = payment_info['payment']['created_at']
-    payment_card_type = payment_info['payment']['card_details']['card']['card_brand']
-    payment_card_last4 = payment_info['payment']['card_details']['card']['last_4']
-    payment_amount = payment_info['payment']['amount_money']['amount'] / 100
+    patient_cost = Patient_Cost.objects.filter(patient_id=patient_id).first()
+
+    if int(patient_cost.cost) > 0:
+        payment_info = Payment.objects.filter(patient_id=patient_id, status='Paid').values('response').first()['response']
+        payment_info = json.loads(payment_info.replace("\'", "\""))
+
+        payment_date = payment_info['payment']['created_at']
+        payment_card_type = payment_info['payment']['card_details']['card']['card_brand']
+        payment_card_last4 = payment_info['payment']['card_details']['card']['last_4']
+        payment_amount = payment_info['payment']['amount_money']['amount'] / 100
+    else:
+        payment_info = "None"
+
+        payment_date = datetime.today()
+        payment_card_type = "NA"
+        payment_card_last4 = "NA"
+        payment_amount = "Free"
 
     body = f"""
         Hi {patient.first_name},

@@ -1,3 +1,6 @@
+function $(x) { return document.getElementById(x)}
+const patient_id = $('patient_id').innerHTML;
+
 const paymentForm = new SqPaymentForm({
     // Initialize the payment form elements
     applicationId: "sandbox-sq0idb-tOPCaqqjNhHwoh3Vi_ihkg",
@@ -26,18 +29,50 @@ const paymentForm = new SqPaymentForm({
             let nonce_div = document.getElementById('id_nonce');
             nonce_div.value = nonce;
             document.forms[0].submit();
-
-
             return;
         }
     }
 });
 paymentForm.build();
  // onGetCardNonce is triggered when the "Pay $1.00" button is clicked
-function onGetCardNonce(event) {
-   // Don't submit the form until SqPaymentForm returns with a nonce
-   event.preventDefault();
-   // Request a nonce from the SqPaymentForm object
-   paymentForm.requestCardNonce();
+async function onGetCardNonce(event) {
+    // Don't submit the form until SqPaymentForm returns with a nonce
+    event.preventDefault();
+    let cost_val = await fetchCost();
+
+    if(parseInt(cost_val.patient_cost) > 0){
+        // Request a nonce from the SqPaymentForm object
+        paymentForm.requestCardNonce();
+    } else {
+        document.forms[0].submit();
+    }
 
 }
+
+function fetchCost() {
+    let promise = fetch('/patient-cost/', {
+            method: 'POST',
+            headers: {"X-Requested-With": "XMLHttpRequest", "X-CSRFToken": getCookie("csrftoken")},
+            body: JSON.stringify({'patient_id': patient_id})
+        });
+    let cst = promise.then(response => {
+        return response.json()
+    })
+    return cst
+
+}
+
+function getCookie(c_name) {
+    if (document.cookie.length > 0)
+    {
+        c_start = document.cookie.indexOf(c_name + "=");
+        if (c_start !== -1)
+        {
+            c_start = c_start + c_name.length + 1;
+            c_end = document.cookie.indexOf(";", c_start);
+            if (c_end === -1) c_end = document.cookie.length;
+            return unescape(document.cookie.substring(c_start,c_end));
+        }
+    }
+    return "";
+ }

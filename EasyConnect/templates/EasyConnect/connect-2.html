@@ -118,13 +118,31 @@
                                 </div>
                             </div>
                         </div>
+                        {% if affiliate.affiliate_name == "EasyConnect" %}
                         <div class="row">
-                            <div class="col"><label style="margin-left: 0.6rem;">Total</label>
-                                <div><span style="margin-left: 0.5em;color: #ffa500;">${{ affiliate.affiliate_price|div:100 }}</span></div>
+                            <div class="col">
+                                <div class="form-group half-width">{{ coupon_form.code }}</div>
+                                <input  type="button" style="background-color: rgb(255,255,255);color: #ffa500;border: 2px solid #ffa500 !important;"
+                                                    value="Apply" onclick="applyCoupon(event)"/>
                             </div>
                         </div>
-
-                        <div class="row">
+                        {% endif %}
+                        <div class="row" style="margin-top: 1em">
+                            <div class="col"><label style="margin-left: 0.6rem;">Total</label>
+                                <div><span id="cost" style="margin-left: 0.5em;color: #ffa500;">
+                                    {% if patient_cost.cost|add:"0" <= 0  %}
+                                        <strike>$ {{ affiliate.affiliate_price|div:100 }}</strike> Free
+                                    {% else %}
+                                        ${{ patient_cost.cost|div:100 }}
+                                    {% endif %}
+                                </span></div>
+                            </div>
+                        </div>
+                        {% if patient_cost.cost|add:"0" <= 0  %}
+                        <div class="row hidden" id="card-container">
+                        {% else %}
+                        <div class="row" id="card-container">
+                        {% endif %}
                             <div class="col">
                                 <div class="row">
                                      <div id="form-container">
@@ -134,9 +152,10 @@
                             </div>
                         </div>
                         <div class="row seperator" id="light">
-                            <div class="col">
-                                <div class="hidden" id="zipcode">{{ zip }}</div>
-                                <div class="hidden" id="nonce">{{ payment_form.nonce }}</div>
+                            <div class="col hidden">
+                                <div id="zipcode">{{ zip }}</div>
+                                <div id="nonce">{{ payment_form.nonce }}</div>
+                                <div id="patient_id">{{ patient_id }}</div>
                             </div>
                         </div>
                         <div class="row" style="margin-top: 1em;">
@@ -147,7 +166,11 @@
                         </div>
                     </form>
                     <div class="row" style="margin-top: 3em;margin-bottom: 0;">
-                        <div class="col text-center d-sm-flex align-items-sm-end m-sm-auto justify-content-lg-center"><span style="padding-right: 1em;padding-left: 1em;"><br>1.About you<br><br></span><span style="padding-right: 1em;padding-left: 1em;"><br><br>2.Symptoms &amp; Payment<br><br></span><span style="padding-right: 1em;padding-left: 1em;"><br><br>3.Video Chat<br><br></span></div>
+                        <div class="col text-center d-sm-flex align-items-sm-end m-sm-auto justify-content-lg-center">
+                            <span style="padding-right: 1em;padding-left: 1em;"><br>1.About you<br><br></span>
+                            <span style="padding-right: 1em;padding-left: 1em;"><br><br>2.Symptoms &amp; Payment<br><br>
+                            </span><span style="padding-right: 1em;padding-left: 1em;"><br><br>3.Video Chat<br><br></span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -155,6 +178,9 @@
     </div>
     {% include 'EasyConnect/standard-footer.html' %}
     <script src="{% get_static_prefix %}EasyConnect/assets/js/paymentForm.js"></script>
+    {% if affiliate.affiliate_name == "EasyConnect" %}
+    <script src="{% get_static_prefix %}EasyConnect/assets/js/coupon.js"></script>
+    {% endif %}
 </body>
 
 </html>

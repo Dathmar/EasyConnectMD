@@ -36,6 +36,24 @@ class Patient(models.Model):
         return f'{self.first_name} {self.last_name}'
 
 
+class Coupon(models.Model):
+    code = models.CharField(max_length=200, default=None)
+    begin_date = models.DateField(default=None)
+    end_date = models.DateField(default=None)
+    discount = models.CharField(max_length=200, default=None)
+
+    create_datetime = models.DateTimeField('date created', auto_now_add=True)
+    update_datetime = models.DateTimeField('date updated', auto_now=True)
+
+    def __str__(self):
+        return self.code
+
+class Patient_Cost(models.Model):
+    patient = models.ForeignKey(Patient, on_delete=models.PROTECT)
+    cost = models.CharField(max_length=200, default=None)
+    coupon_applied = models.CharField(max_length=1, default='N')
+
+
 class Preferred_Pharmacy(models.Model):
     # section in page 1
     # would like to expand to location information from Google
