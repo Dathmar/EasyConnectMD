@@ -543,9 +543,12 @@ def apply_coupon(request):
         coupon = None
 
         default_cost = 3999
+        server_time = datetime.now(pytz.utc)
+        tz = timezone(settings.DISPLAY_TZ)
+        loc_dt = server_time.astimezone(tz)
 
         if coupon_code:
-            coupon = Coupon.objects.filter(code=coupon_code).first()
+            coupon = Coupon.objects.filter(code=coupon_code, begin_date__lte=loc_dt.today(), end_date__gte=loc_dt.today()).first()
 
         patient_cost = Patient_Cost.objects.filter(patient_id=patient_id).first()
         status = 'Invalid coupon'

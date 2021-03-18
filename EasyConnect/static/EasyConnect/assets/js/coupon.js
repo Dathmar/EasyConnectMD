@@ -2,6 +2,7 @@ function $(x) { return document.getElementById(x)}
 
 let coupon = $('id_code');
 let cost_field = $('cost')
+const patient_id_coupon = $('patient_id').innerHTML;
 
 function applyCoupon(event) {
     event.preventDefault();
@@ -13,7 +14,7 @@ function fetchCoupon(){
         fetch('/apply-coupon/', {
                 method: 'POST',
                 headers: {"X-Requested-With": "XMLHttpRequest", "X-CSRFToken": getCookie("csrftoken")},
-                body: JSON.stringify({'coupon_code': coupon.value, 'patient_id': patient_id})
+                body: JSON.stringify({'coupon_code': coupon.value, 'patient_id': patient_id_coupon})
             })
             .then(
                 response => response.json()
