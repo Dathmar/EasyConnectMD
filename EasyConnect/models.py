@@ -105,6 +105,7 @@ class Icd10(models.Model):
     def __str__(self):
         return self.ICD10_DSC
 
+
 class ProviderNotes(models.Model):
     patient = models.ForeignKey(Patient, on_delete=models.PROTECT)
     hpi = models.TextField(default=None)

@@ -18,4 +18,8 @@ def sub(value, arg):
 @register.filter
 def div(value, arg):
     "Divides the value by the arg"
-    return int(float(value)) / int(arg)
+    try:
+        value = int(value)
+        return int(value) / int(arg)
+    except:
+        return value

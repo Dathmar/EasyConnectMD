@@ -1,39 +1,55 @@
 function $(x) { return document.getElementById(x)}
 const patient_id = $('patient_id').innerHTML;
 
-const paymentForm = new SqPaymentForm({
-    // Initialize the payment form elements
-    applicationId: "sandbox-sq0idb-tOPCaqqjNhHwoh3Vi_ihkg",
-    autoBuild: false,
-    // Initialize the credit card placeholders
-    card: {
-        elementId: 'sq-card',
-    },
-    // SqPaymentForm callback functions
-    callbacks: {
-        /*
-        * callback function: cardNonceResponseReceived
-        * Triggered when: SqPaymentForm completes a card nonce request
-        */
-        cardNonceResponseReceived: function (errors, nonce, cardData) {
-        if (errors) {
-            // Log errors from nonce generation to the browser developer console.
-            console.error('Encountered errors:');
-            errors.forEach(function (error) {
-                console.error('  ' + error.message);
-            });
-            alert('Encountered errors, check browser developer console for more details');
-            return;
-        }
+function fetchSquareAppId() {
+    let sq_id = fetch('/square-app-id/').then(
+            response => {
+                return response.json()
+            }
+        )
+    return sq_id;
+};
 
-            let nonce_div = document.getElementById('id_nonce');
-            nonce_div.value = nonce;
-            document.forms[0].submit();
-            return;
+async function setSquareAppID() {
+    let app_id = await fetchSquareAppId();
+    const paymentForm = new SqPaymentForm(
+        {
+        // Initialize the payment form elements
+        applicationId: app_id.square_app_id,
+        autoBuild: false,
+        // Initialize the credit card placeholders
+        card: {
+            elementId: 'sq-card',
+        },
+        // SqPaymentForm callback functions
+        callbacks: {
+            /*
+            * callback function: cardNonceResponseReceived
+            * Triggered when: SqPaymentForm completes a card nonce request
+            */
+            cardNonceResponseReceived: function (errors, nonce, cardData) {
+            if (errors) {
+                // Log errors from nonce generation to the browser developer console.
+                console.error('Encountered errors:');
+                errors.forEach(function (error) {
+                    console.error('  ' + error.message);
+                });
+                alert('Encountered errors, check browser developer console for more details');
+                return;
+            }
+
+                let nonce_div = document.getElementById('id_nonce');
+                nonce_div.value = nonce;
+                document.forms[0].submit();
+                return;
+            }
         }
-    }
-});
-paymentForm.build();
+    });
+    paymentForm.build();
+}
+
+setSquareAppID();
+
  // onGetCardNonce is triggered when the "Pay $1.00" button is clicked
 async function onGetCardNonce(event) {
     // Don't submit the form until SqPaymentForm returns with a nonce
@@ -50,16 +66,14 @@ async function onGetCardNonce(event) {
 }
 
 function fetchCost() {
-    let promise = fetch('/patient-cost/', {
+    let cst = fetch('/patient-cost/', {
             method: 'POST',
             headers: {"X-Requested-With": "XMLHttpRequest", "X-CSRFToken": getCookie("csrftoken")},
             body: JSON.stringify({'patient_id': patient_id})
-        });
-    let cst = promise.then(response => {
+        }).then(response => {
         return response.json()
     })
     return cst
-
 }
 
 function getCookie(c_name) {

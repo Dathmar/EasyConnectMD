@@ -24,7 +24,6 @@ from square.client import Client
 
 from twilio.jwt.access_token import AccessToken
 from twilio.jwt.access_token.grants import VideoGrant
-from twilio.rest import Client as twilio_client
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -32,7 +31,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 def get_affiliate_context(affiliate_url):
     affiliate = None
-    if affiliate_url:
+    if affiliate_url != '':
         affiliate = Affiliate.objects.filter(affiliate_url=affiliate_url).first()
 
     if not affiliate:
@@ -218,6 +217,12 @@ def connect_2_affiliate(request, patient_id, affiliate_url):
     affiliate_url = affiliate_url.lower()
     patient = get_object_or_404(Patient, pk=patient_id)
     patient_cost = Patient_Cost.objects.filter(patient=patient_id).first()
+    affiliate_obj = get_affiliate_object(affiliate_url=affiliate_url)
+
+    if not patient_cost:
+        patient_cost = Patient_Cost(patient_id=patient.id, cost=affiliate_obj.affiliate_price)
+        patient_cost.save()
+
     payment_errors = None
 
     # TODO add handling for completed appointments.
@@ -296,6 +301,7 @@ def connect_2_affiliate(request, patient_id, affiliate_url):
 
                 payments_api = client.payments
                 result = payments_api.create_payment(body)
+                payment_status = ""
                 if result.is_success():
                     payment_status = "Paid"
                 elif result.is_error():
@@ -542,7 +548,7 @@ def apply_coupon(request):
         coupon_code = json.loads(request.body)['coupon_code']
         coupon = None
 
-        default_cost = 3999
+        default_cost = 3995  # should have this come from the DB.
         server_time = datetime.now(pytz.utc)
         tz = timezone(settings.DISPLAY_TZ)
         loc_dt = server_time.astimezone(tz)
@@ -582,6 +588,14 @@ def patient_cost(request):
         return JsonResponse(data, safe=False)
 
     return HttpResponse(None, status=401)
+
+
+def square_app_id(request):
+    data = {
+        'square_app_id': settings.SQUARE_APP_ID,
+    }
+    return JsonResponse(data, safe=False)
+
 
 
 def server_time(request):
@@ -681,6 +695,7 @@ def get_patient_records(patient_id):
         return None
 
     return [dict(zip([key[0] for key in cursor.description], row)) for row in result]
+
 
 def get_appointments(status, count=100, order_by='ASC'):
     sql = f'''SELECT 

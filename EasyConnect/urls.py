@@ -38,6 +38,7 @@ urlpatterns = [
     path('video-token/', views.video_token, name='video-token'),
     path('apply-coupon/', views.apply_coupon, name='apply-coupon'),
     path('patient-cost/', views.patient_cost, name='patient-cost'),
+    path('square-app-id/', views.square_app_id, name='square-app-id'),
 
     #affiliate views
     path('<slug:affiliate_url>/', views.index_affiliate, name='index-affiliate'),
