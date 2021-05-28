@@ -277,7 +277,6 @@ def connect_2_affiliate(request, patient_id, affiliate_url):
                                           update_datetime=datetime.now())
             pharmacy.save()
 
-
             # only generate payment if patient cost is greater than 0
             if int(patient_cost.cost) > 0:
                 # each payment attempt will generate a new nonce
@@ -328,6 +327,14 @@ def connect_2_affiliate(request, patient_id, affiliate_url):
                 payment_status = "NA"
 
             if payment_status != 'Failed':
+                # add 1 to the coupon uses.
+                coupon = patient_cost.coupon
+                if coupon:
+                    coupon.current_uses += 1
+
+                    coupon.update_datetime = datetime.now()
+                    coupon.save(update_fields=['current_uses', 'update_datetime'])
+
                 if not Appointments.objects.filter(patient_id=patient.id):
                     appointment = Appointments(patient=patient,
                                                status='Ready for Provider',
@@ -559,9 +566,24 @@ def apply_coupon(request):
         patient_cost = Patient_Cost.objects.filter(patient_id=patient_id).first()
         status = 'Invalid coupon'
 
+        should_apply_coupon = False
+
         if coupon:
+            if coupon.max_uses:
+                if coupon.max_uses > coupon.current_uses:
+                    should_apply_coupon = True
+                else:
+                    status = 'All coupons used'
+            else:
+                should_apply_coupon = True
+        else:
+            status = 'Coupon not found'
+
+        if should_apply_coupon:
             patient_cost.cost = int(default_cost) - int(coupon.discount)
-            patient_cost.save(update_fields=['cost'])
+            patient_cost.coupon_applied = True
+            patient_cost.coupon = coupon
+            patient_cost.save(update_fields=['cost', 'coupon_applied', 'coupon'])
             status = 'Success'
 
         data = {
@@ -595,7 +617,6 @@ def square_app_id(request):
         'square_app_id': settings.SQUARE_APP_ID,
     }
     return JsonResponse(data, safe=False)
-
 
 
 def server_time(request):
@@ -648,6 +669,7 @@ def is_offhours():
             off_hours = True
 
     return off_hours
+
 
 def get_patient_records(patient_id):
     sql = f'''

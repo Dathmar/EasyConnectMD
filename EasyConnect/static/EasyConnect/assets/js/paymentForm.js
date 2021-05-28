@@ -1,6 +1,6 @@
 function $(x) { return document.getElementById(x)}
 const patient_id = $('patient_id').innerHTML;
-
+let paymentForm;
 function fetchSquareAppId() {
     let sq_id = fetch('/square-app-id/').then(
             response => {
@@ -12,7 +12,7 @@ function fetchSquareAppId() {
 
 async function setSquareAppID() {
     let app_id = await fetchSquareAppId();
-    const paymentForm = new SqPaymentForm(
+    paymentForm = new SqPaymentForm(
         {
         // Initialize the payment form elements
         applicationId: app_id.square_app_id,

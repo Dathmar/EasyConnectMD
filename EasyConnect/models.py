@@ -40,7 +40,9 @@ class Coupon(models.Model):
     code = models.CharField(max_length=200, default=None)
     begin_date = models.DateField(default=None)
     end_date = models.DateField(default=None)
-    discount = models.CharField(max_length=200, default=None)
+    discount = models.IntegerField()
+    max_uses = models.IntegerField(default=None, null=True)  # New
+    current_uses = models.IntegerField(default=0)  # New
 
     create_datetime = models.DateTimeField('date created', auto_now_add=True)
     update_datetime = models.DateTimeField('date updated', auto_now=True)
@@ -48,10 +50,12 @@ class Coupon(models.Model):
     def __str__(self):
         return self.code
 
+
 class Patient_Cost(models.Model):
     patient = models.ForeignKey(Patient, on_delete=models.PROTECT)
     cost = models.CharField(max_length=200, default=None)
-    coupon_applied = models.CharField(max_length=1, default='N')
+    coupon_applied = models.BooleanField(default=None, null=True)
+    coupon = models.ForeignKey(Coupon, on_delete=models.PROTECT, null=True)
 
 
 class Preferred_Pharmacy(models.Model):

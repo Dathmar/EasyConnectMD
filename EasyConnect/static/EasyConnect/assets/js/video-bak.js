@@ -6,8 +6,8 @@ const container = $('chatSection');
 const username = $('username').innerHTML;
 const patient_id = $('patient_id').innerHTML;
 let room;
-const connect_string = 'Start Video Chat'
-const disconnect_string = 'Leave Video'
+const connect_string = 'Start Video Chat';
+const disconnect_string = 'Leave Video';
 let videoTrack = null;
 
 function addLocalVideo() {
@@ -42,27 +42,26 @@ function connectButtonHandler(event) {
 function connect() {
     let promise = new Promise((resolve, reject) => {
         // get a token from the back end
-        console.log(patient_id)
+        console.log(patient_id);
         fetch('/video-token/', {
             method: 'POST',
             headers: {"X-Requested-With": "XMLHttpRequest", "X-CSRFToken": getCookie("csrftoken")},
             body: JSON.stringify({'username': username, 'patient_id': patient_id})
         }).then(res => res.json()).then(data => {
             // join video call
-            console.log('joining chat')
-            return Twilio.Video.connect(data.token);
+            console.log('joining chat');
+            return Twilio.Video.connect(data.token, videoTrack);
         }).then(_room => {
-            console.log('setting room')
+            console.log('setting room');
             room = _room;
             room.participants.forEach(participantConnected);
             room.on('participantConnected', participantConnected);
             room.on('participantDisconnected', participantDisconnected);
             connected = true;
-            videoTrack.restart();
             resolve();
         }).catch(() => {
             // can add error catching for incorrect device, or no access.
-            console.log('error connecting')
+            console.log('error connecting');
             reject();
         });
     });
@@ -92,15 +91,14 @@ function disconnect() {
     button.innerHTML = connect_string;
 
     // when disconnecting change to local only
-    let video = $('local')
-    video.classList.remove('participant-overlay')
-    video.classList.add('participant')
-    videoTrack.restart();
+    let video = $('local');
+    video.classList.remove('participant-overlay');
+    video.classList.add('participant');
     connected = false;
 }
 
 function participantConnected(participant) {
-    console.log('test participantConnected')
+    console.log('test participantConnected');
     let participantDiv = document.createElement('div');
     participantDiv.setAttribute('id', participant.sid);
     participantDiv.setAttribute('class', 'remote');
@@ -116,7 +114,6 @@ function participantConnected(participant) {
         let video = $('local');
         video.classList.remove('participant');
         video.classList.add('participant-overlay');
-        videoTrack.restart();
     }
 
     participant.tracks.forEach(publication => {
@@ -137,7 +134,6 @@ function participantDisconnected(participant) {
         let video = $('local');
         video.classList.remove('participant-overlay');
         video.classList.add('participant');
-        videoTrack.restart();
     }
 }
 

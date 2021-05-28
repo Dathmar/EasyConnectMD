@@ -125,6 +125,9 @@
                                 <input  type="button" style="background-color: rgb(255,255,255);color: #ffa500;border: 2px solid #ffa500 !important;"
                                                     value="Apply" onclick="applyCoupon(event)"/>
                             </div>
+                            <div class="col">
+                                <div id='coupon-status' class="d-none form-group half-width"></div>
+                            </div>
                         </div>
                         {% endif %}
                         <div class="row" style="margin-top: 1em">
@@ -139,7 +142,7 @@
                             </div>
                         </div>
                         {% if patient_cost.cost|add:"0" <= 0  %}
-                        <div class="row hidden" id="card-container">
+                        <div class="row d-none" id="card-container">
                         {% else %}
                         <div class="row" id="card-container">
                         {% endif %}
