@@ -3,7 +3,7 @@ import csv
 import json
 import threading
 
-from datetime import datetime
+from datetime import datetime, timedelta
 from pytz import timezone
 import pytz
 
@@ -14,6 +14,7 @@ from django.conf import settings
 from django.contrib.auth import logout
 from django.core.mail import send_mail
 from django.db import connection
+from django.contrib.auth.models import User
 
 from EasyConnect.forms import PatientForm, SymptomsForm, ProviderForm, PharmacyForm, PaymentForm, ICD10CodeLoad, \
     AffiliateForm, CouponForm
@@ -82,7 +83,6 @@ def faq_affiliate(request, affiliate_url):
     affiliate_url = affiliate_url.lower()
     context = get_affiliate_context(affiliate_url)
     return render(request, 'EasyConnect/faq.html', context)
-
 
 def privacy_policy(request):
     return faq_affiliate(request, '')
@@ -201,11 +201,12 @@ def connect_timeless(request):
 
     off_hours = False
 
+    affiliate = get_affiliate_context(affiliate_url='')
     context = {
         'form': form,
         'off_hours': off_hours
     }
-
+    context.update(affiliate)
     return render(request, 'EasyConnect/connect.html', context)
 
 
@@ -549,6 +550,46 @@ def video_token(request):
     return HttpResponse(None, status=401)
 
 
+def is_eighteen(request):
+    if request.method == 'POST':
+        data = {
+            'is_eighteen': True,
+        }
+
+        dob = json.loads(request.body)['dob']
+
+        try:
+            dob_year, dob_month, dob_day = dob.split('-')
+        except ValueError:
+            return JsonResponse(data, safe=False)
+
+        dob_year = int(dob_year)
+        dob_month = int(dob_month)
+        dob_day = int(dob_day)
+
+        try:
+            datetime(dob_year, dob_month, dob_day)
+        except ValueError:
+            return JsonResponse(data, safe=False)
+
+        if dob_year > 1800 and dob_month > 0 and dob_day > 0:
+            server_time = datetime.now(pytz.utc)
+
+            tz = timezone(settings.DISPLAY_TZ)
+            today = server_time.astimezone(tz)
+
+            patient_age = today.year - dob_year - ((today.month, today.day) < (dob_month, dob_day))
+
+            if patient_age < 18:
+                data = {
+                    'is_eighteen': False,
+                }
+
+        return JsonResponse(data, safe=False)
+
+    return HttpResponse(None, status=401)
+
+
 def apply_coupon(request):
     if request.method == 'POST':
         patient_id = json.loads(request.body)['patient_id']
@@ -561,7 +602,7 @@ def apply_coupon(request):
         loc_dt = server_time.astimezone(tz)
 
         if coupon_code:
-            coupon = Coupon.objects.filter(code=coupon_code, begin_date__lte=loc_dt.today(), end_date__gte=loc_dt.today()).first()
+            coupon = Coupon.objects.filter(code__iexact=coupon_code, begin_date__lte=loc_dt.today(), end_date__gte=loc_dt.today()).first()
 
         patient_cost = Patient_Cost.objects.filter(patient_id=patient_id).first()
         status = 'Invalid coupon'
@@ -626,11 +667,17 @@ def server_time(request):
 
     off_hours = is_offhours()
 
+    provider_list = User.objects.filter(groups__name='Appointment Notifications').values('email')
+    providers = []
+    for email in provider_list:
+        providers.append(email['email'])
+
     context = {
         'local_time': datetime.strftime(loc_dt, '%m/%d/%Y %H:%M'),
         'server_time': datetime.strftime(server_time, '%m/%d/%Y %H:%M'),
         'local_hour': datetime.strftime(loc_dt, '%H'),
-        'off_hours': off_hours
+        'off_hours': off_hours,
+        'providers': providers,
     }
     return render(request, 'EasyConnect/server-time.html', context)
 
@@ -653,10 +700,10 @@ def is_offhours():
 
     if day_of_week in (3, 4, 5):
         start_time = 8
-        end_time = 0
+        end_time = 20
     else:
         start_time = 8
-        end_time = 0 # 20
+        end_time = 20
 
     off_hours = False
 
@@ -720,6 +767,10 @@ def get_patient_records(patient_id):
 
 
 def get_appointments(status, count=100, order_by='ASC'):
+    app_search = "and eca.create_datetime >= now()::date - interval '18 hours'"
+    if status == 'Appointment Complete':
+        app_search = ""
+
     sql = f'''SELECT 
                 ecp.id as "patient_id",
                 eca.status as "appointment_status",
@@ -730,7 +781,7 @@ def get_appointments(status, count=100, order_by='ASC'):
             FROM "EasyConnect_appointments" as eca
             LEFT JOIN "EasyConnect_patient" as ecp on eca.patient_id=ecp.id
             LEFT JOIN "auth_user" as au on eca.seen_by_id=au.id
-            WHERE eca.status='{status}'
+            WHERE eca.status='{status}' {app_search}
             ORDER BY eca.create_datetime {order_by}
             LIMIT {count}'''
 
@@ -833,6 +884,11 @@ def logout_request(request):
 
 def send_provider_notification(patient_id):
     patient = Patient.objects.filter(pk=patient_id).first()
+    provider_list = User.objects.filter(groups__name='Appointment Notifications').values('email')
+    providers = []
+    for email in provider_list:
+        providers.append(email['email'])
+
     body = f"""
             A new video chat has been received from: {patient.first_name} {patient.last_name}.
             
@@ -868,7 +924,7 @@ def send_provider_notification(patient_id):
         subject=f'Video Chat for {patient.first_name} {patient.last_name}',
         message=body,
         from_email=settings.EMAIL_HOST_USER,
-        recipient_list=settings.APPOINTMENT_RECIPIENT_LIST,
+        recipient_list=providers,
         fail_silently=False,
         html_message=html_body
     ).start()
@@ -905,7 +961,7 @@ def send_patient_notification(patient_id):
         Thank you for choosing EasyConnectMD!
 
         Need technical support?
-        You can email us at <a href='mailto:info@easyconnectmd.net'>info@easyconnectmd.net</a>
+        You can email us at <a href='mailto:info@easyconnectmd.com'>info@easyconnectmd.com</a>
 
         === Receipt Information ===
         Date: {payment_date}
@@ -928,7 +984,7 @@ def send_patient_notification(patient_id):
                 <p>Thank you for choosing EasyConnectMD!</p>
                 <p></p>
                 <p>Need technical support?</p>
-                <p>You can email us at <a href='mailto:info@easyconnectmd.net'>info@easyconnectmd.net</a></p>
+                <p>You can email us at <a href='mailto:info@easyconnectmd.com'>info@easyconnectmd.com</a></p>
                 <p></p>
                 <p>=== Receipt Information ===</p>
                 <p>Date: {payment_date}</p>

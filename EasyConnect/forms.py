@@ -29,6 +29,7 @@ class PatientForm(forms.Form):
                                                           'placeholder': 'Zip*'}), max_length=20)
     dob = forms.DateField(widget=forms.DateInput(attrs={'class': "form-control half-width",
                                                         'type': 'date',
+                                                        'onChange': 'checkAge(this.value);',
                                                         'placeholder': 'mm/dd/yyyy'}))
     gender = forms.ChoiceField(widget=forms.RadioSelect(attrs={'class': "form-check-input"}),
                                choices=GENDER_CHOICES)
@@ -71,11 +72,12 @@ class PatientForm(forms.Form):
         if not data:
             raise ValidationError(_('Invalid Birthday - cannot be blank'))
 
-        tz = timezone('US/Central')
-        today = tz.localize(datetime.today())
-        patient_age = today.year - data.year - ((today.month, today.day) < (data.month, data.day))
-        if patient_age < 18:
-            raise ValidationError(_('You must be 18 or over to use this service.'))
+        # deactivating this section of code to allow younger than 18 with parent's permission.
+        # tz = timezone('US/Central')
+        # today = tz.localize(datetime.today())
+        # patient_age = today.year - data.year - ((today.month, today.day) < (data.month, data.day))
+        # if patient_age < 18:
+        #    raise ValidationError(_('You must be 18 or over to use this service.'))
 
         # Check if a date is not in the past.
         if data > date.today():

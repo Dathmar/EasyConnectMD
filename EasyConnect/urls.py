@@ -35,10 +35,13 @@ urlpatterns = [
     url(r'^accounts/', include("django.contrib.auth.urls")),
     path('accounts/logout/', views.logout_request, name='logout'),
     path('accounts/login/', views.login_request, name='login'),
+
+    # ajax calls
     path('video-token/', views.video_token, name='video-token'),
     path('apply-coupon/', views.apply_coupon, name='apply-coupon'),
     path('patient-cost/', views.patient_cost, name='patient-cost'),
     path('square-app-id/', views.square_app_id, name='square-app-id'),
+    path('age-verification/', views.is_eighteen, name='age_verification'),
 
     #affiliate views
     path('<slug:affiliate_url>/', views.index_affiliate, name='index-affiliate'),

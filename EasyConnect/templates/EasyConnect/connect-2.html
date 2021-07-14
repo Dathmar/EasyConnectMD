@@ -120,13 +120,13 @@
                         </div>
                         {% if affiliate.affiliate_name == "EasyConnect" %}
                         <div class="row">
-                            <div class="col">
-                                <div class="form-group half-width">{{ coupon_form.code }}</div>
+                            <div class="col-6">
+                                <div class="form-group">{{ coupon_form.code }}</div>
                                 <input  type="button" style="background-color: rgb(255,255,255);color: #ffa500;border: 2px solid #ffa500 !important;"
                                                     value="Apply" onclick="applyCoupon(event)"/>
                             </div>
                             <div class="col">
-                                <div id='coupon-status' class="d-none form-group half-width"></div>
+                                <div id='coupon-status' class="d-none form-group" style="padding-top: 1.25em"></div>
                             </div>
                         </div>
                         {% endif %}

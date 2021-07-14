@@ -90,6 +90,10 @@
                                     </div>
                                 </div>
                             </div>
+                            <div id="underage" class="form-group d-none">
+                                <input type="checkbox" id="age" name="age" onclick="enableButton()">
+                                <label for="age">Please check to confirm there is a parent or guardian present.</label>
+                            </div>
                             <div class="row tos-title">
                                 <div class="col">
                                     <h5>Terms of Service*</h5>
@@ -118,7 +122,7 @@
                                 </div>
                             </div>
                             <div class="row" style="margin-top: 1em;">
-                                <div class="col"><input class="btn btn-primary border rounded-0 connect-button" type="submit" style="background-color: rgb(255,255,255);color: #ffa500;border: 2px solid #ffa500 !important;"
+                                <div class="col"><input class="btn btn-primary border rounded-0 connect-button" type="submit" id="submit" style="background-color: rgb(255,255,255);color: #ffa500;border: 2px solid #ffa500 !important;"
                                                         value="Step 2: Symptoms &amp; Payment"/>
                                 </div>
                             </div>
@@ -132,6 +136,7 @@
         </div>
     {%  endif %}
     {% include 'EasyConnect/standard-footer.html' %}
+    <script src="{% get_static_prefix %}EasyConnect/assets/js/age_verification.js"></script>
 </body>
 
 </html>
