@@ -229,8 +229,9 @@ def connect_2_affiliate(request, patient_id, affiliate_url):
     # TODO add handling for completed appointments.
     if Appointments.objects.filter(patient_id=patient.id):
         if affiliate_url:
-            return HttpResponseRedirect(reverse('easyconnect:video-chat-affiliate', kwargs={'patient_id': patient.id,
-                                                                                  'affiliate_url': affiliate_url}))
+            return HttpResponseRedirect(reverse('easyconnect:video-chat-affiliate',
+                                                kwargs={'patient_id': patient.id,
+                                                        'affiliate_url': affiliate_url}))
         else:
             return HttpResponseRedirect(reverse('easyconnect:video-chat', args=(patient_id,)))
 
@@ -420,6 +421,30 @@ def provider_dashboard(request):
     }
 
     return render(request, "EasyConnect/dashboard.html", context)
+
+
+def call_stats(request):
+    today = datetime.now()
+
+    first_form = Patient.objects.filter(create_datetime__range=(today-timedelta(days=7), today))
+    appointments = Appointments.objects.filter(create_datetime__range=(today-timedelta(days=7), today))
+    affiliates = Affiliate.objects.all()
+
+    first_by_affiliates = {}
+    appointments_by_affiliates = {}
+
+    for affiliate in affiliates:
+        first_by_affiliates.update({affiliate: first_form.filter(affiliate=affiliate).count()})
+        appointments_by_affiliates.update({affiliate: appointments.filter(patient__affiliate=affiliate).count()})
+
+    context = {
+        'first_form': first_form,
+        'appointments': appointments,
+        'first_by_affiliates': first_by_affiliates,
+        'appointments_by_affiliates': appointments_by_affiliates,
+    }
+
+    return render(request, "EasyConnect/stats.html", context)
 
 
 def provider_view(request, patient_id):

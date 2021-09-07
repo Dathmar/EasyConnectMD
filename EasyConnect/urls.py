@@ -31,6 +31,7 @@ urlpatterns = [
 
     # provier side
     path('provider/<uuid:patient_id>', views.provider_view, name='provider-view'),
+    path('stats/', views.call_stats, name='call-stats'),
     url(r'^dashboard/', provider_dashboard, name='dashboard'),
     url(r'^accounts/', include("django.contrib.auth.urls")),
     path('accounts/logout/', views.logout_request, name='logout'),

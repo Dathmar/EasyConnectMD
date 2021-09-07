@@ -1,0 +1,101 @@
+{% load static %}
+{% load tz %}
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>EasyConnectMD</title>
+    <link rel="shortcut icon" type="image/png" href="{% get_static_prefix %}EasyConnect/assets/img/favicon-color.png"/>
+    <link rel="stylesheet" href="{% get_static_prefix %}EasyConnect/assets/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Antic">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Cambay">
+    <link rel="stylesheet" href="{% get_static_prefix %}EasyConnect/assets/css/Footer-Dark.css">
+    <link rel="stylesheet" href="{% get_static_prefix %}EasyConnect/assets/css/styles.css">
+    <link rel="stylesheet" href="{% get_static_prefix %}EasyConnect/assets/css/untitled.css">
+</head>
+
+<body style="padding-top: 0;">
+    {% include 'EasyConnect/provider_navbar.html' %}
+    <div style="padding-top: 7.5em">
+        {% if user.is_authenticated %}
+            <div class="container">
+                <h1>Total Visitors</h1>
+                <table class="table table-striped table-hover">
+                    <thead class="thead-light">
+                        <tr>
+                            <th scope="col">Type</th>
+                            <th scope="col">Count</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                first form
+                            </td>
+                            <td>
+                                {{ first_form.count }}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                appointment count
+                            </td>
+                            <td>
+                                {{ appointments.count }}
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h1 class="mt-4">First Form by Affiliates</h1>
+                <table class="table table-striped table-hover">
+                    <thead class="thead-light">
+                        <tr>
+                            <th scope="col">Affiliate</th>
+                            <th scope="col">Count</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for key, value in first_by_affiliates.items %}
+                        <tr>
+                            <td>
+                                {{ key }}
+                            </td>
+                            <td>
+                                {{ value }}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <h1 class="mt-4">Appointment by Affiliates</h1>
+                <table class="table table-striped table-hover">
+                    <thead class="thead-light">
+                        <tr>
+                            <th scope="col">Affiliate</th>
+                            <th scope="col">Count</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for key, value in appointments_by_affiliates.items %}
+                        <tr>
+                            <td>
+                                {{ key }}
+                            </td>
+                            <td>
+                                {{ value }}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <p>Please <a href="{% url 'easyconnect:login' %}">login</a> to perform any actions.
+        {% endif %}
+    </div>
+    {% include 'EasyConnect/provider_footer.html' %}
+</body>
+</html>

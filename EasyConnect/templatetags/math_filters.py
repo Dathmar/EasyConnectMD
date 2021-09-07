@@ -5,19 +5,19 @@ register = template.Library()
 
 @register.filter
 def mult(value, arg):
-    "Multiplies the arg and the value"
+    """Multiplies the arg and the value"""
     return int(value) * int(arg)
 
 
 @register.filter
 def sub(value, arg):
-    "Subtracts the arg from the value"
+    """Subtracts the arg from the value"""
     return int(value) - int(arg)
 
 
 @register.filter
 def div(value, arg):
-    "Divides the value by the arg"
+    """Divides the value by the arg"""
     try:
         value = int(value)
         return int(value) / int(arg)

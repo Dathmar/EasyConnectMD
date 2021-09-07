@@ -8,9 +8,6 @@ from datetime import date
 from EasyConnect.models import Icd10
 from django_select2 import forms as s2forms
 
-from datetime import datetime
-from pytz import timezone
-
 
 class PatientForm(forms.Form):
     def __init__(self, *args, **kwargs):
