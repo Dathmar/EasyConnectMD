@@ -4,6 +4,7 @@ let connected = false;
 const button = $('join_leave');
 const container = $('chatSection');
 const username = $('username').innerHTML;
+const usertype = $('usertype').innerHTML
 const patient_id = $('patient_id').innerHTML;
 let room;
 const connect_string = 'Start Video Chat';
@@ -59,28 +60,73 @@ function connect() {
             body: JSON.stringify({'username': username, 'patient_id': patient_id})
         }).then(res => res.json()).then(data => {
             // join video call
-            msg = 'joining chat'
-            addToLog()
+            msg = 'joining chat';
+            addToLog();
             return Twilio.Video.connect(data.token, videoTrack);
         }).then(_room => {
-            msg = 'setting room'
-            addToLog()
+            msg = 'setting room';
+            addToLog();
             room = _room;
             room.participants.forEach(participantConnected);
             room.on('participantConnected', participantConnected);
             room.on('participantDisconnected', participantDisconnected);
+
+            if(usertype=='patient') {
+                notification_timer();
+            }
+
             connected = true;
             resolve();
         }).catch(() => {
             // can add error catching for incorrect device, or no access.
             msg = 'error connecting'
-            addToLog()
+            addToLog();
             reject();
         });
     });
     return promise;
 }
 
+async function delay(time) {
+  return new Promise(resolve => setTimeout(resolve, time));
+}
+
+async function notification_timer() {
+    let provider_joined;
+    msg = 'starting notification timer'
+    addToLog();
+    provider_joined = await delay(300000).then(() => {
+        if(connected){
+            return email_if_provider_not_joined();
+        }
+    });
+
+    console.log(provider_joined)
+    while(!provider_joined && connected){
+        msg = "In loop timer"
+        addToLog()
+        provider_joined = await delay(120000).then(() => {
+            if(connected) {
+                return email_if_provider_not_joined();
+            }
+        });
+    }
+
+}
+
+function email_if_provider_not_joined() {
+    let promise = fetch('/provider-joined/', {
+        method: 'POST',
+        headers: {"X-Requested-With": "XMLHttpRequest", "X-CSRFToken": getCookie("csrftoken")},
+        body: JSON.stringify({'patient_id': patient_id})
+    }).then(
+        response => response.json()
+    ).then(data => {
+        return data['provider_joined']
+    });
+
+    return promise;
+}
 
 function getCookie(c_name)
 {

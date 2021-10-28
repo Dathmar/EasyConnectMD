@@ -907,7 +907,21 @@ def logout_request(request):
     return HttpResponseRedirect(reverse('easyconnect:dashboard'))
 
 
-def send_provider_notification(patient_id):
+def provider_joined(request):
+    patient_id = json.loads(request.body)['patient_id']
+    appointment = Appointments.objects.filter(patient_id=patient_id).order_by('-create_datetime').first()
+
+    joined = True
+    if appointment.status == 'Ready for Provider':
+        joined = False
+        send_provider_notification(patient_id, True)
+
+    data = {'provider_joined': joined}
+
+    return JsonResponse(data, safe=False)
+
+
+def send_provider_notification(patient_id, reminder=False):
     patient = Patient.objects.filter(pk=patient_id).first()
     provider_list = User.objects.filter(groups__name='Appointment Notifications').values('email')
     providers = []
@@ -945,8 +959,13 @@ def send_provider_notification(patient_id):
             </html>
             """
 
+    if reminder:
+        subject = f'Patient still waiting for provider {patient.first_name} {patient.last_name}'
+    else:
+        subject = f'Video Chat for {patient.first_name} {patient.last_name}'
+
     EmailThread(
-        subject=f'Video Chat for {patient.first_name} {patient.last_name}',
+        subject=subject,
         message=body,
         from_email=settings.EMAIL_HOST_USER,
         recipient_list=providers,
