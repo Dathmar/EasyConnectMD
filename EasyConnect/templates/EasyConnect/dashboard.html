@@ -86,7 +86,7 @@
                                 {{ active_appointment.seen_by }}
                             </td>
                             <td>
-                                {{ active_appointment.|timezone:"US/Central" }}
+                                {{ active_appointment.created_at|timezone:"US/Central" }}
                             </td>
                             <td>
                                 {{ active_appointment.patient_id }}
