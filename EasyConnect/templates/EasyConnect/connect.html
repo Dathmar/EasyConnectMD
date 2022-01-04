@@ -6,6 +6,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <meta name="referrer" content="no-referrer-when-downgrade">
     <title>EasyConnectMD</title>
     <link rel="shortcut icon" type="image/png" href="{% get_static_prefix %}EasyConnect/assets/img/favicon-color.png"/>
     <link rel="stylesheet" href="{% get_static_prefix %}EasyConnect/assets/bootstrap/css/bootstrap.min.css">
@@ -33,6 +34,29 @@
                     <div class="row" style="margin-bottom: -42px;">
                         <div class="col text-center">
                             <h5><br>We're open everyday from 8:00am - 8:00pm Central<br><br></h5>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    {% elif is_holiday %}
+        <div class="d-md-flex justify-content-md-center" style="margin-right: 10%;margin-left: 10%;">
+            <section class="container-wrapper" style="background-color: #ffffff;padding: 0px;padding-bottom: 4em;">
+                <div id="textAboveForm">
+                    <div class="row">
+                        <div class="col text-center">
+                            <h1 style="margin-top: 1em;margin-bottom: 1em;">We are currently closed.</h1>
+                        </div>
+                    </div>
+                    <div class="row" style="margin-bottom: -42px;">
+                        <div class="col text-center">
+                            <h5><br>In observance of the Thanksgiving holiday, EasyConnectMD will be closed<br/>
+                            on Thursday, November 25th.<br/>
+                            <br/>
+                            We are thankful you have chosen us to care for you.<br/>
+                            <br/>
+                            We wish you a wonderful Thanksgiving Day.<br/>
+                            We will resume normal hours tomorrow. from 8:00am - 8:00pm Central</h5>
                         </div>
                     </div>
                 </div>
@@ -140,6 +164,7 @@
     {%  endif %}
     {% include 'EasyConnect/standard-footer.html' %}
     <script src="{% get_static_prefix %}EasyConnect/assets/js/age_verification.js"></script>
+    {% include 'EasyConnect/chat-widget.html' %}
 </body>
 
 </html>
