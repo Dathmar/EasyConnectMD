@@ -135,6 +135,7 @@
                 <div class="chatSection" style="width:90%;" id="chatSection">
                     <div id="local" class="participant"><div></div></div>
                 </div>
+                <div id="patient_being_seen" class="d-none">Patient is already being seen by a provider.</div>
                 <div id="button-container" style="padding-left: 15%"><button id="join_leave"  type="button">Start Video Chat</button></div>
             </div>
             <div class="button-buffer"></div>
@@ -182,7 +183,7 @@
                                 <p>Medical History</p>
                             </div>
                             <div class="col-md-6 light-grey">
-                                <p>{{ patient_record.revious_diagnosis }}</p>
+                                <p>{{ patient_record.previous_diagnosis }}</p>
                             </div>
                         </div>
                         <div class="row">
@@ -222,7 +223,7 @@
             </div>
         </div>
     </div>
-    <div id="username" class="hidden">{{ username }}</div>
+    <div id="username" class="hidden">provider</div>
     <div id="usertype" class="hidden">provider</div>
     <div id="patient_id" class="hidden">{{ patient.id }}</div>
     <div id="log"></div>
@@ -230,6 +231,7 @@
     {{ provider_form.media.js }}
     <script src="//media.twiliocdn.com/sdk/js/video/releases/2.7.2/twilio-video.min.js"></script>
     <script src="{% get_static_prefix %}EasyConnect/assets/js/video.js"></script>
+    <script src="{% get_static_prefix %}EasyConnect/assets/js/patient_already_being_seen.js"></script>
 </body>
 
 </html>

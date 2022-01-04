@@ -25,6 +25,7 @@ from square.client import Client
 
 from twilio.jwt.access_token import AccessToken
 from twilio.jwt.access_token.grants import VideoGrant
+from twilio.rest import Client as TwilioRestClient
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -157,6 +158,7 @@ def connect_affiliate(request, affiliate_url):
     context = {
         'form': form,
         'off_hours': off_hours,
+        'is_holiday': is_holiday(),
     }
     context.update(affiliate)
     return render(request, 'EasyConnect/connect.html', context)
@@ -575,6 +577,32 @@ def video_token(request):
     return HttpResponse(None, status=401)
 
 
+def provider_in_chat(request):
+    if request.method == 'POST':
+        patient_id = json.loads(request.body)['patient_id']
+
+        twilio_account_sid = settings.TWILIO_ACCOUNT_SID
+        twilio_api_key_sid = settings.TWILIO_API_KEY_SID
+        twilio_api_key_secret = settings.TWILIO_API_KEY_SECRET
+
+        client = TwilioRestClient(twilio_api_key_sid, twilio_api_key_secret)
+
+        in_chat = False
+        try:
+            participants = client.video.rooms(patient_id).participants.get('provider').fetch()
+
+
+            if participants:
+                in_chat = True
+        except Exception as e:
+            in_chat = False
+
+        data = { 'in_chat': in_chat }
+        return HttpResponse(json.dumps(data), status=200, content_type='application/json')
+
+    return HttpResponse(None, status=401)
+
+
 def is_eighteen(request):
     if request.method == 'POST':
         data = {
@@ -613,6 +641,18 @@ def is_eighteen(request):
         return JsonResponse(data, safe=False)
 
     return HttpResponse(None, status=401)
+
+
+def is_holiday():
+    server_time = datetime.now(pytz.utc)
+
+    tz = timezone(settings.DISPLAY_TZ)
+    today = server_time.astimezone(tz)
+
+    if datetime.strftime(today, '%m/%d/%y') == '11/25/21':
+        return True
+    else:
+        return False
 
 
 def apply_coupon(request):
