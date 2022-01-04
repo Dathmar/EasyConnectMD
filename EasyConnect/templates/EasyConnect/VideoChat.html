@@ -5,6 +5,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <meta name="referrer" content="no-referrer-when-downgrade">
     <title>EasyConnectMD</title>
     <link rel="shortcut icon" type="image/png" href="{% get_static_prefix %}EasyConnect/assets/img/favicon-color.png"/>
     <link rel="stylesheet" href="{% get_static_prefix %}EasyConnect/assets/bootstrap/css/bootstrap.min.css">
@@ -41,6 +42,7 @@
     {% include 'EasyConnect/standard-footer.html' %}
     <script src="https://sdk.twilio.com/js/video/releases/2.15.2/twilio-video.min.js"></script>
     <script src="{% get_static_prefix %}EasyConnect/assets/js/video.js"></script>
+    {% include 'EasyConnect/chat-widget.html' %}
 </body>
 
 </html>
