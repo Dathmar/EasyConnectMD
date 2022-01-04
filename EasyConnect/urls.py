@@ -40,6 +40,7 @@ urlpatterns = [
     # ajax calls
     path('video-token/', views.video_token, name='video-token'),
     path('provider-joined/', views.provider_joined, name='provider-joined'),
+    path('provider-in-chat/', views.provider_in_chat, name='provider-in-chat'),
     path('apply-coupon/', views.apply_coupon, name='apply-coupon'),
     path('patient-cost/', views.patient_cost, name='patient-cost'),
     path('square-app-id/', views.square_app_id, name='square-app-id'),
