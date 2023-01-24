@@ -18,9 +18,9 @@ from django.db import connection
 from django.contrib.auth.models import User
 
 from EasyConnect.forms import PatientForm, SymptomsForm, ProviderForm, PaymentForm, ICD10CodeLoad, \
-    AffiliateForm, CouponForm
+    AffiliateForm, CouponForm, VitalsForm
 from EasyConnect.models import Patient, Symptoms, ProviderNotes, Appointments, Payment, Icd10, \
-    Affiliate, Coupon, Patient_Cost
+    Affiliate, Coupon, Patient_Cost, Vitals
 
 from square.client import Client
 
@@ -250,8 +250,9 @@ def connect_2_affiliate(request, patient_id, affiliate_url):
         symptom_form = SymptomsForm(request.POST)
         payment_form = PaymentForm(request.POST)
         coupon_form = CouponForm(request.POST)
+        vitals_form = VitalsForm(request.POST)
 
-        if symptom_form.is_valid() and (payment_form.is_valid() or patient_cost <= 0):
+        if symptom_form.is_valid() and vitals_form.is_valid() and (payment_form.is_valid() or patient_cost <= 0):
             logger.info(f'{patient.id} forms are valid')
 
             # process the data in form.cleaned_data as required (here we just write it to the model due_back field)
@@ -262,6 +263,18 @@ def connect_2_affiliate(request, patient_id, affiliate_url):
 
             # get existing object if it exists and update.
             symptom_obj = get_object_data_or_set_defaults(Symptoms.objects.filter(patient_id=patient_id).first())
+
+            height_feet = vitals_form.cleaned_data['height_feet']
+            height_inches = vitals_form.cleaned_data['height_inches']
+            weight = vitals_form.cleaned_data['weight']
+
+            vitals = Vitals(
+                patient=patient,
+                height_feet=height_feet,
+                height_inches=height_inches,
+                weight=weight
+            )
+            vitals.save()
 
             symptoms = Symptoms(pk=symptom_obj['pk'],
                                 patient=patient,
@@ -352,6 +365,7 @@ def connect_2_affiliate(request, patient_id, affiliate_url):
         symptom_form = SymptomsForm()
         payment_form = PaymentForm()
         coupon_form = CouponForm()
+        vitals_form = VitalsForm()
 
     if not request.session.get('idempotency_key'):
         request.session['idempotency_key'] = str(uuid.uuid4())
@@ -360,6 +374,7 @@ def connect_2_affiliate(request, patient_id, affiliate_url):
     affiliate = get_affiliate_context(affiliate_url=affiliate_url)
 
     context = {
+        'vitals_form': vitals_form,
         'symptom_form': symptom_form,
         'payment_form': payment_form,
         'coupon_form': coupon_form,
@@ -502,8 +517,8 @@ def provider_view(request, patient_id):
                                               'medications': symptoms.medications,
                                               'previous_diagnosis': symptoms.previous_diagnosis})
 
-        tz = timezone(settings.DISPLAY_TZ)
-        today = tz.localize(datetime.today())
+
+        today = datetime.today()
         patient_age = today.year - patient.dob.year - ((today.month, today.day) < (patient.dob.month, patient.dob.day))
         provider_notes = ProviderNotes.objects.filter(patient_id=patient_id).first()
 
