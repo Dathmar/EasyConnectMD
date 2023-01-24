@@ -134,6 +134,23 @@ class PaymentForm(forms.Form):
                                                           'placeholder': 'nonce'}), max_length=2000, required=False)
 
 
+class VitalsForm(forms.Form):
+    height_feet = forms.FloatField(
+        widget=forms.NumberInput(
+            attrs={'required': True, 'type': 'number', 'style': 'width: 4em;', 'class': 'border'}
+        )
+    )
+    height_inches = forms.FloatField(
+        widget=forms.NumberInput(
+            attrs={'required': True, 'type': 'number', 'style': 'width: 4em', 'class': 'border mt-2'}
+        )
+    )
+    weight = forms.FloatField(
+        widget=forms.NumberInput(
+            attrs={'required': True, 'type': 'number', 'style': 'width: 6em', 'class': 'border'}
+        )
+    )
+
 class SymptomsForm(forms.Form):
     allergies = forms.CharField(widget=forms.Textarea(
         attrs={

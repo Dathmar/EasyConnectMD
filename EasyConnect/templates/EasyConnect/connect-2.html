@@ -65,7 +65,37 @@
                         </div>
                         {%  endif %}
                         <div class="row">
-                            <div class="col"><label class="col-form-label">Known drug or food allergies*</label></div>
+                            <div class="col"><label class="col-form-label">Height</label></div>
+                        </div>
+                        <div class="row">
+                            <div class="col">
+                                <div>
+                                    {{ vitals_form.height_feet }}
+                                    <label for={{ vitals_form.height_feet.id_for_label }}>
+                                        ft
+                                    </label>
+                                </div>
+                                <div>
+                                    {{ vitals_form.height_inches }}
+                                    <label for={{ vitals_form.height_inches.id_for_label }}>
+                                        in
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col"><label class="col-form-label">Weight</label></div>
+                        </div>
+                        <div class="row">
+                            <div class="col">
+                                {{ vitals_form.weight }}
+                                <label for={{ vitals_form.weight.id_for_label }}>
+                                    lbs
+                                </label>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col"><label class="col-form-label">Known drug or food allergies</label></div>
                         </div>
                         <div class="row">
                             <div class="col">
@@ -73,7 +103,7 @@
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col"><label class="col-form-label">Current Medications and Doses*</label></div>
+                            <div class="col"><label class="col-form-label">Current Medications and Doses</label></div>
                         </div>
                         <div class="row">
                             <div class="col">
@@ -90,7 +120,7 @@
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col"><label class="col-form-label">Have you been diagnosed with any of the following?*</label></div>
+                            <div class="col"><label class="col-form-label">Have you been diagnosed with any of the following?</label></div>
                         </div>
                         <div class="row ul-no-bulletpoints">
                             <div class="col">
@@ -113,7 +143,7 @@
                             <div class="col"><label style="margin-left: 0.6rem;">Total</label>
                                 <div><span id="cost" style="margin-left: 0.5em;color: #ffa500;">
                                     {% if patient_cost.cost|add:"0" <= 0  %}
-                                        <strike>$ {{ affiliate.affiliate_price|div:100 }}</strike> Free
+                                        <span style="text-decoration: line-through;">$ {{ affiliate.affiliate_price|div:100 }}</span> Free
                                     {% else %}
                                         ${{ patient_cost.cost|div:100 }}
                                     {% endif %}
@@ -159,7 +189,7 @@
         </section>
     </div>
     {% include 'EasyConnect/standard-footer.html' %}
-    <script src="{% static 'EasyConnect/assets/js/paymentForm_v1.1.0.0.js' %}"></script>
+    <script src="{% static 'EasyConnect/assets/js/paymentForm_v1.2.0.0.js' %}"></script>
     {% if affiliate.affiliate_name == "EasyConnect" %}
     <script src="{% static 'EasyConnect/assets/js/coupon.js' %}"></script>
     {% endif %}

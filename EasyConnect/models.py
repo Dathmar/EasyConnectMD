@@ -74,6 +74,13 @@ class Preferred_Pharmacy(models.Model):
         return self.pharmacy_name
 
 
+class Vitals(models.Model):
+    patient = models.ForeignKey(Patient, on_delete=models.PROTECT)
+    height_feet = models.FloatField()
+    height_inches = models.FloatField()
+    weight = models.FloatField()
+
+
 class Symptoms(models.Model):
     # page 2
     patient = models.ForeignKey(Patient, on_delete=models.PROTECT)
