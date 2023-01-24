@@ -1,9 +1,6 @@
 function $(x) { return document.getElementById(x)}
 
-const tax_percent_elemt = $('tax_percent')
-const tax_amount_elemt = $('tax_amount')
-const order_cost_elemt = $('order_cost')
-const shipping_amount_elemt = $('shipping_amount')
+const patient_id = $('patient_id').innerHTML;
 
 async function initializeCard(payments) {
     const card = await payments.card();
@@ -48,7 +45,13 @@ document.addEventListener('DOMContentLoaded', async function () {
         'card-button'
     );
     cardButton.addEventListener('click', async function (event) {
-        await handlePaymentMethodSubmission(event, card);
+        let patient_cost = await get_patient_cost();
+        console.log(patient_cost)
+        if ( patient_cost >= 0 ) {
+            document.forms[0].submit();
+        } else {
+            await handlePaymentMethodSubmission(event, card);
+        }
     });
 });
 
@@ -101,3 +104,17 @@ function fetchSquareAppId() {
         })
     return sq_id;
 };
+
+function get_patient_cost() {
+    let patient_cost = fetch('/patient-cost/', {
+        method: 'POST',
+        headers: {"X-Requested-With": "XMLHttpRequest", "X-CSRFToken": getCookie("csrftoken")},
+        body: JSON.stringify({'patient_id': patient_id})
+    }).then(
+        response => {
+            return response.json();
+        }).then( data => {
+            return data.patient_cost;
+    })
+    return patient_cost;
+}
