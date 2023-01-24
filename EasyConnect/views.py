@@ -2,13 +2,14 @@ import os
 import csv
 import json
 import threading
+import uuid
 
 from datetime import datetime, timedelta
-from pytz import timezone
+from django.utils import timezone
 import pytz
 
 from django.shortcuts import render, get_object_or_404
-from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
+from django.http import HttpResponseRedirect, HttpResponse, JsonResponse, HttpResponseNotAllowed
 from django.urls import reverse
 from django.conf import settings
 from django.contrib.auth import logout
@@ -16,9 +17,9 @@ from django.core.mail import send_mail
 from django.db import connection
 from django.contrib.auth.models import User
 
-from EasyConnect.forms import PatientForm, SymptomsForm, ProviderForm, PharmacyForm, PaymentForm, ICD10CodeLoad, \
+from EasyConnect.forms import PatientForm, SymptomsForm, ProviderForm, PaymentForm, ICD10CodeLoad, \
     AffiliateForm, CouponForm
-from EasyConnect.models import Patient, Symptoms, ProviderNotes, Preferred_Pharmacy, Appointments, Payment, Icd10, \
+from EasyConnect.models import Patient, Symptoms, ProviderNotes, Appointments, Payment, Icd10, \
     Affiliate, Coupon, Patient_Cost
 
 from square.client import Client
@@ -26,6 +27,10 @@ from square.client import Client
 from twilio.jwt.access_token import AccessToken
 from twilio.jwt.access_token.grants import VideoGrant
 from twilio.rest import Client as TwilioRestClient
+
+import logging
+
+logger = logging.getLogger('app_api')
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -84,6 +89,7 @@ def faq_affiliate(request, affiliate_url):
     affiliate_url = affiliate_url.lower()
     context = get_affiliate_context(affiliate_url)
     return render(request, 'EasyConnect/faq.html', context)
+
 
 def privacy_policy(request):
     return faq_affiliate(request, '')
@@ -223,6 +229,7 @@ def connect_2_affiliate(request, patient_id, affiliate_url):
     affiliate_obj = get_affiliate_object(affiliate_url=affiliate_url)
 
     if not patient_cost:
+        logger.info(f'{patient.id} Adding patient cost.')
         patient_cost = Patient_Cost(patient_id=patient.id, cost=affiliate_obj.affiliate_price)
         patient_cost.save()
 
@@ -238,15 +245,17 @@ def connect_2_affiliate(request, patient_id, affiliate_url):
             return HttpResponseRedirect(reverse('easyconnect:video-chat', args=(patient_id,)))
 
     if request.method == 'POST':
+        logger.info(f'{patient.id} patient submitting payment')
         # Create a form instance and populate it with data from the request (binding):
         symptom_form = SymptomsForm(request.POST)
-        pharmacy_form = PharmacyForm(request.POST)
         payment_form = PaymentForm(request.POST)
         coupon_form = CouponForm(request.POST)
 
-        if symptom_form.is_valid() and pharmacy_form.is_valid() and (payment_form.is_valid() or patient_cost <= 0):
+        if symptom_form.is_valid() and (payment_form.is_valid() or patient_cost <= 0):
+            logger.info(f'{patient.id} forms are valid')
+
             # process the data in form.cleaned_data as required (here we just write it to the model due_back field)
-            symptom_description = symptom_form.cleaned_data['symptom_description']
+            pancreatitis_thyroid_cancer = symptom_form.cleaned_data['pancreatitis_thyroid_cancer']
             allergies = symptom_form.cleaned_data['allergies']
             medications = symptom_form.cleaned_data['medications']
             previous_diagnosis = symptom_form.cleaned_data['previous_diagnosis']
@@ -256,7 +265,7 @@ def connect_2_affiliate(request, patient_id, affiliate_url):
 
             symptoms = Symptoms(pk=symptom_obj['pk'],
                                 patient=patient,
-                                symptom_description=symptom_description,
+                                pancreatitis_thyroid_cancer=pancreatitis_thyroid_cancer,
                                 allergies=allergies,
                                 medications=medications,
                                 previous_diagnosis=previous_diagnosis,
@@ -264,33 +273,19 @@ def connect_2_affiliate(request, patient_id, affiliate_url):
                                 update_datetime=datetime.now())
             symptoms.save()
 
-            pharmacy_name = pharmacy_form.cleaned_data['pharmacy_name']
-            pharmacy_address = pharmacy_form.cleaned_data['pharmacy_address']
-            pharmacy_phone = pharmacy_form.cleaned_data['pharmacy_phone']
-
-            # get existing object if it exists and update.
-            pharmacy_obj = get_object_data_or_set_defaults(
-                Preferred_Pharmacy.objects.filter(patient_id=patient_id).first())
-
-            pharmacy = Preferred_Pharmacy(id=pharmacy_obj['pk'],
-                                          patient=patient,
-                                          pharmacy_name=pharmacy_name,
-                                          pharmacy_address=pharmacy_address,
-                                          pharmacy_phone=pharmacy_phone,
-                                          create_datetime=pharmacy_obj['create_datetime'],
-                                          update_datetime=datetime.now())
-            pharmacy.save()
-
             # only generate payment if patient cost is greater than 0
             if int(patient_cost.cost) > 0:
+                logger.info(f'{patient.id} processing payment.')
                 # each payment attempt will generate a new nonce
-                nonce = payment_form.cleaned_data['nonce']
-                previous_payments = Payment.objects.filter(patient_id=patient_id).count()
+                nonce = request.session.get('nonce')
+                idempotency_key = request.session.get('idempotency_key')
+
+                logger.info(f'{patient.id} nonce {nonce} idempotency_key {idempotency_key}')
 
                 # process the payment
                 body = {
                     'source_id': nonce,
-                    'idempotency_key': str(patient_id) + '-' + str(previous_payments),
+                    'idempotency_key': idempotency_key,
                     'amount_money': {
                         'amount': int(patient_cost.cost),
                         'currency': 'USD'
@@ -320,15 +315,11 @@ def connect_2_affiliate(request, patient_id, affiliate_url):
                             payment_errors.append('The CCV did not match the card number.')
                         else:
                             payment_errors.append(error)
-
-                payment = Payment(patient=patient,
-                                  nonce=nonce,
-                                  status=payment_status,
-                                  response=result.body)
-
-                payment.save()
             else:
                 payment_status = "NA"
+
+            request.session['idempotency_key'] = False
+            request.session['nonce'] = False
 
             if payment_status != 'Failed':
                 # add 1 to the coupon uses.
@@ -347,8 +338,8 @@ def connect_2_affiliate(request, patient_id, affiliate_url):
                     appointment.save()
 
                     # send e-mails
-                    send_patient_notification(patient_id)
-                    send_provider_notification(patient_id)
+                    # send_patient_notification(patient_id)
+                    # send_provider_notification(patient_id)
                 if affiliate_url:
                     return HttpResponseRedirect(reverse('easyconnect:video-chat-affiliate',
                                                         kwargs={'patient_id': patient.id,
@@ -359,15 +350,17 @@ def connect_2_affiliate(request, patient_id, affiliate_url):
     # If this is a GET (or any other method) create the default form.
     else:
         symptom_form = SymptomsForm()
-        pharmacy_form = PharmacyForm()
         payment_form = PaymentForm()
         coupon_form = CouponForm()
+
+    if not request.session.get('idempotency_key'):
+        request.session['idempotency_key'] = str(uuid.uuid4())
+        request.session['nonce'] = False
 
     affiliate = get_affiliate_context(affiliate_url=affiliate_url)
 
     context = {
         'symptom_form': symptom_form,
-        'pharmacy_form': pharmacy_form,
         'payment_form': payment_form,
         'coupon_form': coupon_form,
         'patient_id': patient_id,
@@ -455,7 +448,7 @@ def provider_view(request, patient_id):
 
     patient = get_object_or_404(Patient, pk=patient_id)
     symptoms = get_object_or_404(Symptoms, patient_id=patient_id)
-    preferred_pharmacy = get_object_or_404(Preferred_Pharmacy, patient_id=patient_id)
+
     appointment = Appointments.objects.filter(patient_id=patient_id).order_by('-create_datetime').first()
 
     if request.method == 'POST':
@@ -463,7 +456,7 @@ def provider_view(request, patient_id):
         provider_form = ProviderForm(request.POST)
         patient_form = PatientForm(request.POST)
         symptoms_form = SymptomsForm(request.POST)
-        preferred_pharmacy_form = PharmacyForm(request.POST)
+
         if provider_form.is_valid():
             hpi = provider_form.cleaned_data['hpi']
             assessments = provider_form.cleaned_data['assessments']
@@ -497,9 +490,6 @@ def provider_view(request, patient_id):
             appointment.seen_by = request.user
             appointment.save(update_fields=['status', 'seen_by'])
 
-        preferred_pharmacy_form = PharmacyForm(initial={'pharmacy_phone': preferred_pharmacy.pharmacy_phone,
-                                                        'pharmacy_address': preferred_pharmacy.pharmacy_address,
-                                                        'pharmacy_name': preferred_pharmacy.pharmacy_name})
         patient_form = PatientForm(initial={'first_name': patient.first_name,
                                             'last_name': patient.last_name,
                                             'phone_number': patient.phone_number,
@@ -507,7 +497,7 @@ def provider_view(request, patient_id):
                                             'dob': patient.dob,
                                             'gender': patient.gender,
                                             'zip': patient.zip})
-        symptoms_form = SymptomsForm(initial={'symptom_description': symptoms.symptom_description,
+        symptoms_form = SymptomsForm(initial={'pancreatitis_thyroid_cancer': symptoms.pancreatitis_thyroid_cancer,
                                               'allergies': symptoms.allergies,
                                               'medications': symptoms.medications,
                                               'previous_diagnosis': symptoms.previous_diagnosis})
@@ -536,7 +526,6 @@ def provider_view(request, patient_id):
         'patient_form': patient_form,
         'symptoms': symptoms,
         'symptoms_form': symptoms_form,
-        'preferred_pharmacy_form': preferred_pharmacy_form,
         'patient_records': patient_records,
         'username': provider_name,
         'patient_age': patient_age
@@ -570,7 +559,7 @@ def video_token(request):
 
         token.add_grant(VideoGrant(room=patient_id))
 
-        data = {'token': token.to_jwt().decode()}
+        data = {'token': token.to_jwt()}
         data = json.dumps(data)
         return HttpResponse(data, status=200, content_type='application/json')
 
@@ -626,10 +615,7 @@ def is_eighteen(request):
             return JsonResponse(data, safe=False)
 
         if dob_year > 1800 and dob_month > 0 and dob_day > 0:
-            server_time = datetime.now(pytz.utc)
-
-            tz = timezone(settings.DISPLAY_TZ)
-            today = server_time.astimezone(tz)
+            today = datetime.now()
 
             patient_age = today.year - dob_year - ((today.month, today.day) < (dob_month, dob_day))
 
@@ -644,10 +630,7 @@ def is_eighteen(request):
 
 
 def is_holiday():
-    server_time = datetime.now(pytz.utc)
-
-    tz = timezone(settings.DISPLAY_TZ)
-    today = server_time.astimezone(tz)
+    today = datetime.now()
 
     if datetime.strftime(today, '%m/%d/%y') == '11/25/21':
         return True
@@ -661,10 +644,8 @@ def apply_coupon(request):
         coupon_code = json.loads(request.body)['coupon_code']
         coupon = None
 
-        default_cost = 3995  # should have this come from the DB.
-        server_time = datetime.now(pytz.utc)
-        tz = timezone(settings.DISPLAY_TZ)
-        loc_dt = server_time.astimezone(tz)
+        default_cost = 4995  # should have this come from the DB.
+        loc_dt = datetime.now()
 
         if coupon_code:
             coupon = Coupon.objects.filter(code__iexact=coupon_code, begin_date__lte=loc_dt.today(), end_date__gte=loc_dt.today()).first()
@@ -726,9 +707,8 @@ def square_app_id(request):
 
 
 def server_time(request):
-    server_time = datetime.now(pytz.utc)
-    tz = timezone(settings.DISPLAY_TZ)
-    loc_dt = server_time.astimezone(tz)
+    server_time = datetime.now()
+    loc_dt = server_time
 
     off_hours = is_offhours()
 
@@ -748,10 +728,7 @@ def server_time(request):
 
 
 def is_offhours():
-    server_time = datetime.now(pytz.utc)
-
-    tz = timezone(settings.DISPLAY_TZ)
-    loc_dt = server_time.astimezone(tz)
+    loc_dt = datetime.now()
 
     # get day of week
     # 0 = Monday
@@ -763,12 +740,11 @@ def is_offhours():
     # 6 = Sunday
     day_of_week = loc_dt.weekday()
 
-    if day_of_week in (3, 4, 5):
+    if day_of_week in (0, 1, 2, 3, 4):
         start_time = 8
-        end_time = 20
+        end_time = 17
     else:
-        start_time = 8
-        end_time = 20
+        return False
 
     off_hours = False
 
@@ -804,7 +780,7 @@ def get_patient_records(patient_id):
             ) 
             SELECT
                 PNMax.mxdate as create_datetime, 
-                sym.symptom_description symptom_description, sym.allergies allergies, 
+                sym.pancreatitis_thyroid_cancer pancreatitis_thyroid_cancer, sym.allergies allergies, 
                 sym.medications medications, sym.previous_diagnosis previous_diagnosis, PN.hpi hpi, 
                 PNA.icd10_dsc icd10_dsc, PN.treatment treatment, PN.followup, 
                 concat(au.first_name, ' ', last_name) seen_by, patient.patient_name, patient.dob
@@ -1018,6 +994,7 @@ def send_patient_notification(patient_id):
     patient = Patient.objects.filter(pk=patient_id).first()
 
     patient_cost = Patient_Cost.objects.filter(patient_id=patient_id).first()
+    video_url = f'{settings.EMAIL_BASE_URL}/video-chat/{patient_id}'
 
     if int(patient_cost.cost) > 0:
         payment_info = Payment.objects.filter(patient_id=patient_id, status='Paid').values('response').first()['response']
@@ -1028,64 +1005,12 @@ def send_patient_notification(patient_id):
         payment_card_last4 = payment_info['payment']['card_details']['card']['last_4']
         payment_amount = payment_info['payment']['amount_money']['amount'] / 100
     else:
-        payment_info = "None"
-
         payment_date = datetime.today()
         payment_card_type = "NA"
         payment_card_last4 = "NA"
         payment_amount = "Free"
 
-    body = f"""
-        Hi {patient.first_name},
-
-        If you get disconnected from your online appointment, please click the following link to re-join:
-
-        <a href='{settings.EMAIL_BASE_URL}/video-chat/{patient_id}'>Click to Rejoin</a>
-
-        Thank you for choosing EasyConnectMD!
-
-        Need technical support?
-        You can email us at <a href='mailto:info@easyconnectmd.com'>info@easyconnectmd.com</a>
-
-        === Receipt Information ===
-        Date: {payment_date}
-        Total paid: ${payment_amount}
-        {payment_card_type} ending in {payment_card_last4}
-        """
-
-    html_body = f"""
-        <!DOCTYPE html>
-        <html>
-            <head>
-            </head>
-            <body>
-                <p>Hi {patient.first_name},</p>
-                <p></p>
-                <p>If you get disconnected from your online appointment, please click the following link to re-join:</p>
-                <p></p>
-                <p><a href='{settings.EMAIL_BASE_URL}/video-chat/{patient_id}'>Click to Rejoin</a></p>
-                <p></p>
-                <p>Thank you for choosing EasyConnectMD!</p>
-                <p></p>
-                <p>Need technical support?</p>
-                <p>You can email us at <a href='mailto:info@easyconnectmd.com'>info@easyconnectmd.com</a></p>
-                <p></p>
-                <p>=== Receipt Information ===</p>
-                <p>Date: {payment_date}</p>
-                <p>Total paid: ${payment_amount}</p>
-                <p>{payment_card_type} ending in {payment_card_last4}</p>
-            </body>
-        </html>
-        """
-
-    EmailThread(
-        subject='In case you get disconnected',
-        message=body,
-        from_email=settings.EMAIL_HOST_USER,
-        recipient_list=[patient.email],
-        fail_silently=False,
-        html_message=html_body
-    ).start()
+    #add call to sendgrid to send
 
 
 class EmailThread(threading.Thread):
@@ -1102,3 +1027,13 @@ class EmailThread(threading.Thread):
         msg = send_mail(subject=self.subject, message=self.message, from_email=self.from_email,
                         recipient_list=self.recipient_list, fail_silently=self.fail_silently,
                         html_message=self.html_message)
+
+
+def order_nonce(request):
+    if request.method == 'POST':
+        logger.info(f'Adding nonce to session.')
+        nonce = json.loads(request.body)['nonce']
+        request.session['nonce'] = nonce
+        return HttpResponse('ok')
+
+    return HttpResponseNotAllowed(['POST', ])

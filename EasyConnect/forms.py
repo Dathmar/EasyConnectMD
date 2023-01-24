@@ -2,7 +2,7 @@ from django import forms
 from EasyConnect.choices import GENDER_CHOICES, DIAGNOSED_CHOICES
 from django.core.exceptions import ValidationError
 from phonenumber_field.formfields import PhoneNumberField
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 import re
 from datetime import date
 from EasyConnect.models import Icd10
@@ -28,7 +28,7 @@ class PatientForm(forms.Form):
                                                         'type': 'date',
                                                         'onChange': 'checkAge(this.value);',
                                                         'placeholder': 'mm/dd/yyyy'}))
-    gender = forms.ChoiceField(widget=forms.RadioSelect(attrs={'class': "form-check-input"}),
+    gender = forms.ChoiceField(widget=forms.RadioSelect(),
                                choices=GENDER_CHOICES)
     tos = forms.BooleanField(widget=forms.CheckboxInput(attrs={'class': "form-check-input"}),
                              label='I agree to the Terms of Service',
@@ -124,7 +124,9 @@ class AffiliateForm(forms.Form):
 
 class CouponForm(forms.Form):
     code = forms.CharField(widget=forms.TextInput(attrs={'class': "form-control form-control",
-                                                           'placeholder': 'Coupon'}), max_length=200)
+                                                           'placeholder': 'Coupon'}), max_length=200,
+                           required=False
+                           )
 
 
 class PaymentForm(forms.Form):
@@ -133,27 +135,24 @@ class PaymentForm(forms.Form):
 
 
 class SymptomsForm(forms.Form):
-    symptom_description = forms.CharField(widget=forms.Textarea(
-        attrs={"class": "overflow-auto border",
-               "rows": "3", "cols": "40", "style": "width: 100%; resize: none; border: none"}))
     allergies = forms.CharField(widget=forms.Textarea(
-        attrs={"class": "overflow-auto border",
-               "rows": "3", "cols": "40", "style": "width: 100%; resize: none; border: none"}))
+        attrs={
+            "class": "overflow-auto border",
+            "rows": "3", "cols": "40", "style": "width: 100%; resize: none; border: none"
+        }))
     medications = forms.CharField(widget=forms.Textarea(
-        attrs={"class": "overflow-auto border",
-               "rows": "3", "cols": "40", "style": "width: 100%; resize: none; border: none"}))
+        attrs={
+            "class": "overflow-auto border",
+            "rows": "3", "cols": "40", "style": "width: 100%; resize: none; border: none"
+        }))
+    pancreatitis_thyroid_cancer = forms.BooleanField(
+        widget=forms.RadioSelect(choices=[('yes', 'Yes'),('no', 'No')])
+    )
     previous_diagnosis = forms.MultipleChoiceField(
         required=True,
         widget=forms.CheckboxSelectMultiple(attrs={"onClick": "removeChecks(this)"}),
         choices=DIAGNOSED_CHOICES
     )
-
-    def clean_symptom_description(self):
-        data = self.cleaned_data['symptom_description']
-        if not data:
-            raise ValidationError(_('Invalid Symptom Description - cannot be blank'))
-
-        return data
 
     def clean_allergies(self):
         data = self.cleaned_data['allergies']
@@ -175,6 +174,13 @@ class SymptomsForm(forms.Form):
             raise ValidationError(_('Invalid previous diagnosis - cannot be blank'))
 
         return data
+
+    def clean_pancreatitis_thyroid_cancer(self):
+        data = self.cleaned_data['pancreatitis_thyroid_cancer']
+        if data == 'no':
+            return False
+        return True
+
 
 
 class PharmacyForm(forms.Form):

@@ -8,8 +8,8 @@ from django.conf import settings
 # Create your models here.
 class Affiliate(models.Model):
     affiliate_name = models.TextField()
-    affiliate_logo = models.TextField()
-    affiliate_url = models.TextField(null=True)
+    affiliate_logo = models.TextField(null=True, blank=True)
+    affiliate_url = models.TextField(null=True, blank=True)
     affiliate_price = models.TextField()
 
     def __str__(self):
@@ -77,9 +77,9 @@ class Preferred_Pharmacy(models.Model):
 class Symptoms(models.Model):
     # page 2
     patient = models.ForeignKey(Patient, on_delete=models.PROTECT)
-    symptom_description = models.TextField(default=None)
     allergies = models.TextField(default=None)
     medications = models.TextField(default=None)
+    pancreatitis_thyroid_cancer = models.BooleanField(default=None, blank=True, null=True)
     previous_diagnosis = models.CharField(default=None, max_length=2000)
 
     create_datetime = models.DateTimeField('date created', auto_now_add=True)

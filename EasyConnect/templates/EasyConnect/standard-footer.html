@@ -1,19 +1,15 @@
 {% load static %}
-    <div class="social-icons" style="background-color: #ffa500;">
-        <h6 style="color: #FFFFFF">Follow us on social media</h6>
-        <a href="https://www.facebook.com/EasyConnectMedical/" target="_blank"><i class="icon ion-social-facebook"></i></a>
-    </div>
     <div class="footer-dark">
         <footer>
             <div class="container">
                 <div class="row">
                     <div class="col d-flex d-sm-flex d-md-flex d-lg-flex d-xl-flex justify-content-center justify-content-sm-center justify-content-md-center justify-content-lg-center justify-content-xl-center">
-                        <img src="{% get_static_prefix %}EasyConnect/assets/img/favicon-white.png" width="110" height="110">
+                        <img src="{% get_static_prefix %}EasyConnect/assets/img/Logo-footer.png" width="auto" height="110">
                     </div>
                 </div>
                 <div class="row d-xl-flex">
                     <div class="col d-xl-flex justify-content-xl-center" style="padding-top: 0px;padding-right: 6px;padding-bottom: 8px;">
-                        <p class="d-xl-flex copyright" style="font-size: 20px;height: 50px;font-family: Antic, sans-serif;">EasyConnectMD © 2021</p>
+                        <p class="d-xl-flex copyright" style="font-size: 20px;height: 50px;font-family: Antic, sans-serif;">KellumConnectMD © 2023</p>
                     </div>
                 </div>
                 <div class="row">
@@ -23,4 +19,5 @@
         </footer>
     </div>
     <script src="{% get_static_prefix %}EasyConnect/assets/js/jquery.min.js"></script>
-    <script src="{% get_static_prefix %}EasyConnect/assets/bootstrap/js/bootstrap.min.js"></script>
+    <script src="{% static 'EasyConnect/assets/bootstrap/js/bootstrap.bundle.js' %}"></script>
+    <script src="{% static 'EasyConnect/assets/js/fadein.js' %}"></script>

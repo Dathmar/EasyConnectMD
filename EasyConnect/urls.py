@@ -1,5 +1,4 @@
 from django.urls import path, include
-from django.conf.urls import url
 from EasyConnect.views import provider_dashboard
 from . import views
 
@@ -32,8 +31,8 @@ urlpatterns = [
     # provier side
     path('provider/<uuid:patient_id>', views.provider_view, name='provider-view'),
     path('stats/', views.call_stats, name='call-stats'),
-    url(r'^dashboard/', provider_dashboard, name='dashboard'),
-    url(r'^accounts/', include("django.contrib.auth.urls")),
+    path('dashboard/', provider_dashboard, name='dashboard'),
+    path('accounts/', include("django.contrib.auth.urls")),
     path('accounts/logout/', views.logout_request, name='logout'),
     path('accounts/login/', views.login_request, name='login'),
 
@@ -44,6 +43,7 @@ urlpatterns = [
     path('apply-coupon/', views.apply_coupon, name='apply-coupon'),
     path('patient-cost/', views.patient_cost, name='patient-cost'),
     path('square-app-id/', views.square_app_id, name='square-app-id'),
+    path('order-nonce/', views.order_nonce, name='order-nonce'),
     path('age-verification/', views.is_eighteen, name='age_verification'),
 
     #affiliate views

@@ -1,0 +1,18 @@
+{% load static %}
+{% load math_filters %}
+<!DOCTYPE html>
+<html lang="en">
+
+{% include 'base-head.html' %}
+
+<body>
+    {% include 'EasyConnect/standard_navbar.html' %}
+    {% block body_copy %}
+    {% endblock %}
+    {% include 'EasyConnect/standard-footer.html' %}
+
+    <script src="{% get_static_prefix %}EasyConnect/assets/js/jquery.min.js"></script>
+    <script src="{% static 'EasyConnect/assets/bootstrap/js/bootstrap.bundle.js' %}"></script>
+    <script src="{% static 'EasyConnect/assets/js/fadein.js' %}"></script>
+</body>
+</html>

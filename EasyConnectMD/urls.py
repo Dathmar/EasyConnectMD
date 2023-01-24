@@ -16,13 +16,18 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import include, path
 
-admin.site.site_header = 'EasyConnectMD Admin'
-admin.site.site_title = 'EasyConnectMD Admin'
-admin.site.site_url = 'https://easyconnectmd.com/'
-admin.site.index_title = 'Easyconnect administration'
-admin.empty_value_display = '**Empty**'
+from django.conf.urls.static import static
+from django.contrib.staticfiles.storage import staticfiles_storage
+from django.views.generic.base import RedirectView
 
 urlpatterns = [
+    path('favicon.ico', RedirectView.as_view(url=staticfiles_storage.url('img/favicon.ico'))),
+    path('apple-touch-icon.png', RedirectView.as_view(url=staticfiles_storage.url('img/apple-touch-icon.png'))),
+    path('android-chrome-192x192.png', RedirectView.as_view(url=staticfiles_storage.url('img/android-chrome-192x192.png'))),
+    path('android-chrome-512x512.png', RedirectView.as_view(url=staticfiles_storage.url('img/android-chrome-512x512.png'))),
+    path('browserconfig.xml', RedirectView.as_view(url=staticfiles_storage.url('img/browserconfig.xml'))),
+    path('mstile-150x150.png', RedirectView.as_view(url=staticfiles_storage.url('img/mstile-150x150.png'))),
+    path('robots.txt', RedirectView.as_view(url=staticfiles_storage.url('robots.txt'))),
     path('admin/', admin.site.urls),
     path('select2/', include('django_select2.urls')),
     path('', include('EasyConnect.urls')),

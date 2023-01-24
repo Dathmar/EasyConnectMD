@@ -7,25 +7,19 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
     <meta name="referrer" content="no-referrer-when-downgrade">
-    <title>EasyConnectMD</title>
+    <title>KellumConnectMD | Connect with a doctor</title>
     <link rel="shortcut icon" type="image/png" href="{% get_static_prefix %}EasyConnect/assets/img/favicon-color.png"/>
     <link rel="stylesheet" href="{% get_static_prefix %}EasyConnect/assets/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Antic">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Cambay">
-    <link rel="stylesheet" href="{% get_static_prefix %}EasyConnect/assets/css/Footer-Dark.css">
     <link rel="stylesheet" href="{% get_static_prefix %}EasyConnect/assets/css/styles.css">
-    <link rel="stylesheet" href="{% get_static_prefix %}EasyConnect/assets/css/untitled.css">
-    <link rel="stylesheet" href="{% get_static_prefix %}EasyConnect/assets/css/google_map.css">
+
 
     <link rel="stylesheet" href="{% get_static_prefix %}EasyConnect/assets/fonts/ionicons.min.css">
     <link rel="stylesheet" href="{% get_static_prefix %}EasyConnect/assets/css/Social-Icons.css">
 
     {% include 'EasyConnect/tracking_codes.html' %}
     <script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDDhdlOWJynJ3hq34ZhiIY7bMegpWSN3FE&callback=initMap&libraries=places&v=weekly"
-            defer
-    ></script>
-    <script src="{% get_static_prefix %}EasyConnect/assets/js/nearbyPharmacies.js"></script>
     <script type="text/javascript" src="{{ square_js_url }}"></script>
 </head>
 
@@ -71,14 +65,6 @@
                         </div>
                         {%  endif %}
                         <div class="row">
-                            <div class="col"><label class="col-form-label">Describe your symptoms*</label></div>
-                        </div>
-                        <div class="row">
-                            <div class="col">
-                                <div style="height: 6em;">{{ symptom_form.symptom_description }}</div>
-                            </div>
-                        </div>
-                        <div class="row">
                             <div class="col"><label class="col-form-label">Known drug or food allergies*</label></div>
                         </div>
                         <div class="row">
@@ -95,31 +81,20 @@
                             </div>
                         </div>
                         <div class="row">
+                            <div class="col"><label class="col-form-label">Do you have a history of Pancreatitis or Thyroid cancer?</label></div>
+                        </div>
+                        <div class="row">
+                            <div class="col">
+                                <div style="height: 6em;">{{ symptom_form.pancreatitis_thyroid_cancer }}</div>
+                                <div></div>
+                            </div>
+                        </div>
+                        <div class="row">
                             <div class="col"><label class="col-form-label">Have you been diagnosed with any of the following?*</label></div>
                         </div>
                         <div class="row ul-no-bulletpoints">
                             <div class="col">
                                 {{ symptom_form.previous_diagnosis }}
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col"><label>Choose Your Preferred Pharmacy</label>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col" style="height: 25em">
-                                <div id="map"></div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col" style="margin-top: 1em; height: 15em"><label>Preferred Pharmacy</label>
-                                <div id="panel">
-                                    <input type="checkbox" id="custom_pharmacy" value="Don't see your pharmacy?" onclick="allowCustomPharmacy()">
-                                    <label for="custom_pharmacy">Don't see your pharmacy?</label>
-                                    {{ pharmacy_form.pharmacy_name }}
-                                    {{ pharmacy_form.pharmacy_address }}
-                                    {{ pharmacy_form.pharmacy_phone }}
-                                </div>
                             </div>
                         </div>
                         {% if affiliate.affiliate_name == "EasyConnect" %}
@@ -168,7 +143,7 @@
                         <div class="row" style="margin-top: 1em;">
                             <div class="col d-lg-flex">
                                 <input class="btn btn-primary border rounded-0 connect-button button-credit-card" type="submit" style="background-color: rgb(255,255,255);color: #ffa500;border: 2px solid #ffa500 !important;"
-                                                    value="Proceed to Video Chat" onclick="onGetCardNonce(event)"/>
+                                                    value="Proceed to Video Chat" id="card-button"/>
                             </div>
                         </div>
                     </form>
@@ -184,11 +159,11 @@
         </section>
     </div>
     {% include 'EasyConnect/standard-footer.html' %}
-    <script src="{% get_static_prefix %}EasyConnect/assets/js/paymentForm.js"></script>
+    <script src="{% static 'EasyConnect/assets/js/paymentForm_v1.1.0.0.js' %}"></script>
     {% if affiliate.affiliate_name == "EasyConnect" %}
-    <script src="{% get_static_prefix %}EasyConnect/assets/js/coupon.js"></script>
+    <script src="{% static 'EasyConnect/assets/js/coupon.js' %}"></script>
     {% endif %}
-    {% include 'EasyConnect/chat-widget.html' %}
+
 </body>
 
 </html>
