@@ -25,13 +25,13 @@ document.addEventListener('DOMContentLoaded', async function () {
     // Checkpoint 2.
     async function handlePaymentMethodSubmission(event, paymentMethod) {
         event.preventDefault();
-
         try {
             // disable the submit button as we await tokenization and make a
             // payment request.
             cardButton.disabled = true;
             const token = await tokenize(paymentMethod);
             await nce(token);
+            console.log('token id')
             console.log(token)
             document.forms[0].submit();
         } catch (e) {
@@ -47,32 +47,14 @@ document.addEventListener('DOMContentLoaded', async function () {
     cardButton.addEventListener('click', async function (event) {
         let patient_cost = await get_patient_cost();
         console.log(patient_cost)
-        if ( patient_cost >= 0 ) {
+        if ( patient_cost <= 0 ) {
+            event.preventDefault();
             document.forms[0].submit();
         } else {
             await handlePaymentMethodSubmission(event, card);
         }
     });
 });
-
-async function createPayment(token) {
-    const body = JSON.stringify({
-        locationId,
-        sourceId: token,
-    });
-    const paymentResponse = await fetch('/payment', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body,
-    });
-    if (paymentResponse.ok) {
-        return paymentResponse.json();
-    }
-    const errorBody = await paymentResponse.text();
-    throw new Error(errorBody);
-}
 
 async function tokenize(paymentMethod) {
     const tokenResult = await paymentMethod.tokenize();
@@ -90,7 +72,7 @@ async function tokenize(paymentMethod) {
 }
 
 async function nce(nonce) {
-    await fetch('/order-nonce/', {
+    return await fetch('/order-nonce/', {
         method: 'POST',
         headers: {"X-Requested-With": "XMLHttpRequest", "X-CSRFToken": getCookie("csrftoken")},
         body: JSON.stringify({'nonce': nonce})

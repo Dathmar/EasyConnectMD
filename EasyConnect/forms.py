@@ -6,7 +6,6 @@ from django.utils.translation import gettext_lazy as _
 import re
 from datetime import date
 from EasyConnect.models import Icd10
-from django_select2 import forms as s2forms
 
 
 class PatientForm(forms.Form):
@@ -151,6 +150,7 @@ class VitalsForm(forms.Form):
         )
     )
 
+
 class SymptomsForm(forms.Form):
     allergies = forms.CharField(widget=forms.Textarea(
         attrs={
@@ -163,7 +163,8 @@ class SymptomsForm(forms.Form):
             "rows": "3", "cols": "40", "style": "width: 100%; resize: none; border: none"
         }))
     pancreatitis_thyroid_cancer = forms.BooleanField(
-        widget=forms.RadioSelect(choices=[('yes', 'Yes'),('no', 'No')])
+        widget=forms.RadioSelect(choices=[('yes', 'Yes'), ('no', 'No')]),
+        required=True
     )
     previous_diagnosis = forms.MultipleChoiceField(
         required=True,
@@ -199,7 +200,6 @@ class SymptomsForm(forms.Form):
         return True
 
 
-
 class PharmacyForm(forms.Form):
     pharmacy_name = forms.CharField(widget=forms.TextInput(attrs={'class': "form-control form-control",
                                                                   'placeholder': 'Pharmacy Name*'}),
@@ -222,10 +222,15 @@ class ProviderForm(forms.Form):
         required=False)
 
     # Requires Redis server.
-    assessments = forms.ModelMultipleChoiceField(widget=s2forms.ModelSelect2MultipleWidget(queryset=Icd10.objects.all(),
-                                                                            search_fields=['ICD10_DSC__icontains']),
-                                                 queryset=Icd10.objects.all(), required=False)
-
+    assessments = forms.CharField(
+        widget=forms.Select(
+            choices=Icd10.objects.all().values_list('id', 'ICD10_DSC'),
+            attrs={
+                'class': 'form-control-sm select2',
+                'placeholder': 'Assessment',
+            }
+        )
+    )
     treatment = forms.CharField(widget=forms.Textarea(
         attrs={"class": "overflow-auto border smaller-field",
                "rows": "3", "cols": "40", "style": "width: 100%; resize: none; border: none"}),
@@ -244,3 +249,16 @@ class ProviderForm(forms.Form):
 
 class ICD10CodeLoad(forms.Form):
     file = forms.FileField()
+
+
+class PrescriptionProvidedForm(forms.Form):
+    prescription = forms.BooleanField(
+        widget=forms.RadioSelect(choices=[('yes', 'Yes'), ('no', 'No')],),
+        required=True
+    )
+
+    def clean_prescription(self):
+        data = self.cleaned_data['prescription']
+        if data == 'no':
+            return False
+        return True

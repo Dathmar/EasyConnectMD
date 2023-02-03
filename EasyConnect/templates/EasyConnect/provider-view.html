@@ -32,45 +32,25 @@
                         <div class="tab-style">
                             <h6 class="col-form-label">Patient Submitted Information</h6>
                             <h4></h4>
-                            <p class="appointment"><strong>Name:</strong> {{ patient.first_name }} {{ patient.last_name }} | <strong>DOB:</strong> {{ patient.dob }} | <strong>Age:</strong> {{ patient_age }} | <strong>Phone:</strong> {{ patient.phone_number }} | <strong>Email:</strong> {{ patient.email }} | <strong>Gender:</strong> {{ patient.gender }}</p>
-                            <h6 class="appointment"><strong>Chief Complaint (<em>Describe your symptoms</em>):</strong><br></h6>
-                            <p class="appointment">{{ symptoms.symptom_description }}</p>
-                            <h6 class="bold-h6 appointment"><strong>HPI</strong></h6>
-                            <div style="height: 6em;">{{ provider_form.hpi }}</div>
+                            <p class="appointment">
+                                <strong>Name:</strong> {{ patient.first_name }} {{ patient.last_name }} |
+                                <strong>DOB:</strong> {{ patient.dob }} |
+                                <strong>Age:</strong> {{ patient_age }} |
+                                <strong>Phone:</strong> {{ patient.phone_number }} |
+                                <strong>Email:</strong> {{ patient.email }} |
+                                <strong>Gender:</strong> {{ patient.gender }} |
+                                <strong>Height:</strong> {{ vitals.height_feet | floatformat:"0" }}' {{ vitals.height_inches | floatformat:"0" }}" |
+                                <strong>Weight:</strong> {{ vitals.weight | floatformat:1 }}
+                                <strong>BMI:</strong> {{ bmi | floatformat:2 }}
+                            </p>
                             <h6 class="appointment"><strong>Allergies to Medications (<em>Known drug or food allergies</em>):</strong></h6>
                             <p class="appointment">{{ symptoms.allergies }}</p>
                             <h6 class="appointment"><strong>Current Medications (<em>Current Medications and Doses</em>):</strong></h6>
                             <p class="appointment">{{ symptoms.medications }}</p>
                             <h6 class="appointment"><strong>Medical History (<em>Have you been diagnosed with any of the following</em>):</strong></h6>
                             <p class="appointment">{{ symptoms.previous_diagnosis }}</p>
-                            <h6 class="bold-h6 appointment">Assesment(s)</h6>
-                            <h6 class="appointment"><em>Select one or more options. Type a few characters to search then wait a second for the options to load.</em></h6>
-                            <div class="smaller-field">
-                                <p class="appointment">{{ provider_form.assessments }}</p>
-                            </div>
-                            <h6 class="bold-h6 appointment" style="margin-top: 1.5em;">Treatment</h6>
-                            <div style="height: 6em;">{{ provider_form.treatment }}</div>
-                            <h6 class="bold-h6 appointment">Followup</h6>
-                            <div style="height: 6em;">{{ provider_form.followup }}</div>
-                            <div class="form-group">
-                                <div class="d-xl-flex align-items-xl-center">
-                                    <div class="half-width">
-                                        <h6 class="bold-h6 appointment">Preferred Pharmacy Name</h6>
-                                        <div class="input-wrapper">{{ preferred_pharmacy_form.pharmacy_name }}</div>
-                                    </div>
-                                    <div class="half-width">
-                                        <h6 class="bold-h6 appointment">Preferred Pharmacy Phone<br></h6>
-                                        <div class="input-wrapper">{{ preferred_pharmacy_form.pharmacy_phone }}</div>
-                                    </div>
-                                    <div class="half-width">
-                                        <h6 class="bold-h6 appointment">Preferred Pharmacy Address<br></h6>
-                                        <div class="input-wrapper">{{ preferred_pharmacy_form.pharmacy_address }}</div>
-                                    </div>
-                                </div>
-                                <div></div>
-                            </div>
-                            <h6 class="bold-h6 appointment">Return to Work Notes</h6>
-                            <div style="height: 6em;">{{ provider_form.return_to_work_notes }}</div>
+                            {{ provider_form.as_p }}
+                            {{ prescription_form.as_p }}
                         </div>
                     </div>
                     <div class="tab-pane" role="tabpanel" id="tab-2">
@@ -228,7 +208,6 @@
     <div id="patient_id" class="hidden">{{ patient.id }}</div>
     <div id="log"></div>
     {% include 'EasyConnect/provider_footer.html' %}
-    {{ provider_form.media.js }}
     <script src="//media.twiliocdn.com/sdk/js/video/releases/2.7.2/twilio-video.min.js"></script>
     <script src="{% get_static_prefix %}EasyConnect/assets/js/video.js"></script>
     <script src="{% get_static_prefix %}EasyConnect/assets/js/patient_already_being_seen.js"></script>

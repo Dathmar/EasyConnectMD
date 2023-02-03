@@ -1,11 +1,16 @@
 import uuid
 from django.db import models
-from EasyConnect.choices import GENDER_CHOICES, DIAGNOSED_CHOICES
+from EasyConnect.choices import GENDER_CHOICES
 from phonenumber_field.modelfields import PhoneNumberField
 from django.conf import settings
+from django.contrib.auth.models import User
 
 
-# Create your models here.
+class UserPhone(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    phone_number = PhoneNumberField(max_length=20, blank=True, null=True)
+
+
 class Affiliate(models.Model):
     affiliate_name = models.TextField()
     affiliate_logo = models.TextField(null=True, blank=True)
@@ -120,7 +125,7 @@ class Icd10(models.Model):
 class ProviderNotes(models.Model):
     patient = models.ForeignKey(Patient, on_delete=models.PROTECT)
     hpi = models.TextField(default=None)
-    assessments = models.ManyToManyField(Icd10, blank=True)
+    assessments = models.ForeignKey(Icd10, on_delete=models.PROTECT, default=None, null=True, blank=True)
     treatment = models.TextField(default=None)
     followup = models.TextField(default=None)
     return_to_work_notes = models.TextField(default=None)
